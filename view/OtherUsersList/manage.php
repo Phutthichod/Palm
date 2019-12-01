@@ -48,20 +48,19 @@ if(isset($_POST['request'])){
             // echo $fname;
             $lname = trim($_POST['lname']);
             $username = trim($_POST['username']);
-            $pwd = $_POST['pwd'];
+            $pwd = trim($_POST['pwd']);
            
             $mail = trim($_POST['mail']);  
             $id_type = trim($_POST['type']);
             $id_department = trim($_POST['department']);
 
-           // if($department != "" && $alias != ""){
             $sql = "INSERT INTO `db-user` (`UID`,Title,FirstName,LastName,UserName,PWD,Icon,EMAIL,ETID,DID,IsAdmin,IsResearch,IsOperator,IsFarmer,IsBlock) 
              VALUES ('','$title','$fname','$lname','$username','null','default.jpg','$mail','$id_type','$id_department','$admin','$research','$operator','$farmer','0')";
 
             $uid = addinsertData($sql);
    
-            //}
-            $pwd_md5 = md5($uid.$username.$pwd);
+            $username_up = strtoupper($username);
+            $pwd_md5 = md5($uid.$username_up.$pwd);
             
             $sql=   "UPDATE `db-user` SET PWD='$pwd_md5'
             WHERE `UID`='$uid' ";
@@ -81,26 +80,102 @@ if(isset($_POST['request'])){
             $sql = "INSERT INTO `dim-user` (ID,`dbID`,`Type`,Title,FullName,Alias) 
                     VALUES ('','$uid','U','$title','$fullname','$fname')";
 
-            addinsertData($sql);
+            $id_u=addinsertData($sql);
 
+            $time = time();
+                $data_t =  getDIMDate();
+            $id_t = $data_t[1]['ID'];
+                $loglogin = $_SESSION[md5('LOG_LOGIN')];
+            $loglogin_id = $loglogin[1]['ID'];
+            
+            $sql = "INSERT INTO `log-password` (ID,DIMuserID,LOGloginID,StartT,StartID,PWD) 
+                        VALUES ('','$id_u','$loglogin_id','$time','$id_t','$pwd_md5')";
+            $did = addinsertData($sql);
+
+            $dimd_id = get_DIMd($id_department);
+            
+
+            $sql = "INSERT INTO `log-user` (ID,DIMuserID,DIMdeptID,LOGloginID,StartT,StartID,IsAdmin,IsResearch,IsOperator,IsFarmer,IsBlock) 
+                        VALUES ('','$id_u','$dimd_id','$loglogin_id','$time','$id_t','$admin','$research','$operator','$farmer','0')";
+            $did = addinsertData($sql);
+
+            $sql = "SELECT * FROM  `db-emailtype` WHERE ETID='$id_type'";
+            $DATA = selectData($sql);
+            $type= $DATA[1]['Type'];
+            $fullemail = $mail.'@'.$type;
+
+            $sql = "INSERT INTO `log-email` (ID,DIMuserID,LOGloginID,StartT,StartID,dbETID,FullEmail,`Type`) 
+                        VALUES ('','$id_u','$loglogin_id','$time','$id_t','$id_type','$fullemail','$type')";
+            $did = addinsertData($sql);
+            
             header("location:OtherUsersList.php");
             
             break;
         
         case 'delete' ;
             $uid = $_POST['uid'];
+            $get_idDim = getDIMu($uid);
+
+            $time = time();
+                $data_t =  getDIMDate();
+            $id_t = $data_t[1]['ID'];
+
+            $sql="UPDATE `log-user` 
+            SET EndT='$time', EndID='$id_t'
+            WHERE DIMuserID='$get_idDim' AND EndT IS NULL ";
+            $o_did = updateData($sql);
+
+            $sql="UPDATE `log-email` 
+            SET EndT='$time', EndID='$id_t'
+            WHERE DIMuserID='$get_idDim' AND EndT IS NULL ";
+            $o_did = updateData($sql);
+
+            $sql="UPDATE `log-password` 
+            SET EndT='$time', EndID='$id_t'
+            WHERE DIMuserID='$get_idDim' AND EndT IS NULL ";
+            $o_did = updateData($sql);
+
             $sql = "DELETE FROM `db-user` WHERE `UID`='".$uid."'";  
             delete($sql);
+
 
             break;
 
         case 'block' ;
             $val = $_POST['val'];
             $uid = $_POST['uid'];
-            
-            $sql=   "UPDATE `db-user` SET IsBlock=$val
-            WHERE `UID`='$uid' ";
 
+            $get_idDim = getDIMu($uid);
+
+            $time = time();
+                $data_t =  getDIMDate();
+            $id_t = $data_t[1]['ID'];
+                $loglogin = $_SESSION[md5('LOG_LOGIN')];
+            $loglogin_id = $loglogin[1]['ID'];
+
+            $sql = "SELECT * FROM `log-user`  WHERE DIMuserID='$get_idDim' AND EndT IS NULL ";
+            $DATA = selectData($sql);
+            $id_old = $DATA[1]['ID'];
+
+            $id_dim = $DATA[1]['DIMuserID'];
+            $dimd_id = $DATA[1]['DIMdeptID'];
+            $admin = $DATA[1]['IsAdmin'];
+            $research = $DATA[1]['IsResearch'];
+            $operator = $DATA[1]['IsOperator'];
+            $farmer = $DATA[1]['IsFarmer'];
+
+            $sql = "INSERT INTO `log-user` (ID,DIMuserID,DIMdeptID,LOGloginID,StartT,StartID,IsAdmin,IsResearch,IsOperator,IsFarmer,IsBlock) 
+                    VALUES ('','$id_dim','$dimd_id','$loglogin_id','$time','$id_t','$admin','$research','$operator','$farmer','$val')";
+            $did = addinsertData($sql);
+         
+                        
+            $sql="UPDATE `log-user` 
+                SET EndT='$time', EndID='$id_t'
+                WHERE ID='$id_old'";
+            $o_did = updateData($sql);
+                       
+            $sql=   "UPDATE `db-user` SET IsBlock=$val
+                WHERE `UID`='$uid' ";
             $re = updateData($sql);
 
             break;
@@ -111,18 +186,58 @@ if(isset($_POST['request'])){
 
             break;
         case 'changePass' ;
-            $pwd = $_POST['e_pwd'];
+            
+            $pwd = trim($_POST['e_pwd']);
             $uid = $_POST['pass_uid'];
             $username = $_POST['pass_username'];
+            $o_pwd = trim($_POST['pass_old']);
 
-            $pwd_md5 = md5($uid.$username.$pwd);
+            // echo   "<script>
+            //         console.log('$o_pwd');
+            //         </script>";
+            $title = $_POST['p_title'];
+            $fname = $_POST['p_fname'];
+            $lname = $_POST['p_lname'];
+
+            $DIM_user = getDIM($uid,$title,$fname,$lname);
+            $id_dim = $DIM_user[1]['ID'];
+            $username_up = strtoupper($username);
+            
+            $DATA = getUser($uid);
+            $pwd_DATA = $DATA[1]['PWD'];
+            $pwd_md5 = md5($uid.$username_up.$pwd);
+            
+            if($o_pwd == $pwd_md5){
+                
+                header("location:OtherUsersList.php");
+            }else{
+
+            
+            $time = time();
+                $data_t =  getDIMDate();
+            $id_t = $data_t[1]['ID'];
+                $loglogin = $_SESSION[md5('LOG_LOGIN')];
+            $loglogin_id = $loglogin[1]['ID'];
+            
+            $sql="UPDATE `log-password` 
+                            SET EndT='$time', EndID='$id_t'
+                            WHERE DIMuserID='$id_dim' AND EndT IS NULL ";
+             $o_did = updateData($sql);
+
+           
+            $sql = "INSERT INTO `log-password` (DIMuserID,LOGloginID,StartT,StartID,PWD) 
+            VALUES ('$id_dim','$loglogin_id','$time','$id_t','$pwd_md5')";
+
+            $did = addinsertData($sql);
+
              $sql=   "UPDATE `db-user` 
                         SET PWD='$pwd_md5'
                         WHERE `UID`='$uid' ";
 
                 $re = updateData($sql);
                 header("location:OtherUsersList.php");
-
+            
+            }
             break;
         case 'update' :
             $uid = $_POST['uid'];
@@ -144,23 +259,20 @@ if(isset($_POST['request'])){
             if(isset($_POST['e_farmer'])){
                 $farmer = 1;
             }
-            // echo $admin." ".$research." ";
             $title = trim($_POST['e_title']);
-            // echo "title = ".$title." ";
             $fname = trim($_POST['e_fname']);
-            // echo "fname = ".$fname." ";
             $lname = trim($_POST['e_lname']);
-            // echo "lname = ".$lname." ";
             $username = trim($_POST['e_username1']);
-            // echo "username = ".$username." ";
             $mail = trim($_POST['e_mail']);
-            // echo "mail = ".$mail." ";
             $id_type = trim($_POST['e_type']);
-            // echo "id_type = ".$id_type." ";
             $id_department = trim($_POST['e_department']);
-            // echo "id_department = ".$id_department;
-            // if($department != "" && $alias != ""){
-          
+                $get_User = getUser($uid);
+                $o_mail = $get_User[1]['EMAIL'];
+                $o_etid = $get_User[1]['ETID'];
+
+                
+                $get_idDim = getDIMu($uid);     //get ID_DIM_user before update for update log-user  
+
                 $sql=   "UPDATE `db-user` 
                         SET Title='$title', FirstName='$fname', LastName='$lname',UserName='$username', EMAIL='$mail', ETID='$id_type',
                         DID='$id_department', IsAdmin='$admin', IsResearch='$research',IsOperator='$operator', IsFarmer='$farmer'
@@ -168,12 +280,9 @@ if(isset($_POST['request'])){
 
                 $re = updateData($sql);
                 
-                $DATA =  select_dimUser();
-                //  print_r($DATA);
-                // echo   "<script>
-                //     console.log($DATA);
-                //     </script>";
-                echo $DATA[1]['Alias'];
+
+                $DATA =  select_dimUser();  //get DIM_user for check ADD duplicate dim-user
+                
                 if($title == 1){
                     $title_show = "นาย";
                 }else if($title == 2){
@@ -186,9 +295,6 @@ if(isset($_POST['request'])){
                 $i = 1;
                 $check_dim = 1;
             
-                    echo   "<script>
-                    console.log('this');
-                    </script>";
                 for($i = 1;$i <= $DATA[0]['numrow'];$i++){
                     if($DATA[$i]['dbID'] == $uid && $DATA[$i]['Title'] == $title && $DATA[$i]['FullName'] == $fullname  && $DATA[$i]['Alias'] == $fname ){
                         $check_dim = 0;
@@ -196,41 +302,73 @@ if(isset($_POST['request'])){
                         break;
                     }
                 }
-                // echo   "<script>
-                //     console.log('$uid,$title,$fullname,$fname,$i,$id_data');
-                //     </script>";
                if($check_dim == 1){
-                // header("location:test.php");
-                echo   "<script>
-                    console.log('ไม่ซ้ำ');
-                    </script>";
-                    
-                // echo $uid;
-                // echo $title;
-                // echo $fullname;
-                // echo $fname;
-                $sql = "INSERT INTO `dim-user` (ID,`dbID`,`Type`,Title,FullName,Alias) 
-                VALUES ('','$uid','U','$title','$fullname','$fname')";
+                        // header("location:test.php");
+                        echo   "<script>
+                            console.log('ไม่ซ้ำ');
+                            </script>";
+//    --------------------------------------------------- update dim-user ---------------------------------------------------
+                        $sql = "INSERT INTO `dim-user` (ID,`dbID`,`Type`,Title,FullName,Alias) 
+                        VALUES ('','$uid','U','$title','$fullname','$fname')";
 
-                $id_dim = addinsertData($sql);
-                // $DATA = select_dimUser();
-                               
-                $sh = $_SESSION[md5('user')];
-                $row = $sh[0]['numrow'];
-                echo   "<script>
-                    console.log('$row');
-                    </script>";
-                UpdateLogLogin();
-                NewLogLogin();
+                        $id_dim = addinsertData($sql);
+                                    
+//    ------------------------------------------------ update and Add log-login ---------------------------------------------------                       
+                        $sh = $_SESSION[md5('user')];
+                        $row = $sh[0]['numrow'];
+                        UpdateLogLogin();
+                        NewLogLogin();
 
                }else{
-                echo   "<script>
-                console.log('ซ้ำ');
-                </script>";
-                // header("location:OtherUsersList.php");
+                        $id_dim=$get_idDim;
+                        echo   "<script>
+                        console.log('ซ้ำ');
+                        </script>";
+                        // header("location:OtherUsersList.php");
                }
-                
-               header("location:OtherUsersList.php");
+//    --------------------------------------------------- get for log -------------------------------------------------------
+                $time = time();
+                $data_t =  getDIMDate();
+                $id_t = $data_t[1]['ID'];
+                $loglogin = $_SESSION[md5('LOG_LOGIN')];
+                $loglogin_id = $loglogin[1]['ID'];
+
+//    --------------------------------------------------- update log-user ---------------------------------------------------
+         
+                $sql="UPDATE `log-user` 
+                            SET EndT='$time', EndID='$id_t'
+                            WHERE DIMuserID='$get_idDim' AND EndT IS NULL ";
+                $o_did = updateData($sql);
+
+//    --------------------------------------------------- insert log-user ---------------------------------------------------
+
+                $dimd_id = get_DIMd($id_department);  //get ID_DIM_department for Add log-user
+
+                $sql = "INSERT INTO `log-user` (ID,DIMuserID,DIMdeptID,LOGloginID,StartT,StartID,IsAdmin,IsResearch,IsOperator,IsFarmer,IsBlock) 
+                            VALUES ('','$id_dim','$dimd_id','$loglogin_id','$time','$id_t','$admin','$research','$operator','$farmer','0')";
+                $did = addinsertData($sql);
+
+                $sql = "SELECT * FROM  `db-emailtype` WHERE ETID='$id_type'";
+                $DATA = selectData($sql);
+                $type= $DATA[1]['Type'];
+                $fullemail = $mail.'@'.$type;
+
+                echo $o_mail." ".$mail."--";
+                echo $o_etid." ".$id_type;
+                if($o_mail == $mail && $o_etid == $id_type ){
+
+                }else{
+
+                $sql="UPDATE `log-email` 
+                            SET EndT='$time', EndID='$id_t'
+                            WHERE DIMuserID='$id_dim' AND EndT IS NULL ";
+                $o_did = updateData($sql);
+
+                $sql = "INSERT INTO `log-email` (ID,DIMuserID,LOGloginID,StartT,StartID,dbETID,FullEmail,`Type`) 
+                            VALUES ('','$id_dim','$loglogin_id','$time','$id_t','$id_type','$fullemail','$type')";
+                $did = addinsertData($sql);
+                }
+                   header("location:OtherUsersList.php");
                 
                
             break;
@@ -240,6 +378,58 @@ if(isset($_POST['request'])){
 
     
 }
+function getDIMu($uid){
+    $sql = "SELECT * FROM `db-user` WHERE `UID`='$uid'";
+    $DATA = selectData($sql);
+    
+    $title = $DATA[1]['Title'];
+    if($title == 1){
+        $fullname = "นาย ";
+    }else if($title == 2){
+        $fullname = "นาง ";
+    }else{
+        $fullname = "นางสาว ";
+    }
+    $fname = $DATA[1]['FirstName'];
+    $lname = $DATA[1]['LastName'];
+    $fullname = $fullname.$fname." ".$lname;
+
+    $sql = "SELECT * FROM `dim-user` WHERE `dbID`='$uid' AND Title='$title' AND FullName='$fullname' AND Alias='$fname'";
+
+    $DATA = selectData($sql);
+    $IDdim_user = $DATA[1]['ID'];
+    return $IDdim_user;
+
+}
+function get_DIMd($id_department){
+    $sql = "SELECT * FROM `db-department` WHERE `DID`='$id_department'";
+    $DATA = selectData($sql);
+    $department = $DATA[1]['Department'];
+    $alias = $DATA[1]['Alias'];
+    $note = $DATA[1]['Note'];
+
+    // echo $department;
+
+    $sql = "SELECT * FROM `dim-department` WHERE `Department`='$department' AND Alias='$alias' AND Note='$note'";
+    $DATA = selectData($sql);
+    $dimd_id = $DATA[1]['ID'];
+
+   return $dimd_id;
+}
+function getDIM($uid,$title,$fname,$lname){
+    if($title == 1){
+        $fullname = "นาย ";
+    }else if($title == 2){
+        $fullname = "นาง ";
+    }else{
+        $fullname = "นางสาว ";
+    }
+    $fullname = $fullname.$fname." ".$lname;
+    $sql = "SELECT * FROM `dim-user` WHERE `dbID`='$uid' AND Title='$title' AND FullName='$fullname' AND Alias='$fname'";
+
+   $DATA = selectData($sql);
+   return $DATA;
+}
 function select_dimUser(){
     $sql = "SELECT * FROM `dim-user`";
 
@@ -247,4 +437,11 @@ function select_dimUser(){
    return $DATA;
 
 }
+function getUser($uid){
+    $sql = "SELECT * FROM `db-user` WHERE `UID`='$uid'";
+
+   $DATA = selectData($sql);
+   return $DATA;
+}
+
 ?>

@@ -57,13 +57,29 @@ $CurrentMenu = "FarmerList";
                     </div>
                 </div>
             </div>
+
+            <?php
+            $sql = "SELECT COUNT(`FSID`) AS sf FROM `db-subfarm`";
+            $sql1 = "SELECT COUNT(`FMID`) AS f FROM `db-farm`";
+            $result = $conn->query($sql);
+            $result1 = $conn->query($sql1);
+            ?>
+
             <div class="col-xl-3 col-12 mb-4">
                 <div class="card border-left-primary card-color-two shadow h-100 py-2">
                     <div class="card-body">
                         <div class="row no-gutters align-items-center">
                             <div class="col mr-2">
                                 <div class="font-weight-bold  text-uppercase mb-1">จำนวนสวน/แปลง</div>
-                                <div class="h5 mb-0 font-weight-bold text-gray-800">20 สวน/100 แปลง</div>
+                                <?php
+                                while ($row = $result->fetch_assoc()) {
+                                    $row1 = $result1->fetch_assoc()
+                                    ?>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800"><?php echo $row1['f']; ?> สวน /
+                                        <?php echo $row['sf']; ?> แปลง </div>
+                                <?php
+                                }
+                                ?>
                             </div>
                             <div class="col-auto">
                                 <i class="material-icons icon-big">waves</i>
@@ -72,13 +88,25 @@ $CurrentMenu = "FarmerList";
                     </div>
                 </div>
             </div>
+
+            <?php
+            $sql = "SELECT SUM(`AreaRai`) AS r FROM `db-subfarm`";
+            $result = $conn->query($sql);
+            ?>
+
             <div class="col-xl-3 col-12 mb-4">
                 <div class="card border-left-primary card-color-three shadow h-100 py-2">
                     <div class="card-body">
                         <div class="row no-gutters align-items-center">
                             <div class="col mr-2">
                                 <div class="font-weight-bold  text-uppercase mb-1">พื้นที่ทั้งหมด</div>
-                                <div class="h5 mb-0 font-weight-bold text-gray-800">10 ไร่</div>
+                                <?php
+                                while ($row = $result->fetch_assoc()) {
+                                    ?>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800"><?php echo $row['r']; ?> ไร่</div>
+                                <?php
+                                }
+                                ?>
                             </div>
                             <div class="col-auto">
                                 <i class="material-icons icon-big">dashboard</i>
@@ -87,13 +115,25 @@ $CurrentMenu = "FarmerList";
                     </div>
                 </div>
             </div>
+
+            <?php
+            $sql = "SELECT COUNT(`FCID`) AS t FROM `db-coorfarm`";
+            $result = $conn->query($sql);
+            ?>
+
             <div class="col-xl-3 col-12 mb-4">
                 <div class="card border-left-primary card-color-four shadow h-100 py-2">
                     <div class="card-body">
                         <div class="row no-gutters align-items-center">
                             <div class="col mr-2">
                                 <div class="font-weight-bold  text-uppercase mb-1">จำนวนต้นไม้</div>
-                                <div class="h5 mb-0 font-weight-bold text-gray-800">150 ต้น</div>
+                                <?php
+                                while ($row = $result->fetch_assoc()) {
+                                    ?>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800"><?php echo $row['t']; ?> ต้น</div>
+                                <?php
+                                }
+                                ?>
                             </div>
                             <div class="col-auto">
                                 <i class="material-icons icon-big">format_size</i>
@@ -235,32 +275,63 @@ $CurrentMenu = "FarmerList";
                                         <th>จัดการ</th>
                                     </tr>
                                 </tfoot>
+                                <?php
+                                //INFO
+                                $sql = "SELECT `FirstName`,`LastName`,`Distrinct`,`Province` FROM `db-farmer` 
+                                        JOIN `db-subdistrinct` ON `db-subdistrinct`.`AD3ID` = `db-farmer`.`AD3ID` 
+                                        JOIN `db-distrinct` ON `db-distrinct`.`AD2ID` = `db-subdistrinct`.`AD2ID`
+                                        JOIN `db-province` ON `db-province`.`AD1ID` = `db-distrinct`.`AD1ID`";
+                                $result = $conn->query($sql);
+                                //COUNT FARM
+                                $sql1 = "SELECT UFID, COUNT(CASE WHEN `UFID` IN (`UFID`) THEN 1 END) f FROM `db-farmer` GROUP BY `UFID`";
+                                $result1 = $conn->query($sql1);
+                                //COUNT subFARM
+                                $sql2 = "SELECT UFID, COUNT(CASE WHEN `UFID` IN (`UFID`) THEN 1 END) sf 
+                                FROM `db-farm` LEFT JOIN `db-subfarm` ON `db-farm`.`FMID` = `db-subfarm`.`FMID` GROUP BY UFID ";
+                                $result2 = $conn->query($sql2);
+                                //COUNT TREE
+                                $sql3 = "SELECT UFID, COUNT(CASE WHEN `UFID` IN (`UFID`) THEN 1 END) t 
+                                FROM `db-farm` LEFT JOIN `db-subfarm` ON `db-farm`.`FMID` = `db-subfarm`.`FMID` 
+                                LEFT JOIN `db-coorfarm` ON `db-subfarm`.`FSID` = `db-coorfarm`.`FSID` WHERE `FCID`
+                                GROUP BY UFID ";
+                                $result3 = $conn->query($sql3);
+                                //COUNT AREA
+                                $sql4 = "SELECT UFID, SUM(CASE WHEN `UFID` IN (`UFID`) THEN `AreaRai` END) A 
+                                FROM `db-farm` LEFT JOIN `db-subfarm` ON `db-farm`.`FMID` = `db-subfarm`.`FMID` 
+                                GROUP BY UFID ";
+                                $result4 = $conn->query($sql4);
+                                ?>
+
                                 <tbody>
-                                    <tr>
-                                        <?php
-                                        $sql = "SELECT * FROM `db-farmer` ";
-                                        $result = $conn->query($sql);
-                                        if ($result->num_rows > 0) {
-                                            while ($row = $result->fetch_assoc()) {
-                                                ?>
+                                    <?php
+                                    if ($result->num_rows > 0) {
+                                        while ($row = $result->fetch_assoc()) {
+                                            ?>
+                                            <tr>
                                                 <td><?php echo $row["FirstName"] . " " . $row["LastName"]; ?></td>
-                                                <td><?php  ?>กรุงเทพมหานคร</td>
-                                                <td>พระประะแดง</td>
-                                                <td>5</td>
-                                                <td>50</td>
-                                                <td>120</td>
-                                                <td>210</td>
-                                        <?php
-                                            }
-                                        } else {
-                                            echo "0 row";
+                                                <td><?php echo $row["Province"] ?></td>
+                                                <td><?php echo $row["Distrinct"] ?></td>
+                                                <?php $row1 = $result1->fetch_assoc() ?>
+                                                <td><?php echo $row1["f"] ?></td>
+                                                <?php $row2 = $result2->fetch_assoc() ?>
+                                                <td><?php echo $row2["sf"] ?></td>
+                                                <?php $row4 = $result4->fetch_assoc() ?>
+                                                <td><?php echo $row4["A"] ?></td>
+                                                <?php $row3 = $result3->fetch_assoc() ?>
+                                                <td><?php echo $row3["t"] ?></td>
+                                                <td style="text-align:center;">
+                                                    <a href="FarmerListDetail.php"><?php $_SESSION[md5('value')] = "UFID"; ?><button type="button" id="btn_info" class="btn btn-info btn-sm">
+                                                    <i class="fas fa-bars"></i></button></a>
+                                                </td>
+                                            </tr>
+                                    <?php
                                         }
-                                        $conn->close();
-                                        ?>
-                                        <td style="text-align:center;">
-                                            <a href="FarmerListDetail.php"><button type="button" id="btn_info" class="btn btn-info btn-sm"><i class="fas fa-bars"></i></button></a>
-                                        </td>
-                                    </tr>
+                                    } else {
+                                        echo "0 row";
+                                    }
+                                    $conn->close();
+                                    ?>
+
                                 </tbody>
                             </table>
                         </div>

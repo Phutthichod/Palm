@@ -91,9 +91,9 @@
                             <input type="text" hidden class="form-control" name="request" id="request" value="update">
                         </div>
                     </div>
-                 
-
-                    
+                    <input type="hidden" id="e_o_department" name="e_o_department" value="" >
+                    <input type="hidden" id="e_o_alias" name="e_o_alias" value="" >
+                    <input type="hidden" id="e_o_note" name="e_o_note" value="" >
                 </div>
 
             </div>

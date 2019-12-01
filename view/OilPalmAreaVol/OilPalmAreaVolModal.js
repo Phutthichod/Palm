@@ -1,3 +1,4 @@
+
 var addProductModal =
     `
 <div class="modal fade" id="addProductModal" tabindex="-1" role="dialog">
@@ -13,7 +14,7 @@ var addProductModal =
                         <span>ชื่อแปลง</span>
                     </div>
                     <div class="col-xl-9 col-12">
-                        <select id="sub" class="form-control">
+                        <select id="sub" name="name" class="form-control">
                             <option selected>เลือกแปลง</option>
                             <option>ไลอ้อน 1</option>
                             <option>ไลอ้อน 2</option>
@@ -33,7 +34,7 @@ var addProductModal =
                         <span>ผลผลิต (ก.ก.)</span>
                     </div>
                     <div class="col-xl-9 col-12">
-                        <input type="number" name="product" class="form-control" id="rank">
+                        <input type="number" name="weight" class="form-control" id="rank">
                     </div>
                 </div>
                 <div class="row mb-4">
@@ -41,7 +42,7 @@ var addProductModal =
                         <span>ราคาต่อหน่วย</span>
                     </div>
                     <div class="col-xl-9 col-12">
-                        <input type="number" name="price" class="form-control" id="rank">
+                        <input type="number" name="UnitPrice" class="form-control" id="rank">
                     </div>
                 </div>
             </div>
@@ -57,10 +58,9 @@ var addProductModal =
 
 `;
 
-
-var addProductModal =
+var addProductModal1 =
     `
-<div class="modal fade" id="addProductModal" tabindex="-1" role="dialog">
+<div class="modal fade" id="addProductModal1" tabindex="-1" role="dialog">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header header-modal">
@@ -105,7 +105,7 @@ var addProductModal =
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-success">ยืนยัน</button>
+                <input type="submit" name="addOilPalmAreaVol" class="btn btn-success">ยืนยัน</button>
                 <button type="button" class="btn btn-danger" data-dismiss="modal">ยกเลิก</button>
                 
             </div>
@@ -114,6 +114,7 @@ var addProductModal =
 </div>
 
 `;
+
 
 
 var imageModal =

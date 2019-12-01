@@ -143,21 +143,16 @@ switch($request){
                 foreach($dataCondition as $i => $val){
                     if($dataCondition[$i]['Condition'] != $Condition[$i]){
                         $isCondition = true;
-                        break;
+                        // break;
                     }
                 }
                 if($ID_OLD[1]['ID']!=$IDInsert){
                     $IDCon = $ID_OLD[1]['ID'];
-                    $sqlCon = "SELECT * FROM `log-ferCondition` WHERE `DIMfertID` = $IDCon AND `EndID` = 0;";
-                    $data = select($sqlCon);
-                    echo $sqlCon;
                     updateLogCon($ID_OLD[1]['ID']);
-                   
-                    foreach($data as $i=>$val){
-                            $itemCon = $data[$i]['Condition'];
-                            $itemSize = $data[$i]['Order'];
-                            $sql_insert = "INSERT INTO `db-fercondition` (`FID`,`Order`,`Condition`) VALUES ($FID,$itemSize,'$itemCon');";
-                            insertLogCon($itemCon,$IDInsert,$itemSize);
+                    $size = 1;
+                    foreach($Condition as $i=>$val){
+                        insertLogCon($Condition[$i],$IDInsert,$size);
+                        $size++;
                     }
                 }
             }
@@ -244,25 +239,61 @@ switch($request){
         }
         
         break;
+    case 'insert2':
+        if(isset($_POST['imagebase64'])){
+            $data = $_POST['imagebase64'];
+            $img_array = explode(';',$data);
+            $img_array2 = explode(",",$img_array[1]);
+            $data = base64_decode($img_array2[1]);
+
+            $imgName = time().'.png';
+
+            file_put_contents('upload/'.$imgName,$data);
+            $img_file = addslashes(file_get_contents('upload/'.$imgName));
+            echo( base64_encode($img_file));
+        }
+        print_r($_POST);    
+        break;
     case 'insert':
         $Name =  $_POST['name_insert'];
         $Alias = $_POST['alias_insert'];
-        $t=time();
-        $file = $_FILES['icon_insert']['name'];
-        $type = end(explode(".", "$file"));
-        $Icon = "$t.$type";
-        $sql = "INSERT INTO `db-fertilizer` (`Name`,`Icon`,`Alias`) VALUES ('$Name','$Icon','$Alias');";
+        // $t=time();
+      //  $file = $_FILES['icon_insert']['name'];
+        // $type = end(explode(".", "$file"));
+      //  $Icon = "$t.$type";
+       
         
         
-        $insertData = addinsertData($sql);
-        $sql = "SELECT `FID` FROM `db-fertilizer` ORDER BY `FID` DESC LIMIT 1";
-        $id = selectDataOne($sql)['FID'];
-        // echo exec("mkdir F_icon/fertilizer");
-        mkdir("../../icon/fertilizer/$id");
-        if(move_uploaded_file($_FILES["icon_insert"]["tmp_name"],"../../icon/fertilizer/$id/$Icon"))
-        {
+       
+       
+        if(isset($_POST['imagebase64'])){
+            $data = $_POST['imagebase64'];
+            $img_array = explode(';',$data);
+            $img_array2 = explode(",",$img_array[1]);
+            $data = base64_decode($img_array2[1]);
             
+
+
+           
+            $Icon = time().'.png';
+            $sql = "INSERT INTO `db-fertilizer` (`Name`,`Alias`,`Icon`) VALUES ('$Name','$Alias','$Icon');";
+            $insertData = addinsertData($sql);
+            $sql = "SELECT `FID` FROM `db-fertilizer` ORDER BY `FID` DESC LIMIT 1";
+            $id = selectDataOne($sql)['FID'];
+            mkdir("../../icon/fertilizer/$id");
+
+            file_put_contents("../../icon/fertilizer/$id/$Icon",$data);
+            
+            // $img_file = addslashes(file_get_contents('upload/'.$imgName));
+            // if(move_uploaded_file($_FILES["icon_insert"]["tmp_name"],"../../icon/fertilizer/$id/$Icon"))
+            // {
+                
+            // }
+            // echo( base64_encode($img_file));
         }
+        // echo exec("mkdir F_icon/fertilizer");
+       
+       
         // ------------------------------------ insert log ---------------------------------
         $id = selectDataOne($sql)['FID'];
         $sql = "SELECT * FROM `db-fertilizer` WHERE `FID` = $id";
@@ -279,9 +310,9 @@ switch($request){
         // $path = "icon/fertilizer/$id/$Icon";
         // $dataIcon = ['Icon' => $dataAll['EQ2'],'Path' =>  $path,'DIMIconID'=>$id,'Type' => 2,'FileName' => $dataAll['Icon']];
 
-        $path = "icon/fertilizer/$id/$Icon";
-        $dataIcon = ['Path' =>  $path,'Type' => 2,'FileName' => $dataAll['Icon']];
-        insertLog($data,$dataIcon);
+        // $path = "icon/fertilizer/$id/$Icon";
+        // $dataIcon = ['Path' =>  $path,'Type' => 2,'FileName' => $dataAll['Icon']];
+        insertLog($data);
         break;
     case 'selectCondition':
         $id = $_POST['id'];

@@ -33,7 +33,10 @@ $( document ).ready(function() {
         $('#e_note').val(note);
         $('#e_did').val(did);
 
-        // console.log(did);
+        $('#e_o_department').val(department);
+        $('#e_o_alias').val(alias);
+        $('#e_o_note').val(note);
+
         
 
     });
@@ -100,13 +103,24 @@ $( document ).ready(function() {
         let alias = $("input[name = 'e_alias']");
         let note = $("input[name = 'e_note']");
         let did = $("input[name = 'e_did']");
+
+        let o_department = $("input[name = 'e_o_department']");
+        let o_alias = $("input[name = 'e_o_alias']");
+        let o_note = $("input[name = 'e_o_note']");
         
         let data = [department,alias];
+        if(!check_duplicate(o_department,o_alias,o_note,department,alias,note)) return;
         if(!check_blank(data)) return;
         if(!check_editDepartment(department,did)) return;
         if(!check_editAlias(alias,did)) return;
     
     })  
+    function check_duplicate(o_department,o_alias,o_note,department,alias,note){
+        if(o_department == department && o_alias == alias && o_note == note){
+            return false;
+        }
+        return true;
+    }
     function check_editDepartment(name,did){
         console.log("check_de");
         for(i in dataD){
@@ -142,7 +156,7 @@ $( document ).ready(function() {
 
 });
 
-function delfunction(_department,_did) {
+function delfunction(_department,_did,_department,_alias,_note) {
     // alert(_did);
     swal({
             title: "คุณต้องการลบ",
@@ -175,7 +189,7 @@ function delfunction(_department,_did) {
     
                 }, function(isConfirm) {
                     if (isConfirm) {
-                        delete_1(_did)
+                        delete_1(_did,_department,_alias,_note)
                     }
     
                 });
@@ -185,17 +199,17 @@ function delfunction(_department,_did) {
         });
     
     }
-    function delete_1(_did) {
+    function delete_1(_did,_department,_alias,_note) {
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function() {
         if (this.readyState == 4 && this.status == 200) {
             window.location.href = 'DepartmentList.php';
-            //  alert(this.responseText);
+            // alert(this.responseText);
         }
     };
     xhttp.open("POST", "manage.php", true);
     xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-    xhttp.send(`did=${_did}&request=delete`);
+    xhttp.send(`did=${_did}&request=delete&department=${_department}&alias=${_alias}&note=${_note}`);
     
     }
     

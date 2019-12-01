@@ -29,6 +29,10 @@ while ($row = $result->fetch_assoc()) {
     }
 }
 
+$sql_province = "SELECT * FROM `db-province`";
+$result_province = $conn->query($sql_province);
+
+
 //print_r($coordinate);
 
 
@@ -63,38 +67,70 @@ while ($row = $result->fetch_assoc()) {
             </div>
             <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordion">
                 <div class="card-body" style="background-color: white; ">
-                    <div class="row mb-2">
-                        <div class="col-12">
-                            <input type="checkbox" name="vehicle1" id="fertilizer_check" value="" style="color:red;" checked>
-                            <span>การใส่ปุ๋ย</span>
+                    <form method="POST">
+                        <div class="row mb-2">
+                            <div class="col-12">
+                                <span>จังหวัด</span>
+                            </div>
                         </div>
-                    </div>
-                    <div class="row mb-3">
-                        <div class="col-12">
-                            <select id="fertilizer" class="form-control">
-                                <option value="all" selected>ทั้งหมด</option>
-                                <option>ใส่ครบ</option>
-                                <option>ใส่ไม่ครบ</option>
-                                <option>ไม่ใส่</option>
-                            </select>
+                        <div class="row mb-3">
+                            <div class="col-12">
+                                <select id="province" class="form-control selectpicker" data-live-search="true" title="กรุณาเลือกจังหวัด">
+                                    <?php while ($row = $result_province->fetch_assoc()) { ?>
+                                        <option value='<?php echo $row['AD1ID']; ?>'> <?php echo $row['Province']; ?> </option>
+                                    <?php } ?>
+                                </select>
+                            </div>
                         </div>
-                    </div>
-                    <div class="row mb-2">
-                        <div class="col-12">
-                            <input type="checkbox" id="product_check" name="vehicle1" value="" style="color:red;" checked>
-                            <span>ผลผลิต</span>
+                        <div class="row mb-2">
+                            <div class="col-12">
+                                <span>อำเภอ</span>
+                            </div>
                         </div>
-                    </div>
-                    <div class="row mb-3">
-                        <div class="col-12">
-                            <select id="product" class="form-control">
-                                <option value="all" selected>ทั้งหมด</option>
-                                <option>เกินค่าเฉลี่ย</option>
-                                <option>ไม่เกินค่าเฉลี่ย</option>
-                                <option>ไม่มีผลผลิต</option>
-                            </select>
+                        <div class="row mb-3">
+                            <div class="col-12">
+                                <select id="distrinct" class="form-control selectpicker" data-live-search="true" title="กรุณาเลือกอำเภอ">
+                                <?php while ($row = $result_province->fetch_assoc()) { ?>
+                                        <option value='<?php echo $row['AD2ID']; ?>'> <?php echo $row['Distrinct']; ?> </option>
+                                    <?php } ?>
+                                </select>
+                            </div>
                         </div>
-                    </div>
+                        <div class="row mb-2">
+                            <div class="col-12">
+                                <span>การใส่ปุ๋ย</span>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-12">
+                                <select id="fertilizer" class="form-control">
+                                    <option value="all" selected>ทั้งหมด</option>
+                                    <option>ใส่ครบ</option>
+                                    <option>ใส่ไม่ครบ</option>
+                                    <option>ไม่ใส่</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-12">
+                                <span>ผลผลิต</span>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-12">
+                                <select id="product" class="form-control">
+                                    <option value="all" selected>ทั้งหมด</option>
+                                    <option>เกินค่าเฉลี่ย</option>
+                                    <option>ไม่เกินค่าเฉลี่ย</option>
+                                    <option>ไม่มีผลผลิต</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <button type="button" class="btn" style="background-color:#E91E63; color:white;margin-left:960px; height:50px;
+                        width:100px;">ค้นหา <i class="fas fa-search"></i> </button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
@@ -123,6 +159,31 @@ while ($row = $result->fetch_assoc()) {
 
 <?php include_once("../layout/LayoutFooter.php"); ?>
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBMLhtSzox02ZCq2p9IIuihhMv5WS2isyo&callback=initMap&language=th" async defer></script>
+
+
+<script>
+    $(document).ready(function() {
+        $(document).on('change', '#province', function() {
+            $.ajax({
+                url:'search_distrinct.php',
+                data:"province="+$('#province').val(),
+                type:"POST",
+                async:false,
+                success: function(data)
+                {
+                    alert(data);
+                    $('#distrinct').html(data);
+                    //$('#distrinct').selectpicker('refresh');
+                },
+                error: function(xhr, status, exception) { 
+                    alert(status); 
+                }
+            });
+        });
+    });
+
+</script>
+
 
 
 <script>

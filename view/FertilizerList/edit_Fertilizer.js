@@ -139,21 +139,26 @@ $(document).on('click','.editSubmit',function(){ // submit to update
 
 })
 $(document).on('click','.insertSubmit',function(e){ // insert submit
-    
+    console.log('sss');
     // e.preventdefault()
     let name = $("input[name='name_insert']");
+    // let name = $(this).parent().prev().children().children().children().children().first().next()
     let alias = $("input[name='alias_insert']");
     let icon = $("#pic-logo");
+    // console.log("name = "+name)
 
-    let dataNull = [name,alias,icon]
-
+    let dataNull = [name,alias]
+    // console.log('sssssssssssssssss');
     if(!checkNull(dataNull)) return;
+    // console.log('pppp');
     if(!checkSameName(name,-1)) return;
     if(!checkSameAlias(alias,-1)) return;
-    // if(!checkSameName(alias,-1)) return;
+    // console.log('bb');
+    // // if(!checkSameName(alias,-1)) return;
   
-    console.log('insert');
+    // console.log('insert');
     let form = new FormData($('#form-insert')[0]);
+    form.append('imagebase64', $('#img-insert').attr('src'))
     insertF(form); // insert data
 })
 function loadDataF(){ // load all data in database and fetch data on wep page
@@ -172,8 +177,13 @@ function loadDataF(){ // load all data in database and fetch data on wep page
        
         // alert(data)
         let text = '';
-        if(Object.keys(dataF).length>0){ 
+        if(Object.keys(dataF).length>0){
+            
             for(i in dataF){
+                let icon = `<img src="../../icon/fertilizer/${dataF[i].FID}/${dataF[i].Icon}" id="pic-Fertilizer" class="" style="border-radius: 150px;width:200px;"; >`;
+                if(dataF[i].Icon == null){
+                    icon = `<img src="https://via.placeholder.com/150x200.png" id="pic-Fertilizer" class="" width="150px" height="200px" >`;
+                }
                 text += `
             <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between" id="card1" >
                 <h6 class="m-0 font-weight-bold text-white">${dataF[i].Name}</h6>
@@ -189,7 +199,11 @@ function loadDataF(){ // load all data in database and fetch data on wep page
                     <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
                     <br>
                         <center>
-                            <img src="../../icon/fertilizer/${dataF[i].FID}/${dataF[i].Icon}" id="pic-Fertilizer" class="" style="border-radius: 100px;width:100px;"; >
+                        <div class="upload-btn-wrapper">
+                            ${icon}
+                            
+                        </div>
+                            
                             <br>
                             <br>
         
@@ -410,6 +424,7 @@ function inputMountYear(){ // set input start end
         }
         mountYearChecked = true;
         setDate()
+        $( "input[name='start']" ).datepicker( $.datepicker.regional[ "fr" ] );
         $( "input[name='start']" ).datepicker( "option", "dateFormat", "ddmm" );
         $( "input[name='end']" ).datepicker( "option", "dateFormat", "ddmm" );
         $( "input[name='start']" ).datepicker( "option", "maxDate",endF );
@@ -445,7 +460,8 @@ function loadCondition(FID){ // load condition from database
       .datepicker({
         defaultDate: "+1w",
         changeMonth: true,
-        numberOfMonths: 1
+        numberOfMonths: 1,
+        regional:'th'
       })
       .on( "change", function() {
         to.datepicker( "option", "minDate", getDate( this ) );
@@ -506,8 +522,10 @@ return true;
 
 }
  function checkNull(selecter){  // check name null
+    
     for( i in selecter){
        if(selecter[i].val() == ''){
+        console.log('key')
         selecter[i][0].setCustomValidity('กรุณากรอกข้อมูล');
         return false;
         }else  selecter[i][0].setCustomValidity(''); 
@@ -525,6 +543,110 @@ return true;
 }
     return true;
 }
+let $uploadCrop;
+let re,
+    rawImg,
+    imageId;
+let item_output;
+function readFile(input) {
+    if (input.files && input.files[0]) {
+     var reader = new FileReader();
+       reader.onload = function (e) {
+           rawImg = e.target.result;
+        loadIm();
+       }
+       reader.readAsDataURL(input.files[0]);
+   }
+   else {
+   }
+}
+$('.divCrop').hide()
+$('.buttonCrop').hide()
+function loadIm(){
+    $('.divName').hide()
+    $('.divHolder').hide()
+    $('.divCrop').show()
+    $('.buttonCrop').show()
+    $('.buttonSubmit').hide()
+    // $('.UI').append(`<div id="upload-demo" class="center-block"></div>`)
+    $uploadCrop = $('#upload-demo').croppie({
+            viewport: {
+                width: 200,
+                height: 200,
+                type:'circle'
+            },
+            enforceBoundary: false,
+            enableExif: true
+        });
+    $uploadCrop.croppie('bind', {
+        url: rawImg
+    }).then(function(){
+        console.log('jQuery bind complete');
+    });
+    $('.item-img').val('');
     
+}
+$(document).on('change','.item-img', function () { 
+    readFile(this);
+    
+});
+$(document).on('click','#cropImageBtn', function (ev) {
+   
+    $('#upload-demo').croppie('result',
+    {type:'canvas',size:'viewport'})
+    .then(function(r) { 
+        $('.buttonSubmit').show()
+        $('.divName').show()
+        $('.buttonCrop').hide()
+         $('.divHolder').show()
+        $('#img-insert').attr('src', r);
+        $('.divCrop').hide()
+     });
+     $('#upload-demo').croppie('destroy')
+   
+});
+$(document).on('click','#cancelCrop',function(){
+    $('#upload-demo').croppie('destroy')
+    $('.divName').show()
+    $('.divHolder').show()
+    $('.divCrop').hide()
+    $('.buttonCrop').hide()
+    $('.buttonSubmit').show()
+    // $('#img-insert').attr('src', "https://via.placeholder.com/200x200.png");
+})
+$(document).on('change','#iconF',function(){
+    let input = this
+    if (input.files && input.files[0]) {
+        var reader = new FileReader();
+          reader.onload = function (e) {
+              rawImg = e.target.result;
+           loadImUpdate();
+          }
+          reader.readAsDataURL(input.files[0]);
+      }
+      else {
+      }
+})
+function loadImUpdate(){
+    $('.divUpdate').hide();
+    $('.divCrop').show();
+    $uploadCrop = $('#upload-demo2').croppie({
+            viewport: {
+                width: 200,
+                height: 200,
+                type:'circle'
+            },
+            enforceBoundary: false,
+            enableExif: true
+        });
+    $uploadCrop.croppie('bind', {
+        url: rawImg
+    }).then(function(){
+        console.log('jQuery bind complete');
+    });
+    $('#iconF').val('');
+    
+}
+
 
 })

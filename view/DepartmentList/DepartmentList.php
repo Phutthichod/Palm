@@ -141,7 +141,8 @@ $result->execute();
                             department= "<?php echo $row["Department"];?>" alias="<?php echo $row["Alias"];?>" note = "<?php echo $row["Note"];?>">
                             <i class="fas fa-edit"></i></button>
                         <button type="button" class="btn btn-danger btn-sm"
-                        onclick="delfunction('<?php echo $row["Department"]; ?>' , '<?php echo $row["DID"] ?>')">
+                        onclick="delfunction('<?php echo $row["Department"]; ?>','<?php echo $row["DID"]; ?>',
+                        '<?php echo $row["Department"];?>','<?php echo $row["Alias"];?>','<?php echo $row["Note"];?>')">
                         <i class="far fa-trash-alt"></i></button>
                     </td>
                 </tr>

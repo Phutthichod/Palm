@@ -6,10 +6,22 @@
             <div class="modal-header header-modal" id="header-card"> 
                 <h4 class="modal-title" id="largeModalLabel">แก้ไขปุ๋ย</h4>
             </div>
-            <!-- start body ------------------------------------- -->
-            <div class="modal-body">
+            <div class="modal-body divCrop">
             <!-- start grid body-------------------------------- -->
-                <form class="grid-body-modal" action="#" method="post" enctype="multipart/form-data">
+                <div class="form-group divCrop">
+                                <!-- <div class="form-inline"> -->
+                                    <!-- <label for="" class="col-4"></label> -->
+                                    <center>
+                                        <!-- <input id='pic-logo' type='file' class='item-img file center-block' name='icon_insert' /> -->
+                                        <!-- <img id="img-insert" src="https://via.placeholder.com/200x200.png" alt="" width="200" height="200"> -->
+                                        <div id="upload-demo2" class="center-block"></div>
+                                    </center>
+                                <!-- </div> -->
+                </div>
+            </div>
+            <!-- start body ------------------------------------- -->
+            <div class="modal-body divUpdate">
+                <form class="grid-body-modal " action="#" method="post" enctype="multipart/form-data">
                     <input type="hidden" name="request" value="update" >
                     <input type="hidden" name="id" value="" >
                     <!-- grid name alias icon -------------------------------------- -->
@@ -37,25 +49,12 @@
                             <div class="form-group mb-2">
                                 <label for="iconF" >ไอคอน</label>
                                 <div class="grid-one-column">
-                                    <img id="icon" style="width : 100px;height : 150;"  src="" alt="">
+                                  
                                     <!-- <input  onchange="changeIcon(this);" type="file" accept=".jpg,.png"  id="iconF" name="icon" > -->
-                                    <div class="upload-btn-wrapper">
-                                    <button class="btn btn-warning">แก้ไขไอคอน</button>
-                                    <input  onchange="changeIcon(this);" type="file" accept=".jpg,.png"  id="iconF" name="icon" />
-                                    <script>
-                                    function changeIcon(input){ // change icon in form
-                                        if (input.files && input.files[0]) {
-                                            var reader = new FileReader();
-
-                                            reader.onload = function (e) {
-                                                $('#icon')
-                                                    .attr('src', e.target.result);
-                                            };
-
-                                            reader.readAsDataURL(input.files[0]);
-                                        }
-                                    }
-                                    </script>
+                                    <div class="upload-btn-wrapper">  
+                                        <img id="icon" style="width : 200px;height : 200px;"  src="" alt="">
+                                        <!-- <button class="btn btn-warning">แก้ไขไอคอน</button> -->
+                                        <input  type="file" accept=".jpg,.png"  id="iconF" name="icon" />
                                     </div>
                                 </div>   
                             </div>

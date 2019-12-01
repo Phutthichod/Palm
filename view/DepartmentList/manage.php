@@ -38,12 +38,16 @@ if(isset($_POST['request'])){
                     $DATA = select_dimDepartment();
                     $i = 1;
                     $check_dim = 1;
-                    for($i = 1;$i <= $DATA[0]['numrow'];$i++){
+                    for($i = 1;$i <= $DATA[0]['numrow'];$i++){                        
                         if($DATA[$i]['dbID'] == $did && $DATA[$i]['Department'] == $department && $DATA[$i]['Alias'] == $alias  && $DATA[$i]['Note'] == $note ){
+                           
                             $check_dim = 0;
                             break;
                         }
                     }
+                    echo   "<script>
+                            console.log('$check_dim');
+                            </script>";
                     if($check_dim){
                         $sql = "INSERT INTO `dim-department` (ID,`dbID`,Department,Alias,Note) 
                         VALUES ('','$did','$department','$alias','$note')";  
@@ -58,8 +62,8 @@ if(isset($_POST['request'])){
                         $loglogin = $_SESSION[md5('LOG_LOGIN')];
                         $loglogin_id = $loglogin[1]['ID'];
                         echo   "<script>
-                    console.log($loglogin_id );
-                    </script>";
+                            console.log($loglogin_id );
+                            </script>";
                         $sql = "INSERT INTO `log-department` (ID,DIMdeptID,LOGloginID,StartT,StartID) 
                         VALUES ('','$id_d','$loglogin_id','$time','$id_t')";
 
@@ -75,25 +79,99 @@ if(isset($_POST['request'])){
         
         case 'delete' ;
             $did = $_POST['did'];
-            // echo $did;
+            $department = trim($_POST['department']);
+            $alias = trim($_POST['alias']);
+            $note = trim($_POST['note']);
+            // echo   "$department";
+            // echo   "$alias";
+            // echo   "$note";
+            $dim=getDIM($did,$department,$alias,$note);
+            $dim_id = $dim[1]['ID'];
+            // echo   "$dim_id";
+            $o_log=getLog($dim_id);
+            $o_log_id = $o_log[1]['ID'];
+            // echo   "$o_log_id";
+            $time = time();
+            $data_t =  getDIMDate();
+            $id_t = $data_t[1]['ID'];
+            $sql="UPDATE `log-department` 
+                        SET EndT='$time', EndID='$id_t'
+                        WHERE ID='$o_log_id' ";
+            $o_did = updateData($sql);
             $sql = "DELETE FROM `db-user` WHERE `DID`='".$did."'";  
             delete($sql);
             $sql = "DELETE FROM `db-department` WHERE `DID`='".$did."'";  
             delete($sql);
+            
             break;
             
         case 'update' :
-
+            echo   "<script>
+            console.log('sfdsf');
+            </script>";
             $did = $_POST['e_did'];
             $department = trim($_POST['e_department']);
             $alias = trim($_POST['e_alias']);
             $note = trim($_POST['e_note']);
+
+            $o_department = trim($_POST['e_o_department']);
+            $o_alias = trim($_POST['e_o_alias']);
+            $o_note = trim($_POST['e_o_note']);
+            // echo   "<script>
+            // console.log('$o_department $o_alias $o_note');
+            // </script>";
+            $dim=getDIM($did,$o_department,$o_alias,$o_note);
+            $dim_id = $dim[1]['ID'];
+
+            $o_log=getLog($dim_id);
+            $o_log_id = $o_log[1]['ID'];
+            // echo   "<script>
+            //             console.log('$o_log_id');
+            //             </script>";
+
             echo "$did";
                 $sql=   "UPDATE `db-department` 
                         SET Department='$department', Alias='$alias', Note='$note'
                         WHERE DID='$did' ";
 
                 $re = updateData($sql);
+                $DATA = select_dimDepartment();
+                $i = 1;
+                $check_dim = 1;
+                for($i = 1;$i <= $DATA[0]['numrow'];$i++){
+                    if($DATA[$i]['dbID'] == $did && $DATA[$i]['Department'] == $department && $DATA[$i]['Alias'] == $alias  && $DATA[$i]['Note'] == $note ){
+                        $id_d=$DATA[$i]['ID'];
+                        $check_dim = 0;
+                        break;
+                    }
+                }
+// ------------------------------------- if DIM don't duplicated ----------------------------
+                if($check_dim){
+                    $sql = "INSERT INTO `dim-department` (ID,`dbID`,Department,Alias,Note) 
+                    VALUES ('','$did','$department','$alias','$note')";  
+
+                    $id_d = addinsertData($sql);
+                    
+                   
+                }
+                $time = time();
+                $data_t =  getDIMDate();
+                $id_t = $data_t[1]['ID'];
+                $loglogin = $_SESSION[md5('LOG_LOGIN')];
+                $loglogin_id = $loglogin[1]['ID'];
+
+                $sql="UPDATE `log-department` 
+                SET EndT='$time', EndID='$id_t'
+                WHERE ID='$o_log_id' ";
+
+                $o_did = updateData($sql);
+
+                $sql = "INSERT INTO `log-department` (ID,DIMdeptID,LOGloginID,StartT,StartID) 
+                VALUES ('','$id_d','$loglogin_id','$time','$id_t')";
+
+                $did = addinsertData($sql);
+
+
                 header("location:DepartmentList.php");
             break;
 
@@ -108,6 +186,20 @@ function select_dimDepartment(){
 
    $DATA = selectData($sql);
    return $DATA;
+
+}
+function getDIM($did,$o_department,$o_alias,$o_note){
+    $sql = "SELECT * FROM `dim-department` WHERE `dbID`='$did' AND Department='$o_department' AND Alias='$o_alias' AND Note='$o_note' ";
+
+   $DATA = selectData($sql);
+   return $DATA;
+
+}
+function getLog($dim_id){
+    $sql = "SELECT * FROM `log-department` WHERE DIMdeptID='$dim_id' AND EndT IS NULL";
+
+    $DATA = selectData($sql);
+    return $DATA;
 
 }
 

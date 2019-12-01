@@ -39,7 +39,9 @@ $backYear = date("Y") + 543 - 1;
                         <div class="row no-gutters align-items-center">
                             <div class="col mr-2">
                                 <div class="font-weight-bold  text-uppercase mb-1">ผลผลิตปี <?php echo $currentYear ?></div>
+                                <?php ?>
                                 <div class="h5 mb-0 font-weight-bold text-gray-800">21 ก.ก.</div>
+                                
                             </div>
                             <div class="col-auto">
                                 <i class="material-icons icon-big">filter_vintage</i>
@@ -253,18 +255,36 @@ $backYear = date("Y") + 543 - 1;
                                 </tfoot>
                                 <tbody>
                                     <tr>
+
+                                    <!--SELECT FirstName , `LastName`, Distrinct , Province , FMID 
+                                    FROM db-farmer JOIN db-subdistrinct ON `db-subdistrinct`.`AD3ID` = `db-farmer`.`AD3ID` 
+                                    JOIN db-distrinct ON `db-subdistrinct`.`AD2ID` = `db-distrinct`.`AD2ID` 
+                                    JOIN db-province ON `db-distrinct`.`AD1ID` = `db-province`.`AD1ID` 
+                                    JOIN db-farm ON `db-farm`.`UFID` = `db-farmer`.`UFID
+                            
+                                    
+                                    SELECT  `dim-user`.`Alias`, `dim-farm`.`Alias`  FROM `dim-user` 
+                                    JOIN `dim-farm` ON `dim-user`.`dbID`=`dim-farm`.`dbID`
+                                    JOIN `log-farm` ON `log-farm`.`ID` = `dim-user`.`dbID`
+
+                                    -->
+
                                         <?php
-                                        $sql = "SELECT * FROM `db-farmer` ";
+                                        $sql = "SELECT `dim-user`.`Alias`, `dim-farm`.`Alias` as Alias2,  `NumSubFarm`, `NumTree`, `AreaRai` ,`Weight` FROM `log-farm` 
+                                                JOIN `dim-user` ON `log-farm`.`DIMownerID` = `dim-user`.`ID` 
+                                                JOIN `dim-farm` ON `log-farm`.`DIMfarmID`=`dim-farm`.`ID`
+                                                JOIN `log-harvest` ON `log-farm`.`DIMfarmID` = `log-harvest`.`DIMfarmID`
+                                                ";
                                         $result = $conn->query($sql);
                                         if ($result->num_rows > 0) {
                                             while ($row = $result->fetch_assoc()) {
                                                 ?>
-                                                <td><?php echo $row["FirstName"] . " " . $row["LastName"]; ?></td>
-                                                <td>ไลอ้อน</td>
-                                                <td>50</td>
-                                                <td>210</td>
-                                                <td>50</td>
-                                                <td>100</td>
+                                                <td><?php echo $row["Alias"]; ?></td>
+                                                <td><?php echo $row["Alias2"]; ?></td>
+                                                <td><?php echo $row["NumSubFarm"]; ?></td>
+                                                <td><?php echo $row["NumTree"]; ?></td>
+                                                <td><?php echo $row["AreaRai"]; ?></td>
+                                                <td><?php echo $row["Weight"]; ?></td>
                                         <?php
                                             }
                                         } else {
@@ -334,4 +354,5 @@ $backYear = date("Y") + 543 - 1;
                 buttons: ["ยกเลิก", "ยืนยัน"],
             });
         });
+
     </script>

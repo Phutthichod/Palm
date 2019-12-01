@@ -12,24 +12,64 @@ $( document ).ready(function() {
             xhttp.onreadystatechange = function() {
               if (this.readyState == 4 && this.status == 200) {
                 dataU = JSON.parse(this.responseText);
-                console.log(dataU);               
+                // console.log(dataU);               
             };
             }
             xhttp.open("POST", "manage.php", true);
             xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
             xhttp.send(`request=select`);
     }
+   
+    
+
     $('.pass_edit').click(function(){
         $("#passModal").modal();
         var uid = $(this).attr('uid');
         var username = $(this).attr('username');
         var pass_old = $(this).attr('pass');
-        // console.log(pass_old);
+
+        var title = $(this).attr('title');
+        var fname = $(this).attr('fname');
+        var lname = $(this).attr('lname');
+        // console.log(title);
+        // console.log(fname);
+        // console.log(lname);
+
+
         $('#pass_uid').val(uid);
         $('#pass_username').val(username);
         $('#pass_old').val(pass_old);
-        console.log(uid);
-        console.log(username);
+
+        $('#p_title').val(title);
+        $('#p_fname').val(fname);
+        $('#p_lname').val(lname);
+
+        // console.log(uid);
+        // console.log(username);
+       
+        
+    });
+
+    $('#edit_cancel').click(function(){
+        // console.log("fff");
+        $('#old_pwd').val("");
+        $('#e_pwd').val("");
+        $('#e_pwd1').val("");
+
+// ---------------------------------- set default old_pwd ---------------------------------- 
+        $('#old_pwd').attr('type', 'password');
+        $('#hide_1').removeClass( "fa-eye" );
+        $('#hide_1').addClass( "fa-eye-slash" );
+// ---------------------------------- set default e_pwd ---------------------------------- 
+        $('#e_pwd').attr('type', 'password');
+        $('#hide_2').removeClass( "fa-eye" );
+        $('#hide_2').addClass( "fa-eye-slash" );
+// ---------------------------------- set default e_pwd1 ---------------------------------- 
+        $('#e_pwd1').attr('type', 'password');
+        $('#hide_3').removeClass( "fa-eye" );
+        $('#hide_3').addClass( "fa-eye-slash" );
+       
+        
     });
 
     $('.btn_edit').click(function(){
@@ -109,15 +149,36 @@ $( document ).ready(function() {
         if(!check_user(username)) return;
         if(!check_long(username)) return;
         if(!check_userName(username)) return;
+        if(!check_long_pass(pwd)) return;
+        if(!check_pass_format(pwd)) return;
         if(!check_pass(pwd,pwd1)) return;
         if(!check_mail(mail)) return;
         if(!check_checkbox(admin,research,operator,farmer,error)) return;
         
             
     })
-    
+    function check_long_pass(pwd){
+        if(pwd.val().length<8){
+            pwd[0].setCustomValidity('ความยาวต้อง >= 8 ตัวอักษร');
+            return false;
+
+        }
+        pwd[0].setCustomValidity('');
+        return true;
+        
+    }
+    function check_pass_format(pwd){
+        if(pwd.val().match(/([a-zA-Z0-9].*[!,@,#,$,%,^,&,*,?,_,~])|([!,@,#,$,%,^,&,*,?,_,~].*[a-zA-Z0-9])/)){
+            pwd[0].setCustomValidity('');
+            return true;
+
+        }
+        pwd[0].setCustomValidity('ต้องมีทั้ง ตัวอักษรภาษาอังกฤษ ตัวเลข และ อักขระพิเศษ');
+        return false;
+        
+    }
     function check_long(username){
-        console.log("check long");
+        // console.log("check long");
         if(username.val().length<5 || username.val().length>25 ){
             username[0].setCustomValidity('ความยาว 5 - 25 ตัวอักษรเท่านั้น');
                 return false;
@@ -127,7 +188,7 @@ $( document ).ready(function() {
         return true;
     }
     function check_checkbox(){
-        console.log("check box");
+        // console.log("check box");
         if(document.formAdd.admin.checked == false && document.formAdd.research.checked == false 
             && document.formAdd.operator.checked == false && document.formAdd.farmer.checked == false)
         {
@@ -140,25 +201,11 @@ $( document ).ready(function() {
         
         return true;
     }
-    // function check_checkbox(admin,research,operator,farmer,error){
-    //     console.log("check box");
-    //     if(document.formAdd.admin.checked == false && document.formAdd.research.checked == false 
-    //         && document.formAdd.operator.checked == false && document.formAdd.farmer.checked == false)
-    //     {
-    //         error[0].setCustomValidity('กรุณาเลือกสิทธิ์การเข้าใช้งาน');
-    //         return false;
-    //     }else{
-    //         error[0].setCustomValidity('');
-    //         document.formAdd.error.checked = true;
-    //     }
-        
-    //     return true;
-    // }
     function check_userName(username){
-        console.log("check userName");
+        // console.log("check userName");
         let en= /^[a-zA-Z0-9]+$/; 
         if(!username.val().match(en)){
-            console.log("ต้องเป็นภาษาอังกฤษ หรือ ตัวเลขเท่านั้น");
+            // console.log("ต้องเป็นภาษาอังกฤษ หรือ ตัวเลขเท่านั้น");
             username[0].setCustomValidity('ต้องเป็นภาษาอังกฤษ หรือ ตัวเลขเท่านั้น');
                 return false;
         }else{
@@ -203,8 +250,8 @@ $( document ).ready(function() {
     }
     function check_name(title,fname,lname){
         for(i in dataU){
-            console.log(dataU[i].Title);
-            console.log(title.val());
+            // console.log(dataU[i].Title);
+            // console.log(title.val());
             if(title.val() == dataU[i].Title && fname.val().trim() == dataU[i].FirstName && lname.val().trim() == dataU[i].LastName){
                 fname[0].setCustomValidity('ชื่อ-นามสกุลซ้ำ');
                 return false;
@@ -248,11 +295,11 @@ $( document ).ready(function() {
         
     })
     function check_checkboxEdit(){
-        console.log("check box");
+        // console.log("check box");
         if(document.formEdit.e_admin.checked == false && document.formEdit.e_research.checked == false 
             && document.formEdit.e_operator.checked == false && document.formEdit.e_farmer.checked == false)
         {
-            console.log("well box");
+            // console.log("well box");
             $('#error').removeAttr('hidden');
             document.getElementById("edit").setAttribute("type","button");
             return false;
@@ -264,8 +311,8 @@ $( document ).ready(function() {
     }
     function check_editName(title,fname,lname,uid){
         for(i in dataU){
-            console.log(dataU[i].Title);
-            console.log(title.val());
+            // console.log(dataU[i].Title);
+            // console.log(title.val());
             if(title.val() == dataU[i].Title && fname.val().trim() == dataU[i].FirstName && lname.val().trim() == dataU[i].LastName && dataU[i].UID != uid.val()){
                 fname[0].setCustomValidity('ชื่อ-นามสกุลซ้ำ');
                 return false;
@@ -302,9 +349,15 @@ $( document ).ready(function() {
         let data = [old_pwd,pwd,pwd1];
   
         call(old_pwd,uid,username);
+        // console.log(old_pwd.val().trim());
+        // console.log(pwd.val().trim());
+        // if(!check_dup(old_pwd,pwd)) return;
         if(!check_blankPass(data)) return;
         if(!check_oldPass(old_pwd,pass_old)) return;
+        if(!check_long_pass(pwd)) return;
+        if(!check_pass_format(pwd)) return;
         if(!check_pass(pwd,pwd1)) return;
+        
         
     })
     function check_blankPass(selecter){
@@ -322,7 +375,9 @@ $( document ).ready(function() {
         return true;
     }
     function call(old_pwd,uid,username){
-        var pwd = uid.val()+username.val()+(old_pwd.val());
+        var us = username.val();
+        // console.log(us.toUpperCase());
+        var pwd = uid.val()+us.toUpperCase()+(old_pwd.val());
         makemd5(pwd);
     }
     function check_oldPass(old_pwd,pass_old){
@@ -509,4 +564,106 @@ function delfunction(_username,_uid) {
     xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
     xhttp.send(`uid=${_uid}&request=delete`);
     
+    }
+    // --------------------------------------- old_pwd ---------------------------------------
+
+    var h1 = document.getElementById('hide_1');
+    h1.addEventListener('click',show_hide1);
+
+    function show_hide1(){
+        
+        h1.classList.toggle('active');
+        
+        if($('#old_pwd').attr("type") == "text"){
+            // console.log("pwd");
+                    $('#old_pwd').attr('type', 'password');
+                    $('#hide_1').removeClass( "fa-eye" );
+                    $('#hide_1').addClass( "fa-eye-slash" );
+        }else if($('#old_pwd').attr("type") == "password"){
+                    // console.log("txt");
+                    $('#old_pwd').attr('type', 'text');
+                    $('#hide_1').removeClass( "fa-eye-slash" );
+                    $('#hide_1').addClass( "fa-eye" );
+        }
+    }
+    // --------------------------------------- e_pwd ---------------------------------------
+    var h2 = document.getElementById('hide_2');
+    h2.addEventListener('click',show_hide2);
+
+    function show_hide2(){
+        
+        h2.classList.toggle('active');
+        
+        if($('#e_pwd').attr("type") == "text"){
+            // console.log("pwd");
+                    $('#e_pwd').attr('type', 'password');
+                    $('#hide_2').removeClass( "fa-eye" );
+                    $('#hide_2').addClass( "fa-eye-slash" );
+        }else if($('#e_pwd').attr("type") == "password"){
+                    // console.log("txt");
+                    $('#e_pwd').attr('type', 'text');
+                    $('#hide_2').removeClass( "fa-eye-slash" );
+                    $('#hide_2').addClass( "fa-eye" );
+        }
+    }
+    // --------------------------------------- e_pwd1 ---------------------------------------
+    var h3 = document.getElementById('hide_3');
+    h3.addEventListener('click',show_hide3);
+
+    function show_hide3(){
+        
+        h3.classList.toggle('active');
+        
+        if($('#e_pwd1').attr("type") == "text"){
+            // console.log("pwd");
+                    $('#e_pwd1').attr('type', 'password');
+                    $('#hide_3').removeClass( "fa-eye" );
+                    $('#hide_3').addClass( "fa-eye-slash" );
+        }else if($('#e_pwd1').attr("type") == "password"){
+                    // console.log("txt");
+                    $('#e_pwd1').attr('type', 'text');
+                    $('#hide_3').removeClass( "fa-eye-slash" );
+                    $('#hide_3').addClass( "fa-eye" );
+        }
+    }
+    // --------------------------------------- pwd ---------------------------------------
+
+    var h_insert_1 = document.getElementById('h_1');
+    h_insert_1.addEventListener('click',show_h1);
+
+    function show_h1(){
+        
+        h_insert_1.classList.toggle('active');
+        
+        if($('#pwd').attr("type") == "text"){
+            // console.log("pwd");
+                    $('#pwd').attr('type', 'password');
+                    $('#h_1').removeClass( "fa-eye" );
+                    $('#h_1').addClass( "fa-eye-slash" );
+        }else if($('#pwd').attr("type") == "password"){
+                    // console.log("txt");
+                    $('#pwd').attr('type', 'text');
+                    $('#h_1').removeClass( "fa-eye-slash" );
+                    $('#h_1').addClass( "fa-eye" );
+        }
+    }
+    // --------------------------------------- pwd1 ---------------------------------------
+    var h_insert_2 = document.getElementById('h_2');
+    h_insert_2.addEventListener('click',show_h2);
+
+    function show_h2(){
+        
+        h_insert_2.classList.toggle('active');
+        
+        if($('#pwd1').attr("type") == "text"){
+            // console.log("pwd");
+                    $('#pwd1').attr('type', 'password');
+                    $('#h_2').removeClass( "fa-eye" );
+                    $('#h_2').addClass( "fa-eye-slash" );
+        }else if($('#old_pwd').attr("type") == "password"){
+                    // console.log("txt");
+                    $('#pwd1').attr('type', 'text');
+                    $('#h_2').removeClass( "fa-eye-slash" );
+                    $('#h_2').addClass( "fa-eye" );
+        }
     }

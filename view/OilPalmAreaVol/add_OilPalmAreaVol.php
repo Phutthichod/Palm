@@ -1,17 +1,26 @@
 <?php
-include("../../dbConnect.php");
+//include("../../dbConnect.php");
+session_start();
+$idUT = $_SESSION[md5('typeid')];
 
-$conn = connectDB();
-//echo $_POST['addOilPalmAreaVol'];
+include_once("connect_db.php");
+
+echo $_POST['addOilPalmAreaVol'];
 if (isset($_POST['addOilPalmAreaVol'])) {
-     echo "add";
-     $tileName = $_POST['tilename'];
-     $officeName = $_POST['tilename'];
-     $style = $_POST['style'];
-     $styleDanger = $_POST['styleDanger'];
 
-     $sql = "INSERT INTO `db-pestlist` (`PID`, `Name`, `Alias`, `PTID`, `Charactor`, `lcon`, `NumPicChar`, `NumPicDanger`)
-          VALUES ('','$tileName','$officeName','1','$style','png','0','0')";
+     $weight = $_POST['weight'];
+     $UnitPrice = $_POST['UnitPrice'];
+     $TotalPrice = $weight*$UnitPrice;
+     $date = time($_POST['date']);
+     $name = $_POST['name'];
+     $LOGloginID = $_POST['$idUT'];
+     $style=$_POST['style'];
+     echo $TotalPrice;
+
+     $sql = "INSERT INTO `log-harvest`( `isDelete`, `GuessFrom`, `Modify`, `LOGloginID`, `DIMdateID`, `DIMownerID`, `DIMfarmID`, `DIMsubFID`, `Weight`, `UnitPrice`, `TotalPrice`, `PICs`) 
+     VALUES (0,null,$date,[value-5],[value-6],[value-7],[value-8],[value-9],$weight,$UnitPrice,$TotalPrice,null)";
+     
+     mysql_query($sql);
      if ($conn->query($sql) == TRUE) {
           echo "<script>";
           echo "alert('New record created successfully');";

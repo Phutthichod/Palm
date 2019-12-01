@@ -111,24 +111,62 @@ if(isset($_POST['request'])){
 
             break;
         case 'changePass' ;
-            $pwd = $_POST['e_pwd'];
-            $uid = $_POST['pass_uid'];
-            $username = $_POST['pass_username'];
+                        $pwd = trim($_POST['e_pwd']);
+                        $uid = $_POST['pass_uid'];
+                        $username = $_POST['pass_username'];
+                        $o_pwd = trim($_POST['pass_old']);
+                        echo "ch pass";
+                        // echo   "<script>
+                        //         console.log('$o_pwd');
+                        //         </script>";
+                        $title = $_POST['p_title'];
+                        $fname = $_POST['p_fname'];
+                        $lname = $_POST['p_lname'];
 
-            $pwd_md5 = md5($uid.$username.$pwd);
-             $sql=   "UPDATE `db-user` 
-                        SET PWD='$pwd_md5'
-                        WHERE `UID`='$uid' ";
+                        // echo " gg ";
+                        // echo "$title";
+                        // echo ($fname);
+                        $DIM_user = getDIM($uid,$title,$fname,$lname);
+                        $id_dim = $DIM_user[1]['ID'];
+                        print_r ($id_dim);
+                        $username_up = strtoupper($username);
+                        
+                        $DATA = getUser($uid);
+                        $pwd_DATA = $DATA[1]['PWD'];
+                        $pwd_md5 = md5($uid.$username_up.$pwd);
+                        
+                        if($o_pwd == $pwd_md5){
+                            
+                            header("location:UserProfile.php");
+                        }else{
 
-                $re = updateData($sql);
-                $sql = "SELECT * FROM `db-user` WHERE `UID` = $uid ";
-               $USER = selectData($sql);
-            //    echo   "<script>
-            //         console.log($USER[1]['UserName']);
-            //         </script>";
-            //         print_r($USER);
-                $_SESSION[md5('user')] = selectData($sql);
-                header("location:UserProfile.php");
+                            // echo "no dup";
+                        $time = time();
+                            $data_t =  getDIMDate();
+                        $id_t = $data_t[1]['ID'];
+                            $loglogin = $_SESSION[md5('LOG_LOGIN')];
+                        $loglogin_id = $loglogin[1]['ID'];
+                        
+                        $sql="UPDATE `log-password` 
+                                        SET EndT='$time', EndID='$id_t'
+                                        WHERE DIMuserID='$id_dim' AND EndT IS NULL ";
+                        $o_did = updateData($sql);
+
+                    
+                        $sql = "INSERT INTO `log-password` (DIMuserID,LOGloginID,StartT,StartID,PWD) 
+                        VALUES ('$id_dim','$loglogin_id','$time','$id_t','$pwd_md5')";
+
+                        $did = addinsertData($sql);
+
+                        $sql=   "UPDATE `db-user` 
+                                    SET PWD='$pwd_md5'
+                                    WHERE `UID`='$uid' ";
+
+                            $re = updateData($sql);
+                            header("location:UserProfile.php");
+                        
+                        }
+                                
 
             break;
         case 'update' :
@@ -260,11 +298,31 @@ if(isset($_POST['request'])){
 
     
 }
+function getDIM($uid,$title,$fname,$lname){
+    if($title == 1){
+        $fullname = "นาย ";
+    }else if($title == 2){
+        $fullname = "นาง ";
+    }else{
+        $fullname = "นางสาว ";
+    }
+    $fullname = $fullname.$fname." ".$lname;
+    $sql = "SELECT * FROM `dim-user` WHERE `dbID`='$uid' AND Title='$title' AND FullName='$fullname' AND Alias='$fname'";
+
+   $DATA = selectData($sql);
+   return $DATA;
+}
 function select_dimUser(){
     $sql = "SELECT * FROM `dim-user`";
 
    $DATA = selectData($sql);
    return $DATA;
 
+}
+function getUser($uid){
+    $sql = "SELECT * FROM `db-user` WHERE `UID`='$uid'";
+
+   $DATA = selectData($sql);
+   return $DATA;
 }
 ?>

@@ -1,13 +1,13 @@
 <?php 
     session_start();
     
-    //$idUT = $_SESSION[md5('typeid')];
+    $idUT = $_SESSION[md5('typeid')];
     $CurrentMenu = "OilPalmAreaVol";
 ?>
 
 
 <?php include_once("../layout/LayoutHeader.php"); ?>
-
+<?php include_once("connect_db.php"); ?>
 
 <div class="container">
     <div class="row">
@@ -220,6 +220,32 @@
                                                     </tfoot>
                                                     <tbody>
                                                         <tr>
+                                                        <?php
+                                                            $sql = "SELECT `Alias`,`Modify`, `Weight`, `UnitPrice`, `TotalPrice` FROM `log-harvest` 
+                                                                    JOIN `dim-farm` ON `log-harvest`.`DIMfarmID`=`dim-farm`.`ID`
+                                                                    ";
+                                                            $result = $conn->query($sql);
+                                                        if ($result->num_rows > 0) {
+                                                            while ($row = $result->fetch_assoc()) {
+                                                        ?>
+                                                            <td><?php echo $row["Alias"]; ?></td>
+                                                            <td><?php echo date('d-m-',$row["Modify"]).(date('Y',$row["Modify"])+543); ?></td>
+                                                            <td><?php echo $row["Weight"]; ?></td>
+                                                            <td><?php echo $row["UnitPrice"]; ?></td>
+                                                            <td><?php echo $row["TotalPrice"]; ?></td>
+                                                            <td style="text-align:center;">
+                                                                <button type="button" id="btn_image" class="btn btn-info btn-sm"><i class="fas fa-images"></i></button>
+                                                                <button type="button" id="btn_delete" class="btn btn-danger btn-sm"><i class="far fa-trash-alt"></i></button>
+                                                            </td>
+                                                        <?php
+                                                            }
+                                                        } else {
+                                                            echo "0 row";
+                                                        }
+                                                        //$conn->close();
+                                                        ?>
+                                                        </tr>
+                                                        <!--<tr>
                                                             <td>ไลอ้อนแปลง 1</td>
                                                             <td>15/06/2561</td>
                                                             <td>50</td>
@@ -254,7 +280,7 @@
                                                                 <button type="button" id="btn_delete" class="btn btn-danger btn-sm"><i class="far fa-trash-alt"></i></button>
 
                                                             </td>
-                                                        </tr>
+                                                        </tr>-->
                                                     </tbody>
                                                 </table>
                                             </div>
