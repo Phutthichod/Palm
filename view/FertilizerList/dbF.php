@@ -62,7 +62,8 @@ switch($request){
         // ------------------------------------ update db-fertilizer` ---------------------------------
         
         $sql_insert = '';
-        if($_FILES['icon']['name'] == ""){
+        
+        if(!isset($_POST['imagebase64'])){
             $sql_insert = "UPDATE `db-fertilizer` 
             SET `Start` = '$Start', `End`= '$End', `Name` = '$Name',`Alias` = '$Alias', `Usage` = $Usage,
             `EQ1` = $EQ1, `EQ2` = $EQ2 ,`Unit` = $Unit
@@ -192,15 +193,20 @@ switch($request){
         }
         // ---------------------------------------update Icon ----------------------------------
         if($isIcon){
-            $file = $_FILES['icon']['name'];
-            $type = end(explode(".", "$file"));
-            $Icon = "$t.$type";
+            $data = $_POST['imagebase64'];
+            $img_array = explode(';',$data);
+            $img_array2 = explode(",",$img_array[1]);
+            $data = base64_decode($img_array2[1]);
+            $Icon = time().'.png';
             $sql = "UPDATE `db-fertilizer` SET  `Icon` = '$Icon' WHERE `FID` = $FID;";
             updateData($sql);
-            if(move_uploaded_file($_FILES["icon"]["tmp_name"],"../../icon/fertilizer/$FID/$Icon"))
-            {
+            mkdir("../../icon/fertilizer/$FID");
+
+            file_put_contents("../../icon/fertilizer/$FID/$Icon",$data);
+            // if(move_uploaded_file($_FILES["icon"]["tmp_name"],"../../icon/fertilizer/$FID/$Icon"))
+            // {
             
-            }
+            // }
             
             $dataIcon = [];
             $StartT = time();
@@ -283,15 +289,7 @@ switch($request){
             mkdir("../../icon/fertilizer/$id");
 
             file_put_contents("../../icon/fertilizer/$id/$Icon",$data);
-            
-            // $img_file = addslashes(file_get_contents('upload/'.$imgName));
-            // if(move_uploaded_file($_FILES["icon_insert"]["tmp_name"],"../../icon/fertilizer/$id/$Icon"))
-            // {
-                
-            // }
-            // echo( base64_encode($img_file));
         }
-        // echo exec("mkdir F_icon/fertilizer");
        
        
         // ------------------------------------ insert log ---------------------------------

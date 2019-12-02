@@ -18,7 +18,7 @@ let abCheck = false; // IF true, input show one column
 
 let a2; // value a in graph
 let b2; // value b in graph
-
+let check_IU = false
 
 $(document).ready(function(){
 
@@ -31,7 +31,7 @@ $(document).on('click','.editF',function(){ // set data in edit modal
     $("input[name='id']").val(idF);
     $("input[name='name']").val(nameF);
     $("input[name='alias']").val(aliasF);
-    $("#icon").attr('src',`../../icon/fertilizer/${idF}/${iconF}`);
+    $("#img_update").attr('src',`../../icon/fertilizer/${idF}/${iconF}`);
     $('#addCondition').empty();
 
     let j = 0;
@@ -106,7 +106,6 @@ $(document).on('click','.editSubmit',function(){ // submit to update
     let b = $("input[name='b']");
     let start = $("input[name='start']");
     let end = $("input[name='end']");
-
     let dataNull = [name,alias,a,b]
     if(start != undefined ){
         dataNull.push[start,end]
@@ -114,13 +113,14 @@ $(document).on('click','.editSubmit',function(){ // submit to update
     let dataNegative = [a,b]
     // alert('ss')
     if(!checkNull(dataNull)) return;
-    
     if(!checkNegative(dataNegative)) return;
     if(!checkSameName(name,idF)) return;
     if(!checkSameAlias(alias,idF)) return;
     // if(!checkSameName(alias,idF)) return;
     
-    let form = new FormData($('.grid-body-modal')[0]);
+    let form = new FormData($('.modal-update')[0]);
+    if(check_IU)
+    form.append('imagebase64', $('#img-update').attr('src'))
     $.ajax({    // update data
         type: "POST",
         data: form,
@@ -552,12 +552,15 @@ function readFile(input) {
     if (input.files && input.files[0]) {
      var reader = new FileReader();
        reader.onload = function (e) {
+           $('#cropImagePop').addClass('show');
+           console.log("lllllllll")
            rawImg = e.target.result;
         loadIm();
        }
        reader.readAsDataURL(input.files[0]);
    }
    else {
+    //    swal("Sorry - you're browser doesn't support the FileReader API");
    }
 }
 $('.divCrop').hide()
@@ -587,6 +590,7 @@ function loadIm(){
     
 }
 $(document).on('change','.item-img', function () { 
+
     readFile(this);
     
 });
@@ -614,23 +618,18 @@ $(document).on('click','#cancelCrop',function(){
     $('.buttonSubmit').show()
     // $('#img-insert').attr('src', "https://via.placeholder.com/200x200.png");
 })
-$(document).on('change','#iconF',function(){
-    let input = this
-    if (input.files && input.files[0]) {
-        var reader = new FileReader();
-          reader.onload = function (e) {
-              rawImg = e.target.result;
-           loadImUpdate();
-          }
-          reader.readAsDataURL(input.files[0]);
-      }
-      else {
-      }
-})
-function loadImUpdate(){
-    $('.divUpdate').hide();
-    $('.divCrop').show();
-    $uploadCrop = $('#upload-demo2').croppie({
+$('.divCU').hide()
+$('.divBCU').hide()
+let IMG;
+let UC;
+function IU(){
+    
+    $('.divU').hide()
+    $('.divBU').hide()
+    $('.divCU').show()
+    $('.divBCU').show()
+    // $('.UI').append(`<div id="upload-demo" class="center-block"></div>`)
+    UC = $('#upload-demo2').croppie({
             viewport: {
                 width: 200,
                 height: 200,
@@ -639,14 +638,50 @@ function loadImUpdate(){
             enforceBoundary: false,
             enableExif: true
         });
-    $uploadCrop.croppie('bind', {
-        url: rawImg
+    UC.croppie('bind', {
+        url: IMG
     }).then(function(){
         console.log('jQuery bind complete');
     });
     $('#iconF').val('');
-    
 }
-
-
+$(document).on('change','#iconF', function () { 
+    
+    let input = this
+    
+    if (input.files && input.files[0]) {
+        var reader = new FileReader();
+          reader.onload = function (e) {
+              IMG = e.target.result;
+              IU()
+              check_IU = true;
+          }
+          reader.readAsDataURL(input.files[0]);
+      }
+      else {
+       //    swal("Sorry - you're browser doesn't support the FileReader API");
+      }
+    
+});
+$(document).on('click','#cropImageBtn2', function (ev) {
+   
+    $('#upload-demo2').croppie('result',
+    {type:'canvas',size:'viewport'})
+    .then(function(r) { 
+    $('.divU').show()
+    $('.divBU').show()
+    $('.divCU').hide()
+    $('.divBCU').hide()
+        $('#img-update').attr('src', r);
+     });
+     $('#upload-demo2').croppie('destroy')
+   
+});
+$(document).on('click','#cancelCrop2',function(){
+    $('#upload-demo2').croppie('destroy')
+    $('.divU').show()
+    $('.divBU').show()
+    $('.divCU').hide()
+    $('.divBCU').hide()
+})
 })

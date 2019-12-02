@@ -216,3 +216,80 @@ $result_e2->execute();
         </div>
     </form>
 </div>
+
+<div class="modal fade" id="photoModal" tabindex="-1" role="dialog">
+    <form method="post" id="formPhoto" name="formPhoto" action="manage.php">
+        <div class="modal-dialog modal-md" role="document">
+            <div class="modal-content">
+                <div class="modal-header header-modal">
+                    <h4 class="modal-title">เปลี่ยนรูปโปรไฟล์</h4>
+                </div>
+                <div class="modal-body" id="passModalBody">
+                    <div class="form-group divHolder">
+                        <div class="form-inline">
+                            <div class="UI" center>
+                                <input id='pic-logo' type='file' class='item-img file center-block'
+                                    name='icon_insert' />
+                                <img id="img-insert" src="https://via.placeholder.com/200x200.png" alt="" width="200"
+                                    height="200">
+                                <!-- <div id="upload-demo" class="center-block"></div> -->
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group divCrop">
+
+                        <center>
+                            <div id="upload-demo" class="center-block"></div>
+                        </center>
+                    </div>
+                    <input type="text" hidden class="form-control" name="p_uid" id="p_uid" value="">
+                    <input type="hidden" id="request" name="request" value="photo">
+                    <input type="hidden" id="imagebase64" name="imagebase64">
+                </div>
+                <!-- end  body---------------------------------------------- -->
+                <div class="modal-footer footer-insert">
+                    <div class="buttonSubmit">
+                        <button type="submit" class="btn btn-success waves-effect insertSubmit"
+                            id="add-data">ยืนยัน</button>
+                        <button type="button" class="btn btn-danger waves-effect" data-dismiss="modal">ยกเลิก</button>
+                    </div>
+                    <div class="buttonCrop">
+                        <button type="button" id="cropImageBtn" class="btn btn-primary">Crop</button>
+                        <button type="button" class="btn btn-default" id="cancelCrop">Close</button>
+                       
+                    </div>
+                </div>
+    </form>
+</div>
+
+<!-- <div class="modal fade" id="photoModal" tabindex="-1" role="dialog">
+    <form method="post" id="formPhoto" name="formPhoto" action="manage.php">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header header-modal">
+                    <h4 class="modal-title">เปลี่ยนรหัสผ่าน</h4>
+                </div>
+                <div class="modal-body" id="passModalBody">
+                    <div class="container">
+                        <div class="upload-demo-wrap">
+                            <div id="upload-demo">
+                            </div>
+                            <div class="actions">
+                                <a class="btn file-btn">
+                                    <span>upload</span>
+                                    <input type="file" id="upload" accept="image/*" value="Choose a file">
+                                </a>
+                                <button class="upload-result">Result</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" id="edit" class="btn btn-success">ยืนยัน</button>
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">ยกเลิก</button>
+                </div>
+            </div>
+
+        </div>
+    </form>
+</div> -->

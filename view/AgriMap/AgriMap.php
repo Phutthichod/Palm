@@ -6,7 +6,6 @@ $CurrentMenu = "AgriMap";
 
 <?php
 include("connect_db.php");
-
 $default = array("lat" => 0.0, "lng" => 0.0);
 //print_r ($default);
 $coordinate = array(
@@ -76,6 +75,8 @@ $result_province = $conn->query($sql_province);
                         <div class="row mb-3">
                             <div class="col-12">
                                 <select id="province" class="form-control selectpicker" data-live-search="true" title="กรุณาเลือกจังหวัด">
+                                    <option value="" hidden>กรุณาเลือกจังหวัด</option>
+                                    <option value="all">ทั้งหมด</option>
                                     <?php while ($row = $result_province->fetch_assoc()) { ?>
                                         <option value='<?php echo $row['AD1ID']; ?>'> <?php echo $row['Province']; ?> </option>
                                     <?php } ?>
@@ -90,9 +91,7 @@ $result_province = $conn->query($sql_province);
                         <div class="row mb-3">
                             <div class="col-12">
                                 <select id="distrinct" class="form-control selectpicker" data-live-search="true" title="กรุณาเลือกอำเภอ">
-                                <?php while ($row = $result_province->fetch_assoc()) { ?>
-                                        <option value='<?php echo $row['AD2ID']; ?>'> <?php echo $row['Distrinct']; ?> </option>
-                                    <?php } ?>
+                                <option value="" hidden>กรุณาเลือกอำเภอ</option>
                                 </select>
                             </div>
                         </div>
@@ -127,8 +126,9 @@ $result_province = $conn->query($sql_province);
                             </div>
                         </div>
                         <div class="row mb-3">
-                            <button type="button" class="btn" style="background-color:#E91E63; color:white;margin-left:960px; height:50px;
-                        width:100px;">ค้นหา <i class="fas fa-search"></i> </button>
+                            <div class="col-12">
+                                <button type="button" class="btn" style="background-color:#E91E63; color:white;margin-left:auto; height:50px;width:100px;">ค้นหา <i class="fas fa-search"></i> </button>
+                            </div>
                         </div>
                     </form>
                 </div>
@@ -165,23 +165,21 @@ $result_province = $conn->query($sql_province);
     $(document).ready(function() {
         $(document).on('change', '#province', function() {
             $.ajax({
-                url:'search_distrinct.php',
-                data:"province="+$('#province').val(),
-                type:"POST",
-                async:false,
-                success: function(data)
-                {
-                    alert(data);
+                url: 'search_distrinct.php',
+                data: "province=" + $('#province').val(),
+                type: "POST",
+                async: false,
+                success: function(data) {
+                    //alert(data);
                     $('#distrinct').html(data);
                     //$('#distrinct').selectpicker('refresh');
                 },
-                error: function(xhr, status, exception) { 
-                    alert(status); 
+                error: function(xhr, status, exception) {
+                    alert(status);
                 }
             });
         });
     });
-
 </script>
 
 

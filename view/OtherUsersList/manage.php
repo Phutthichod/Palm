@@ -235,6 +235,15 @@ if(isset($_POST['request'])){
                         WHERE `UID`='$uid' ";
 
                 $re = updateData($sql);
+
+                $data_u =$_SESSION[md5('user')];
+
+                if($data_u[1]['UID'] == $uid){
+                    $sql = "SELECT * FROM `db-user` WHERE `UID` = $uid ";
+                    $USER = selectData($sql);
+                    $_SESSION[md5('user')] = selectData($sql);
+                }
+
                 header("location:OtherUsersList.php");
             
             }
@@ -270,7 +279,29 @@ if(isset($_POST['request'])){
                 $o_mail = $get_User[1]['EMAIL'];
                 $o_etid = $get_User[1]['ETID'];
 
+                $o_title = $get_User[1]['Title'];
+                $o_fname = $get_User[1]['FirstName'];
+                $o_lname = $get_User[1]['LastName'];
+                $o_username = $get_User[1]['UserName'];
+                $o_idd = $get_User[1]['ETID'];
+                $o_admin = $get_User[1]['IsAdmin'];
+                $o_research = $get_User[1]['IsResearch'];
+                $o_operator = $get_User[1]['IsOperator'];
+                $o_farmer = $get_User[1]['IsFarmer'];
                 
+                echo $o_title." ";
+                echo $o_fname." ";
+                echo $o_lname." ";
+                echo $o_username." ";
+                echo $o_idd." ";
+                echo $o_admin." ";
+                echo $o_research." ";
+                echo $o_operator." ";
+                echo $o_farmer." ";
+
+
+
+
                 $get_idDim = getDIMu($uid);     //get ID_DIM_user before update for update log-user  
 
                 $sql=   "UPDATE `db-user` 
@@ -333,9 +364,15 @@ if(isset($_POST['request'])){
                 $loglogin = $_SESSION[md5('LOG_LOGIN')];
                 $loglogin_id = $loglogin[1]['ID'];
 
+
+                if($o_title == $title && $o_fname == $fname && $o_lname == $lname && $o_username == $username &&
+                $o_idd == $id_department && $o_admin == $admin && $o_research == $research && $o_operator == $operator 
+                && $o_farmer == $farmer){
+
+                
+                }else{
 //    --------------------------------------------------- update log-user ---------------------------------------------------
-         
-                $sql="UPDATE `log-user` 
+                    $sql="UPDATE `log-user` 
                             SET EndT='$time', EndID='$id_t'
                             WHERE DIMuserID='$get_idDim' AND EndT IS NULL ";
                 $o_did = updateData($sql);
@@ -347,6 +384,8 @@ if(isset($_POST['request'])){
                 $sql = "INSERT INTO `log-user` (ID,DIMuserID,DIMdeptID,LOGloginID,StartT,StartID,IsAdmin,IsResearch,IsOperator,IsFarmer,IsBlock) 
                             VALUES ('','$id_dim','$dimd_id','$loglogin_id','$time','$id_t','$admin','$research','$operator','$farmer','0')";
                 $did = addinsertData($sql);
+                }
+                
 
                 $sql = "SELECT * FROM  `db-emailtype` WHERE ETID='$id_type'";
                 $DATA = selectData($sql);
@@ -368,6 +407,16 @@ if(isset($_POST['request'])){
                             VALUES ('','$id_dim','$loglogin_id','$time','$id_t','$id_type','$fullemail','$type')";
                 $did = addinsertData($sql);
                 }
+
+                $data_u =$_SESSION[md5('user')];
+
+                if($data_u[1]['UID'] == $uid){
+                    $sql = "SELECT * FROM `db-user` WHERE `UID` = $uid ";
+                    $USER = selectData($sql);
+                    $_SESSION[md5('user')] = selectData($sql);
+                }
+                
+                
                    header("location:OtherUsersList.php");
                 
                

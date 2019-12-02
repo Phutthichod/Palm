@@ -1,6 +1,5 @@
 <?php 
     session_start();
-    
     $idUT = $_SESSION[md5('typeid')];
     $CurrentMenu = "UserProfile";
 
@@ -23,11 +22,25 @@
     $get_user= selectData($sql2);
     $get_idUser=$get_user[1]['PWD'];
 
+    $icon = $USER[1]['Icon'];
+    if($icon == "default.jpg"){
+        // echo "yes";
+        $userId = 0;
+        $icon = "default.jpg";
+    }else{
+        $userId = $USER[1]['UID'];
+        $icon = $USER[1]['Icon'];
+    }
 
-    // echo $department;
+    // echo $USER[1]['Icon']." ";
+
+    // echo $userId." ";
+    // echo $icon;
 
 ?>
-
+    <!-- ----------------------- crop photo ------------------------- -->
+    <link href="../../croppie/croppie.css" rel="stylesheet" />
+    <link href="style.css" rel="stylesheet" />
 
 <div class="container">
     <div class="row">
@@ -49,13 +62,14 @@
                         </div>
                         <div class="card-body">
                             <div class="row">
-                                <img class="img-radius img-profile" src="../../picture/default.jpg" />
+                                <img class="img-radius img-profile" src="../../icon/user/<?php echo $userId; ?>/<?php echo $icon; ?>" />
                             </div>
                             <div class="row mt-3">
                                 <div class="col-xl-12 col-12">
-                                    <input type="file" id="input_upload" style="display:none" />
-                                    <button type="button" id="btn_upload"
-                                        class="btn btn-primary btn-sm form-control mb-3">เปลี่ยนรูปโปรไฟล์</button>
+                                <!-- <input type="file" id="input_upload" style="display:none" /> -->
+                                    <button type="button" id="edit_photo"
+                                        class="btn btn-primary btn-sm form-control mb-3" uid="<?php echo $USER[1]['UID']; ?>">
+                                        เปลี่ยนรูปโปรไฟล์</button>
                                 </div>
                             </div>
                             <div class="row">
@@ -222,6 +236,7 @@
 <?php include_once("UserProfileModal.php"); ?>
 
 <!-- <script src="UserProfile.js"></script> -->
+<script src="../../croppie/croppie.js"></script>
 <script>
 // console.log("file");
 $(document).ready(function() {
@@ -234,7 +249,7 @@ $(document).ready(function() {
         var xhttp = new XMLHttpRequest();
         xhttp.onreadystatechange = function() {
             if (this.readyState == 4 && this.status == 200) {
-                dataU = JSON.parse(this.responseText);
+                // dataU = JSON.parse(this.responseText);
                 // console.log(dataU);               
             };
         }
@@ -242,6 +257,14 @@ $(document).ready(function() {
         xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
         xhttp.send(`request=select`);
     }
+    $("#edit_photo").click(function() {
+        console.log("photo");
+        $("#photoModal").modal();
+        var uid = $(this).attr('uid');
+        $('#p_uid').val(uid);
+        
+    });
+
     $("#btn_info").click(function() {
         $("#editModal").modal();
         var uid = $(this).attr('uid');
@@ -593,4 +616,124 @@ function show_hide3() {
         $('#hide_3').addClass("fa-eye");
     }
 }
+
+// --------------------------------------- crop photo ------------------------------------------------------
+
+$(document).on('change','.item-img', function () { 
+    console.log("ssssssssss")
+    // $('.cl').collapse('toggle')
+    // $('#insert').modal('show');
+    imageId = $(this).data('id'); 
+    tempFilename = $(this).val();
+    
+    // $('.add-button').append(`<center>
+    //                             <button id='cancelCrop' type="button" class="btn btn-default" >Close</button>
+    //                             <button type="button" id="cropImageBtn"  class="btn btn-primary">Crop</button>
+    //                         </center>`)
+    // item_output = $(this).prev();																 
+    // $('#cancelCropBtn').data('id', imageId);  
+    readFile(this);
+    
+});
+function readFile(input) {
+    if (input.files && input.files[0]) {
+     var reader = new FileReader();
+       reader.onload = function (e) {
+           $('#cropImagePop').addClass('show');
+           console.log("lllllllll")
+           rawImg = e.target.result;
+
+        loadIm();
+       }
+       reader.readAsDataURL(input.files[0]);
+   }
+   else {
+    //    swal("Sorry - you're browser doesn't support the FileReader API");
+   }
+}
+$('.divCrop').hide()
+$('.buttonCrop').hide()
+function loadIm(){
+    $('.divName').hide()
+    $('.divHolder').hide()
+    $('.divCrop').show()
+    $('.buttonCrop').show()
+    $('.buttonSubmit').hide()
+    // $('.UI').append(`<div id="upload-demo" class="center-block"></div>`)
+    $uploadCrop = $('#upload-demo').croppie({
+            viewport: {
+                width: 200,
+                height: 200,
+                type:'circle'
+            },
+            enforceBoundary: false,
+            enableExif: true
+        });
+    $uploadCrop.croppie('bind', {
+        url: rawImg
+    }).then(function(){
+        console.log('jQuery bind complete');
+    });
+    $('.item-img').val('');
+    
+}
+$(document).on('click','#cropImageBtn', function (ev) {
+   
+   $('#upload-demo').croppie('result',
+   {type:'canvas',size:'viewport'})
+   .then(function(r) { 
+       $('.buttonSubmit').show()
+       $('.divName').show()
+       $('.buttonCrop').hide()
+        $('.divHolder').show()
+       $('#img-insert').attr('src', r);
+       $('#imagebase64').val(r);
+       $('.divCrop').hide()
+    });
+    $('#upload-demo').croppie('destroy')
+  
+});
+$(document).on('click','#cancelCrop',function(){
+   $('#upload-demo').croppie('destroy')
+   $('.divName').show()
+   $('.divHolder').show()
+   $('.divCrop').hide()
+   $('.buttonCrop').hide()
+   $('.buttonSubmit').show()
+   // $('#img-insert').attr('src', "https://via.placeholder.com/200x200.png");
+})
+
+$(document).on('click','.insertSubmit',function(e){ // insert submit
+    console.log('sss');
+    
+    let icon = $("#pic-logo");
+
+    if(!checkNull(icon)) return;
+  
+    // let form = new FormData($('#formPhoto')[0]);
+    // form.append('imagebase64', $('#img-insert').attr('src'))
+    // insertPh(form); // insert data
+})
+function checkNull(icon){
+    if(icon == ''){
+        return false;
+    }
+    return true;
+}
+function insertPh(data){ // function insert data
+    $.ajax({
+        type: "POST",
+        data: data,
+        url: "manage.php",
+        async: false,
+        cache: false,
+        contentType: false,
+        processData: false,
+        
+        success: function(result) {
+            // alert(result);
+        }
+        });
+}
+
 </script>

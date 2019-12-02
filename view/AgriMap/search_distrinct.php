@@ -1,12 +1,25 @@
 <?php
-include("connect_db.php");
-$province = $_REQUEST['province'];
+    include("connect_db.php");
+    $province = $_REQUEST['province'];
 
-$sql = "SELECT * FROM `db-distrinct` WHERE `AD1ID` = '$province' ";
-$result = $conn->query($sql);
+   
+    if($province == "all")
+    {
+        $sql = "SELECT * FROM `db-distrinct`";
+        $result = $conn->query($sql);
+        echo "<option value =".$row['AD2ID'].">"."ทั้งหมด"."</option>";
+    }
+    else
+    {
+        $sql = "SELECT * FROM `db-distrinct` WHERE `AD1ID` = '$province' ";
+        $result = $conn->query($sql);
+        while ($row = $result->fetch_assoc()) 
+        {
+            echo "<option value =".$row['AD2ID'].">".$row['Distrinct']."</option>";
+        }
+    }
 
-while ($row = $result->fetch_assoc()) 
-{
-    echo "<option value =".$row['AD2ID'].">".$row['Distrinct']."</option>";
-}
+   
+
+
 ?>

@@ -1,6 +1,6 @@
 $(document).ready(function () {
 
-  $(document).on('click', '.card', function () {
+  $(document).on('click', '.card-item', function () {
     $.ajax({
       type: "POST",
       datatype: 'json',

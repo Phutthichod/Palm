@@ -1,5 +1,5 @@
 <div class="col-xl-3 col-12 mb-4 item.card" id="itemDiseaseCard">
-    <div id=<?php echo $row["PID"]; ?> class="card border-left-primary card-color-one shadow h-100 py-2 item">
+    <div id=<?php echo $row["PID"]; ?> class="card card-item border-left-primary card-color-one shadow h-100 py-2 item">
         <div class="card-body">
             <div class="row">
                 <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12 ">

@@ -77,3 +77,12 @@ function NewLogLogin()
     $LOG_LOGIN = selectData($sql);
     $_SESSION[md5('LOG_LOGIN')] = $LOG_LOGIN;
 }
+function IsBlock()
+{
+    $DATA = $_SESSION[md5('user')];
+    $sql = "SELECT * FROM `db-user` WHERE `UID` = '" . $DATA[1]['UID'] . "'";
+    $DATA = selectData($sql);
+    if ($DATA[1]['IsBlock'] == 1) {
+        header("location:../../index.php?error=3");
+    }
+}

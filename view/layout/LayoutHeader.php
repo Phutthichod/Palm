@@ -7,6 +7,7 @@ include_once("../../dbConnect.php");
 //Set log-login
 include_once("../../set-log-login.php");
 UpdateLogLogin();
+IsBlock();
 //get user info 
 $DATAUSER = $_SESSION[md5('user')];
 $sql = "SELECT * FROM `user-type` WHERE UTID = " . $idUT;
@@ -113,24 +114,34 @@ for ($i = 1; $i <= $DATA[0]['numrow']; $i++) {
 
 // change Type
 $strtpye = "";
-
+$AmountChangeType = 0;
 if ($DATAUSER[1]['IsAdmin'] == 1 && $idUT != 1) {
   $strtpye = $strtpye . "<a class='dropdown-item' href='../../changeType.php?UTID=1'>
     <i class='fas fa-user fa-sm fa-fw mr-2 text-gray-400'></i>
     " . $DATATPYE[1]['UTName'] . "
     </a>";
+  $AmountChangeType++;
 }
 if ($DATAUSER[1]['IsResearch'] == 1 && $idUT != 2) {
   $strtpye = $strtpye . "<a class='dropdown-item' href='../../changeType.php?UTID=2'>
   <i class='fas fa-user fa-sm fa-fw mr-2 text-gray-400'></i>
   " . $DATATPYE[2]['UTName'] . "
   </a>";
+  $AmountChangeType++;
 }
 if ($DATAUSER[1]['IsOperator'] == 1 && $idUT != 3) {
   $strtpye = $strtpye . "<a class='dropdown-item' href='../../changeType.php?UTID=3'>
   <i class='fas fa-user fa-sm fa-fw mr-2 text-gray-400'></i>
   " . $DATATPYE[3]['UTName'] . "
   </a>";
+  $AmountChangeType++;
+}
+if ($DATAUSER[1]['IsFarmer'] == 1 && $idUT != 4) {
+  $strtpye = $strtpye . "<a class='dropdown-item' href='../../changeType.php?UTID=3'>
+  <i class='fas fa-user fa-sm fa-fw mr-2 text-gray-400'></i>
+  " . $DATATPYE[4]['UTName'] . "
+  </a>";
+  $AmountChangeType++;
 }
 ?>
 
@@ -242,15 +253,18 @@ if ($DATAUSER[1]['IsOperator'] == 1 && $idUT != 3) {
                   บัญชีผู้ใช้
                 </a>
                 <div class="dropdown-divider"></div>
-                <a class="dropdown-item " data-toggle="dropdown" id="userDropdown2">
-                  <i class="fas fa-cog fa-sm fa-fw mr-2 text-gray-400"></i>
-                  เปลี่ยนสถานะ
-                </a>
-                <!-- Dropdown subInformation -->
-                <div class="dropdown-menu dropdown-menu-left shadow animated--grow-in" aria-labelledby="userDropdown2">
-                  <?php echo $strtpye; ?>
-                </div>
-                <div class="dropdown-divider"></div>
+                <?php if ($AmountChangeType != 0) { ?>
+                  <a class="dropdown-item " data-toggle="dropdown" id="userDropdown2">
+                    <i class="fas fa-cog fa-sm fa-fw mr-2 text-gray-400"></i>
+                    เปลี่ยนสถานะ
+                  </a>
+                  <!-- Dropdown subInformation -->
+                  <div class="dropdown-menu dropdown-menu-left shadow animated--grow-in" aria-labelledby="userDropdown2">
+                    <?php echo $strtpye; ?>
+                  </div>
+                  <div class="dropdown-divider"></div>
+                <?php } ?>
+
                 <a class="dropdown-item" href="../../Logout.php">
                   <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
                   ออกจากระบบ

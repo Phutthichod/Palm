@@ -5,13 +5,13 @@ include_once("./dbConnect.php");
 session_start();
 session_unset();
 $username = $_POST['username'];
-$password = $_POST['password'];
+$password = $_POST['password1'];
 $sql = "SELECT * FROM `db-user` WHERE `UserName` = '" . $username . "'";
 $DATA = selectData($sql);
 if ($DATA[0]['numrow'] == 1) {
     $UID = $DATA[1]['UID'];
-    print "<br>UID $UID user $username passwd $password-" . md5($UID . $username . $password);
-    $sql = "SELECT * FROM `db-user` WHERE `UserName` = '" . $username . "' AND `PWD` = '" . md5($UID . $username . $password) . "'";
+    print "<br>UID $UID user $username passwd $password-" . md5($UID . strtoupper($username) . $password);
+    $sql = "SELECT * FROM `db-user` WHERE `UserName` = '" . $username . "' AND `PWD` = '" . md5($UID . strtoupper($username) . $password) . "'";
     echo $sql;
     $DATA = selectData($sql);
     print_r($DATA);
@@ -19,46 +19,62 @@ if ($DATA[0]['numrow'] == 1) {
     // print($DATA[1]['u-is-researcher']);
     // print($DATA[1]['u-is-officer']);
     // print($DATA[1]['u-is-farmer']);
+
     if (sizeof($DATA) == 2) {
-
-        if ($DATA[1]['IsOperator'] == 1) {
-            header("location:./view/UserProfile/UserProfile.php");
-            $typeid = 3;
-        } else if ($DATA[1]['IsResearch'] == 1) {
-            header("location:./view/UserProfile/UserProfile.php");
-            $typeid = 2;
-        } else if ($DATA[1]['IsAdmin'] == 1) {
-            header("location:./view/UserProfile/UserProfile.php");
-            $typeid = 1;
+        if (isset($_POST['remember'])) {
+            echo  "<br> test:" . $username . $password . "<br>";
+            setcookie("username", $username, time() + (24 * 60 * 60));
+            setcookie("password", $password, time() + (24 * 60 * 60));
+            echo  "<br> testcookie:" . $_COOKIE['username'] . $_COOKIE['password'] . "<br>";
         } else {
-            //header("location:index.php");
+            setcookie("username");
+            setcookie("password1");
         }
+        if ($DATA[1]['IsBlock'] != 1) {
+            if ($DATA[1]['IsFarmer'] == 1) {
+                header("location:./view/UserProfile/UserProfile.php");
+                $typeid = 4;
+            } else if ($DATA[1]['IsOperator'] == 1) {
+                header("location:./view/UserProfile/UserProfile.php");
+                $typeid = 3;
+            } else if ($DATA[1]['IsResearch'] == 1) {
+                header("location:./view/UserProfile/UserProfile.php");
+                $typeid = 2;
+            } else if ($DATA[1]['IsAdmin'] == 1) {
+                header("location:./view/UserProfile/UserProfile.php");
+                $typeid = 1;
+            } else {
+                header("location:index.php");
+            }
 
-        $sql = "SELECT * FROM `dim-user` WHERE dbID='" . $DATA[1]['UID'] . "' AND Type='U' AND Title='" . $DATA[1]['Title'] . "' AND FullName ='";
-        if ($DATA[1]['Title'] == 1) {
-            $sql = $sql . "นาย";
-        } else if ($DATA[1]['Title'] == 2) {
-            $sql = $sql . "นาง";
+            $sql = "SELECT * FROM `dim-user` WHERE dbID='" . $DATA[1]['UID'] . "' AND Type='U' AND Title='" . $DATA[1]['Title'] . "' AND FullName ='";
+            if ($DATA[1]['Title'] == 1) {
+                $sql = $sql . "นาย";
+            } else if ($DATA[1]['Title'] == 2) {
+                $sql = $sql . "นาง";
+            } else {
+                $sql = $sql . "นางสาว";
+            }
+            $sql = $sql . " " . $DATA[1]['FirstName'] . " " . $DATA[1]['LastName'] . "' AND Alias = '" . $DATA[1]['FirstName'] . "' ";
+            $DIMUSER = selectData($sql);
+
+            $DIMTIME = getDIMDate();
+            $sql = "INSERT INTO `log-login`(`AccessType`,`DIMuserID`,`dbUTID`,`StartT`,`StartID`,`EndT`,`EndID`,`IP`,`hrs`,`mins`,`Total`) VALUES ('W','" . $DIMUSER[1]['ID'] . "','" . $typeid . "','" . time() . "','" . $DIMTIME[1]['ID'] . "','" . time() . "','" . $DIMTIME[1]['ID'] . "','" . getUserIpAddr() . "','0','0','0')";
+            $IDLOGIN = addinsertData($sql);
+
+            $sql = "SELECT * FROM `log-login` WHERE ID='" . $IDLOGIN . "' ";
+            $LOG_LOGIN = selectData($sql);
+
+            $_SESSION[md5('LAST_ACTIVITY')] = $_SERVER['REQUEST_TIME'];
+            $_SESSION[md5('username')] = $username;
+            $_SESSION[md5('typeid')] = $typeid;
+            $_SESSION[md5('user')]   = $DATA;
+            $_SESSION[md5('LOG_LOGIN')] = $LOG_LOGIN;
+
+            print_r($_SESSION[md5('user')]);
         } else {
-            $sql = $sql . "นางสาว";
+            header("location:index.php?error=3");
         }
-        $sql = $sql . " " . $DATA[1]['FirstName'] . " " . $DATA[1]['LastName'] . "' AND Alias = '" . $DATA[1]['FirstName'] . "' ";
-        $DIMUSER = selectData($sql);
-
-        $DIMTIME = getDIMDate();
-        $sql = "INSERT INTO `log-login`(`AccessType`,`DIMuserID`,`dbUTID`,`StartT`,`StartID`,`EndT`,`EndID`,`IP`,`hrs`,`mins`,`Total`) VALUES ('W','" . $DIMUSER[1]['ID'] . "','" . $typeid . "','" . time() . "','" . $DIMTIME[1]['ID'] . "','" . time() . "','" . $DIMTIME[1]['ID'] . "','" . getUserIpAddr() . "','0','0','0')";
-        $IDLOGIN = addinsertData($sql);
-
-        $sql = "SELECT * FROM `log-login` WHERE ID='" . $IDLOGIN . "' ";
-        $LOG_LOGIN = selectData($sql);
-
-        $_SESSION[md5('LAST_ACTIVITY')] = $_SERVER['REQUEST_TIME'];
-        $_SESSION[md5('username')] = $username;
-        $_SESSION[md5('typeid')] = $typeid;
-        $_SESSION[md5('user')]   = $DATA;
-        $_SESSION[md5('LOG_LOGIN')] = $LOG_LOGIN;
-
-        //print_r($_SESSION[md5('user')]);
     } else {
         header("location:index.php?error=2");
     }

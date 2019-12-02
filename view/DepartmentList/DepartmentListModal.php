@@ -83,7 +83,7 @@
                     </div>
                     <div class="row mb-4">
                         <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12 text-right">
-                            <span>หมายเหตุ<span class="text-danger"> *</span></span>
+                            <span>หมายเหตุ</span>
                         </div>
                         <div class="col-lg-9 col-md-8 col-sm-12 col-xs-12">
                             <input type="text" class="form-control" id="e_note" name="e_note" placeholder="" value="">

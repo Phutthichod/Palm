@@ -160,16 +160,21 @@ if(isset($_POST['request'])){
                 $loglogin = $_SESSION[md5('LOG_LOGIN')];
                 $loglogin_id = $loglogin[1]['ID'];
 
-                $sql="UPDATE `log-department` 
-                SET EndT='$time', EndID='$id_t'
-                WHERE ID='$o_log_id' ";
+                if($o_department == $department && $o_alias ==$alias && $o_note == $note){
 
-                $o_did = updateData($sql);
-
-                $sql = "INSERT INTO `log-department` (ID,DIMdeptID,LOGloginID,StartT,StartID) 
-                VALUES ('','$id_d','$loglogin_id','$time','$id_t')";
-
-                $did = addinsertData($sql);
+                }else{
+                    $sql="UPDATE `log-department` 
+                    SET EndT='$time', EndID='$id_t'
+                    WHERE ID='$o_log_id' ";
+    
+                    $o_did = updateData($sql);
+    
+                    $sql = "INSERT INTO `log-department` (ID,DIMdeptID,LOGloginID,StartT,StartID) 
+                    VALUES ('','$id_d','$loglogin_id','$time','$id_t')";
+    
+                    $did = addinsertData($sql);
+                }
+              
 
 
                 header("location:DepartmentList.php");

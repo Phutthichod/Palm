@@ -5,7 +5,7 @@
 ?>
 
 <link rel="stylesheet" href="http://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-<link rel="stylesheet" href="../../node_modules/croppie/croppie.css">
+<link rel="stylesheet" href="../../croppie/croppie.css">
 <link rel="stylesheet" href="style.css">
 <?php include_once("../layout/LayoutHeader.php"); ?>
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
@@ -52,7 +52,7 @@
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 
 
-<script src="../../node_modules/croppie/croppie.js"></script>
+<script src="../../croppie/croppie.js"></script>
 <!-- jQuery -->
 
 <!-- BS JavaScript -->
