@@ -332,7 +332,18 @@ switch($request){
         
         print_r(json_encode(select($sql)));
         break;
-        case 'delete': //--------------------------case delete ------------------------------
+    case 'delete': //--------------------------case delete ------------------------------
+        $FID = $_POST['id'];
+        $sql = "SELECT * FROM `DIM-Fertilizer` WHERE `dbID` = $FID  ,`Name` = $Name,`Alias` = $Alias";
+        $DIMID = selectData($sql)[1]['ID'];
+        updateLog($DIMID);
+        updateLogIcon($DIMID);
+        updateLogIcon($DIMID);
+        $sql = "DELETE FROM `db-fercondition` WHERE `FID` = $FID";
+        delete($sql);
+        $sql = "DELETE FROM `db-fertilizer` WHERE `FID` = $FID";
+        delete($sql);
+        break;
 }
 function insertLog($data){
     $FID = $data['FID'];

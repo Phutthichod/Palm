@@ -209,10 +209,10 @@ function loadDataF(){ // load all data in database and fetch data on wep page
             <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between" id="card1" >
                 <h6 class="m-0 font-weight-bold text-white">${dataF[i].Name}</h6>
                 <div class="dropdown no-arrow">
-                    <a class="dropdown-toggle editF" index=${i}   id="FID${dataF[i].FID}">
+                    <a class="dropdown-toggle editF" index=${i}  id="FID${dataF[i].FID}" data-toggle="modal" data-target="#edit" aria-haspopup="true" aria-expanded="false">
                         <i class="fas fa-cog fa-lg mr-3"  style="color:#FDFEFE"></i>
                     </a>
-                    <a class="dropdown-toggle editF" index=${i}   id="FID${dataF[i].FID}" data-toggle="modal" data-target="#edit" aria-haspopup="true" aria-expanded="false">
+                    <a class="dropdown-toggle deleteF" index=${i}  id="${dataF[i].FID}">
                         <i class="fas fa-trash-alt" style="color:#FDFEFE"></i>
                     </a>
                 </div>
@@ -730,4 +730,46 @@ $(document).on('click','#cancelCrop2',function(){
     $('.divCU').hide()
     $('.divBCU').hide()
 })
+$(document).on('click','.deleteF',function(){
+    delClick($(this).attr('id'))
+})
+function delClick(id){
+    swal({
+      title: id,
+      text: "Once deleted, you will not be able to recover this data!",
+      icon: "warning",
+      buttons: true,
+      dangerMode: true,
+    })
+    .then((willDelete) => {
+      if (willDelete) {
+        $.ajax({    // update data
+            type: "POST",
+            data: {
+                request:"delete",
+                id:id,
+            },
+            url: "dbF.php",
+            async: false,
+            cache: false,
+            contentType: false,
+            processData: false,
+            
+            success: function(result) {
+                alert(result)
+              loadDataF();
+            //   $('.modal').show();
+            //   $('.modal-backdrop').show()
+            }
+            });
+        swal("data has been deleted!", {
+          icon: "success",
+          
+        });
+      } else {
+        swal("Your data is safe!");
+      }
+    })
+    
+}
 })
