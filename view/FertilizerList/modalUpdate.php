@@ -1,5 +1,5 @@
 <div class="edit-modal" >
-    <div class="modal fade" id="edit" tabindex="-1" role="dialog">
+    <div class="modal fade mb-6" id="edit" tabindex="-1" tabindex="-1" role="dialog" aria-labelledby="smallModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
         <!-- -----------------header------------------------------ -->
@@ -20,7 +20,7 @@
                                         <div id="upload-demo2" class="center-block"></div>
                                     </center>
                     </div>
-                    <div class="divU grid-body-modal">
+                    <div class="divU grid-body-modal ">
                         <div  class="grid-icon-name"> 
                             <div class="form-inline">
                                 <div class="form-group">
@@ -155,7 +155,7 @@
 
             <div class="modal-footer">
                 <div class="divBU">
-                     <button type="submit" class="btn btn-success editSubmit" style="margin-left:15px;">ยืนยัน</button>
+                     <button type="button"  class="btn btn-success editSubmit"  style="margin-left:15px;">ยืนยัน</button>
                 <button type="button" class="btn btn-danger " data-dismiss="modal">ปิด</button>               
                 </div>
                 <div class="divBCU">

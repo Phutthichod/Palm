@@ -337,8 +337,12 @@ if(isset($_POST['request'])){
                 }
                 echo "id_d = ".$id_department;
                 echo "O_idd = ".$o_idd;
+                if($o_title == $title && $o_fname == $fname && $o_lname == $lname && $o_username == $username &&
+                $o_idd == $id_department && $o_admin == $admin && $o_research == $research && $o_operator == $operator 
+                && $o_farmer == $farmer){
 
-               if($check_dim == 1 && $id_department != $o_idd){
+                }else{
+                    if($check_dim == 1 ){
                         // header("location:test.php");
                         echo   "<script>
                             console.log('ไม่ซ้ำ');
@@ -362,6 +366,8 @@ if(isset($_POST['request'])){
                         </script>";
                         // header("location:OtherUsersList.php");
                }
+                }
+               
 //    --------------------------------------------------- get for log -------------------------------------------------------
                 $time = time();
                 $data_t =  getDIMDate();
@@ -403,6 +409,7 @@ if(isset($_POST['request'])){
 
                 }else{
 
+                $id_dim = $get_idDim ; 
                 $sql="UPDATE `log-email` 
                             SET EndT='$time', EndID='$id_t'
                             WHERE DIMuserID='$id_dim' AND EndT IS NULL ";

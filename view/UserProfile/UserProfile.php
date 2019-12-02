@@ -199,7 +199,7 @@
                     </div>
                     <div class="row mb-4">
                         <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12 text-right">
-                            <span>สิทธิการเข้าใช้งาน<span class="text-danger"> *</span></span>
+                            <span>สิทธิการเข้าใช้งาน</span>
                         </div>
                         <div class="col-lg-9 col-md-8 col-sm-12 col-xs-12">
 

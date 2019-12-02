@@ -19,6 +19,7 @@ let abCheck = false; // IF true, input show one column
 let a2; // value a in graph
 let b2; // value b in graph
 let check_IU = false
+let check_II = false
 
 $(document).ready(function(){
 
@@ -100,6 +101,7 @@ $(document).on('click','.editF',function(){ // set data in edit modal
 })
 
 $(document).on('click','.editSubmit',function(){ // submit to update
+    $('.editSubmit').attr('type','submit')
     let name = $("input[name='name']");
     let alias = $("input[name='alias']");
     let a = $("input[name='a']");
@@ -125,10 +127,16 @@ $(document).on('click','.editSubmit',function(){ // submit to update
     if(!checkSameName(name,idF)) return;
     if(!checkSameAlias(alias,idF)) return;
     // if(!checkSameName(alias,idF)) return;
+    // event.preventDefault();
+    // $('#edit').attr("data-dismiss","modal")
+    // $('#edit').modal('hide')
+    
     
     let form = new FormData($('.modal-update')[0]);
     if(check_IU)
     form.append('imagebase64', $('#img-update').attr('src'))
+    // $('.modal').hide();
+    // $('.modal-backdrop').hide()
     $.ajax({    // update data
         type: "POST",
         data: form,
@@ -141,9 +149,12 @@ $(document).on('click','.editSubmit',function(){ // submit to update
         success: function(result) {
             alert(result)
           loadDataF();
+        //   $('.modal').show();
+        //   $('.modal-backdrop').show()
         }
         });
         console.log("update");
+        
 
 })
 $(document).on('click','.insertSubmit',function(e){ // insert submit
@@ -166,6 +177,7 @@ $(document).on('click','.insertSubmit',function(e){ // insert submit
   
     // console.log('insert');
     let form = new FormData($('#form-insert')[0]);
+    if(check_II)
     form.append('imagebase64', $('#img-insert').attr('src'))
     insertF(form); // insert data
 })
@@ -427,7 +439,7 @@ function inputMountYear(){ // set input start end
             <div class="form-group">
                 <div class="form-inline">
                     <label for="" style="margin-right:10px;" class="col-2">ตั้งแต่</label>
-                    <input type="text" class="form-control col-4" id="alternate1" disabled/>
+                    <input type="text" class="form-control col-6" id="alternate1" disabled/>
                     <div class="UI">
                         <button type="button" class="btn btn-warning ml-2">เลือกวันที่</button>
                         <input type="text" class="form-control ml-2" style="width:100px; margin-right:10px;" name="start" id="" value=${startF}>
@@ -517,7 +529,7 @@ function loadCondition(FID){ // load condition from database
   
         for(i in dataF){
             console.log(dataF[i].Name);
-            if(name.val() == dataF[i].Name && dataF[i].FID != id){
+            if(name.val().trim() == dataF[i].Name && dataF[i].FID != id){
                 name[0].setCustomValidity('ชื่อนี้ซ้ำ');
                 return false;
             }
@@ -535,7 +547,7 @@ function loadCondition(FID){ // load condition from database
   
     for(i in dataF){
         console.log(dataF[i].Alias);
-        if(name.val() == dataF[i].Alias && dataF[i].FID != id){
+        if(name.val().trim() == dataF[i].Alias && dataF[i].FID != id){
             name[0].setCustomValidity('ชื่อนี้ซ้ำ');
             return false;
         }
@@ -583,6 +595,7 @@ function readFile(input) {
            $('#cropImagePop').addClass('show');
            console.log("lllllllll")
            rawImg = e.target.result;
+           check_II = true;
         loadIm();
        }
        reader.readAsDataURL(input.files[0]);
@@ -692,7 +705,7 @@ $(document).on('change','#iconF', function () {
     
 });
 $(document).on('click','#cropImageBtn2', function (ev) {
-   
+    
     $('#upload-demo2').croppie('result',
     {type:'canvas',size:'viewport'})
     .then(function(r) { 
