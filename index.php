@@ -2,10 +2,16 @@
 
 //header("location:.././view/index/index.php");
 $error = 0;
+$username = "";
+$password = "";
+
 if (isset($_GET['error'])) {
     $error = $_GET['error'];
 }
-
+if (isset($_COOKIE['username']) and isset($_COOKIE['password'])) {
+    $username = $_COOKIE['username'];
+    $password = $_COOKIE['password'];
+}
 ?>
 
 <!DOCTYPE html>
@@ -89,24 +95,20 @@ if (isset($_GET['error'])) {
                                     <br>
                                     <div class="form-label-group">
                                         <label for="inputEmail">ชื่อผู้ใช้</label>
-                                        <input type="text" name="username" id="username" class="form-control" placeholder="username" required autofocus>
+                                        <div class="col-12">
+                                            <input type="text" name="username" id="username" class="form-control" placeholder="username" value="<?php echo $username ?>" required autofocus>
+                                        </div>
 
-                                        <!-- <div class="row">
-                                                <div class="col-sm-1 col-md-1 col-lg-1 mx-auto" >
-                                                    <span><i class="fas fa-user fa-lg"></i></span>
-                                                </div>
-                                                <div class="col-sm-10 col-md-10 col-lg-10 mx-auto">
-                                                    <input type="email" id="inputEmail" class="form-control" placeholder="username" required autofocus>
-
-                                                </div>
-
-                                            </div> -->
 
                                     </div>
                                     <br>
                                     <div class="form-label-group">
                                         <label for="inputPassword">รหัสผ่าน</label>
-                                        <input type="password" name="password" id="password" class="form-control" placeholder="Password" required>
+
+                                        <div class="col-12">
+                                            <input class="form-control" type="password" name="password1" id="password1" placeholder="Password" value="<?php echo $password ?>" required>
+                                            <i class="fa fa-eye-slash eye-setting" id="hide1"></i>
+                                        </div>
 
                                     </div>
                                     <br>
@@ -121,12 +123,19 @@ if (isset($_GET['error'])) {
                                         <div class='form-label-group'>
                                             <label style='color:red'>username หรือ Password ไม่ถูกต้อง </label>
                                         </div> ";
+                                    } else if ($error == 3) {
+                                        echo "
+                                        <div class='form-label-group'>
+                                            <label style='color:red'>บัญชีของคุณถูก Block โปรดติดต่อผู้ดูแลระบบ</label>
+                                        </div> ";
                                     }
                                     ?>
 
                                     <div class="custom-control custom-checkbox mb-1">
-                                        <input type="checkbox" class="custom-control-input" id="customCheck1">
-                                        <label class="custom-control-label" for="customCheck1">บันทึกบัญชีผู้ใช้</label>
+                                        <input type="checkbox" class="custom-control-input" id="remember" name="remember" <?php if (isset($_COOKIE['username']) and isset($_COOKIE['password'])) {
+                                                                                                                                echo " checked ";
+                                                                                                                            } ?>>
+                                        <label class="custom-control-label" for="remember">บันทึกบัญชีผู้ใช้</label>
                                         <button class="btn btn-success btn-md" style="float:right;" type="submit">ล็อกอิน</button>
 
 
@@ -148,3 +157,22 @@ if (isset($_GET['error'])) {
 </body>
 
 </html>
+<script src="lib/jquery/jquery.min.js"></script>
+<script type="text/javascript">
+    var h1 = document.getElementById('hide1');
+    h1.addEventListener('click', show_hide);
+
+    function show_hide() {
+        console.log("5555");
+        h1.classList.toggle('active');
+        if ($('#password1').attr("type") == "password") {
+            $('#password1').attr('type', 'text');
+            $('#hide1').removeClass("fa-eye-slash");
+            $('#hide1').addClass("fa-eye");
+        } else if ($('#password1').attr("type") == "text") {
+            $('#password1').attr('type', 'password');
+            $('#hide1').addClass("fa-eye-slash");
+            $('#hide1').removeClass("fa-eye");
+        }
+    }
+</script>
