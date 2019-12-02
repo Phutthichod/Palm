@@ -31,7 +31,7 @@ $(document).on('click','.editF',function(){ // set data in edit modal
     $("input[name='id']").val(idF);
     $("input[name='name']").val(nameF);
     $("input[name='alias']").val(aliasF);
-    $("#img_update").attr('src',`../../icon/fertilizer/${idF}/${iconF}`);
+    $("#img-update").attr('src',`../../icon/fertilizer/${idF}/${iconF}`);
     $('#addCondition').empty();
 
     let j = 0;
@@ -102,7 +102,7 @@ $(document).on('click','.editF',function(){ // set data in edit modal
 $(document).on('click','.editSubmit',function(){ // submit to update
     let name = $("input[name='name']");
     let alias = $("input[name='alias']");
-    let a = $("input[name='b']");
+    let a = $("input[name='a']");
     let b = $("input[name='b']");
     let start = $("input[name='start']");
     let end = $("input[name='end']");
@@ -113,6 +113,14 @@ $(document).on('click','.editSubmit',function(){ // submit to update
     let dataNegative = [a,b]
     // alert('ss')
     if(!checkNull(dataNull)) return;
+    if(isNaN(a.val())){
+        a[0].setCustomValidity('ต้องใส่ตัวเลขเท่านั้น');
+        return;
+    }
+    if(isNaN(b.val())){
+        b[0].setCustomValidity('ต้องใส่ตัวเลขเท่านั้น');
+        return;
+    }
     if(!checkNegative(dataNegative)) return;
     if(!checkSameName(name,idF)) return;
     if(!checkSameAlias(alias,idF)) return;
@@ -374,19 +382,19 @@ function inputAb(){ // set input x y
     if(abCheck){
         $('.graph').append(`<div class="form-inline"  >
         <label  for="" style="margin-right:10px;">a</label>
-        <input type="number" class="form-control" style="width:100px; margin-right:10px;" name="a" id="" 
+        <input type="text" class="form-control" style="width:100px; margin-right:10px;" name="a" id="" 
         required=""  min='0'  oninput="setCustomValidity('')">
     </div>
     <div class="form-inline">
         <label for="" style="margin-right:10px;">b</label>
-        <input type="number" class="form-control" style="width:100px;" name="b" id=""
+        <input type="text" class="form-control" style="width:100px;" name="b" id=""
         required=""  min='0'   oninput="setCustomValidity('')">
     </div>`);
     }
     else{
         $('.graph').append(`<div class="form-inline">
         <label  for="" style="margin-right:10px;">a</label>
-        <input type="number" class="form-control" style="width:100px; margin-right:10px;" name="a" id=""
+        <input type="text" class="form-control" style="width:100px; margin-right:10px;" name="a" id=""
         required=""  min='0'   oninput="setCustomValidity('')">
     </div>`);
     }
@@ -416,10 +424,26 @@ function inputMountYear(){ // set input start end
     let radio =  $("#add-mount-year");
         if(!mountYearChecked){
             radio.append(`
-            <label for="" style="margin-right:10px;">ตั้งแต่</label>
-            <input type="text" class="form-control" style="width:100px; margin-right:10px;" name="start" id="" value=${startF}>
-            <label for="" style="margin-right:10px;">ถึง</label>
-            <input type="text" class="form-control" style="width:100px;" name="end" id="" value=${endF}>
+            <div class="form-group">
+                <div class="form-inline">
+                    <label for="" style="margin-right:10px;" class="col-2">ตั้งแต่</label>
+                    <input type="text" class="form-control col-4" id="alternate1" disabled/>
+                    <div class="UI">
+                        <button type="button" class="btn btn-warning ml-2">เลือกวันที่</button>
+                        <input type="text" class="form-control ml-2" style="width:100px; margin-right:10px;" name="start" id="" value=${startF}>
+                    </div>              
+                </div>
+            </div>
+            <div class="form-group mt-2">
+                <div class="form-inline">
+                    <label for="" style="margin-right:10px;" class="col-2 mr-2">ถึง</label>
+                    <input type="text" class="form-control col-6" id="alternate2" disabled/>
+                    <div class="UI">
+                        <button type="button" class="btn btn-warning ml-2">เลือกวันที่</button>
+                        <input type="text" class="form-control ml-2 " style="width:100px;" name="end" id="" value=${endF}>
+                    </div>
+                </div>
+            </div>
             `)
         }
         mountYearChecked = true;
@@ -458,6 +482,8 @@ function loadCondition(FID){ // load condition from database
     var dateFormat = "ddmm"
     from = $( "input[name='start']" )
       .datepicker({
+        altField: "#alternate1",
+        altFormat: "DD, d MM",
         defaultDate: "+1w",
         changeMonth: true,
         numberOfMonths: 1,
@@ -467,6 +493,8 @@ function loadCondition(FID){ // load condition from database
         to.datepicker( "option", "minDate", getDate( this ) );
       }),
     to = $( "input[name='end']" ).datepicker({
+        altField: "#alternate2",
+       altFormat: "DD, d MM",
       defaultDate: "+1w",
       changeMonth: true,
       numberOfMonths: 1

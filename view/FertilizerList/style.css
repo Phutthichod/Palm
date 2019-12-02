@@ -37,6 +37,7 @@
 }
 
 .upload-btn-wrapper {
+  cursor: pointer;
     position: relative;
     overflow: hidden;
     display: inline-block;
@@ -44,6 +45,7 @@
   
   
   .upload-btn-wrapper input[type=file] {
+    cursor: pointer;
     font-size: 100px;
     position: absolute;
     left: 0;
@@ -51,13 +53,14 @@
     opacity: 0;
   }
   .UI {
+    cursor: pointer;
     position: relative;
     overflow: hidden;
     display: inline-block;
   }
   
-  
   .UI input[type=file] {
+    cursor: pointer;
       width: 200px;
       height: 200px;
     font-size: 100px;
@@ -66,6 +69,17 @@
     top: 0;
     opacity: 0;
   }
+  .UI.btn{
+    /* width: 500px; */
+  }
+  .UI input[type=text] {
+    cursor: pointer;
+    /* font-size: 100px; */
+    position: absolute;
+    left: 0;
+    top: 0;
+    opacity: 0;
+}
   #upload-demo{
 	width: 250px;
 	height: 250px;

@@ -8,6 +8,10 @@ include_once("../../dbConnect.php");
 include_once("../../set-log-login.php");
 UpdateLogLogin();
 IsBlock();
+if(!isset($_SESSION[md5('LOG_LOGIN')]))
+{
+  header("location:../../index.php");
+}
 //get user info 
 $DATAUSER = $_SESSION[md5('user')];
 $sql = "SELECT * FROM `user-type` WHERE UTID = " . $idUT;
@@ -250,13 +254,13 @@ if ($DATAUSER[1]['IsFarmer'] == 1 && $idUT != 4) {
               <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
                 <a class="dropdown-item" href="../UserProfile/UserProfile.php">
                   <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
-                  บัญชีผู้ใช้
+                  <span style="color: black;">บัญชีผู้ใช้</span>
                 </a>
                 <div class="dropdown-divider"></div>
                 <?php if ($AmountChangeType != 0) { ?>
                   <a class="dropdown-item " data-toggle="dropdown" id="userDropdown2">
                     <i class="fas fa-cog fa-sm fa-fw mr-2 text-gray-400"></i>
-                    เปลี่ยนสถานะ
+                    <span style="color: black;">เปลี่ยนสถานะ</span>
                   </a>
                   <!-- Dropdown subInformation -->
                   <div class="dropdown-menu dropdown-menu-left shadow animated--grow-in" aria-labelledby="userDropdown2">
@@ -267,7 +271,7 @@ if ($DATAUSER[1]['IsFarmer'] == 1 && $idUT != 4) {
 
                 <a class="dropdown-item" href="../../Logout.php">
                   <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
-                  ออกจากระบบ
+                  <span style="color: black;">ออกจากระบบ</span>
                 </a>
               </div>
             </li>

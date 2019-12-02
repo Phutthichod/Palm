@@ -49,7 +49,7 @@
                                         <!-- <input  onchange="changeIcon(this);" type="file" accept=".jpg,.png"  id="iconF" name="icon" > -->
                                         <div class="upload-btn-wrapper">
                                         <!-- <button class="btn btn-warning">แก้ไขไอคอน</button> -->
-                                        <img id="img-update" src="https://via.placeholder.com/200x200.png" alt="" width="200" height="200">
+                                        <img id="img-update" src="https://imbindonesia.com/images/placeholder/camera.jpg" alt="" width="200" height="200">
                                         <input  type="file" accept=".jpg,.png"  id="iconF" name="icon" />
                                         </div>
                                     </div>   

@@ -34,7 +34,7 @@
                                     <label for="" class="col-4">ชื่อปุ๋ย</label>
                                     <div class="UI">
                                         <input id='pic-logo' type='file' class='item-img file center-block' name='icon_insert' />
-                                        <img id="img-insert" src="https://via.placeholder.com/200x200.png" alt="" width="200" height="200">
+                                        <img id="img-insert" src="https://imbindonesia.com/images/placeholder/camera.jpg" alt="" width="200" height="200">
                                         <!-- <div id="upload-demo" class="center-block"></div> -->
                                     </div>
                                 </div>

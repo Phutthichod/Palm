@@ -279,15 +279,17 @@ if(isset($_POST['request'])){
                 $o_mail = $get_User[1]['EMAIL'];
                 $o_etid = $get_User[1]['ETID'];
 
+                $o_idd = $get_User[1]['DID'];
                 $o_title = $get_User[1]['Title'];
                 $o_fname = $get_User[1]['FirstName'];
                 $o_lname = $get_User[1]['LastName'];
                 $o_username = $get_User[1]['UserName'];
-                $o_idd = $get_User[1]['ETID'];
                 $o_admin = $get_User[1]['IsAdmin'];
                 $o_research = $get_User[1]['IsResearch'];
                 $o_operator = $get_User[1]['IsOperator'];
                 $o_farmer = $get_User[1]['IsFarmer'];
+
+                $o_block = $get_User[1]['IsBlock'];
                 
                 echo $o_title." ";
                 echo $o_fname." ";
@@ -333,7 +335,10 @@ if(isset($_POST['request'])){
                         break;
                     }
                 }
-               if($check_dim == 1){
+                echo "id_d = ".$id_department;
+                echo "O_idd = ".$o_idd;
+
+               if($check_dim == 1 && $id_department != $o_idd){
                         // header("location:test.php");
                         echo   "<script>
                             console.log('ไม่ซ้ำ');
@@ -382,7 +387,7 @@ if(isset($_POST['request'])){
                 $dimd_id = get_DIMd($id_department);  //get ID_DIM_department for Add log-user
 
                 $sql = "INSERT INTO `log-user` (ID,DIMuserID,DIMdeptID,LOGloginID,StartT,StartID,IsAdmin,IsResearch,IsOperator,IsFarmer,IsBlock) 
-                            VALUES ('','$id_dim','$dimd_id','$loglogin_id','$time','$id_t','$admin','$research','$operator','$farmer','0')";
+                            VALUES ('','$id_dim','$dimd_id','$loglogin_id','$time','$id_t','$admin','$research','$operator','$farmer','$o_block')";
                 $did = addinsertData($sql);
                 }
                 
