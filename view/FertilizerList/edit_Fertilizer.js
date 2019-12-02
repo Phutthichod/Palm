@@ -198,8 +198,9 @@ function loadDataF(){ // load all data in database and fetch data on wep page
         // alert(data)
         let text = '';
         if(Object.keys(dataF).length>0){
-            
+            let j = 0;
             for(i in dataF){
+                j++;
                 let icon = `<img src="../../icon/fertilizer/${dataF[i].FID}/${dataF[i].Icon}" id="pic-Fertilizer" class="" style="border-radius: 150px;width:200px;"; >`;
                 if(dataF[i].Icon == null){
                     icon = `<img src="https://via.placeholder.com/150x200.png" id="pic-Fertilizer" class="" width="150px" height="200px" >`;
@@ -208,8 +209,11 @@ function loadDataF(){ // load all data in database and fetch data on wep page
             <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between" id="card1" >
                 <h6 class="m-0 font-weight-bold text-white">${dataF[i].Name}</h6>
                 <div class="dropdown no-arrow">
+                    <a class="dropdown-toggle editF" index=${i}   id="FID${dataF[i].FID}">
+                        <i class="fas fa-cog fa-lg mr-3"  style="color:#FDFEFE"></i>
+                    </a>
                     <a class="dropdown-toggle editF" index=${i}   id="FID${dataF[i].FID}" data-toggle="modal" data-target="#edit" aria-haspopup="true" aria-expanded="false">
-                        <i class="fas fa-cog fa-lg" style="color:#FDFEFE"></i>
+                        <i class="fas fa-trash-alt" style="color:#FDFEFE"></i>
                     </a>
                 </div>
             </div>
@@ -264,6 +268,7 @@ function loadDataF(){ // load all data in database and fetch data on wep page
             }
             console.log("a " +dataF[i].EQ1+"b" +dataF[i].EQ2)
             $('.bodyF').append(text);
+            $('.amount-fer').html(`${j} ชนิด`)
             for(i in dataF){
                 let unit;
                 if(dataF[i].Unit==1) unit = 'กก./ต้น'
