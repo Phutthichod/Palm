@@ -99,16 +99,16 @@
                             <div class="form-group">
                                 <label for="">ปริมาณที่ต้องใส่</label>
                                 <div class="form-inline graph" >
-                                <div class="form-inline"  >
-                                    <label  for="" style="margin-right:10px;">a</label>
-                                    <input type="text" class="form-control" style="width:100px; margin-right:10px;" min='0' name="a" id=""
-                                    required=""    oninput="setCustomValidity(' ')">
-                                </div>
-                                <div class="form-inline">
-                                    <label for="" style="margin-right:10px;">b</label>
-                                    <input type="text" class="form-control" style="width:100px;" name="b" id="" min='0'  required=""   oninput="setCustomValidity(' ')">
-                                
-                                </div>
+                                    <div class="form-inline a"  >
+                                        <label  for="" style="margin-right:10px;">a</label>
+                                        <input type="text" class="form-control" style="width:100px; margin-right:10px;" name="a" id="" 
+                                        required=""  min='0'  oninput="setCustomValidity('')">
+                                    </div>
+                                    <div class="form-inline b">
+                                        <label for="" style="margin-right:10px;">b</label>
+                                        <input type="text" class="form-control" style="width:100px;" name="b" id=""
+                                        required=""  min='0'   oninput="setCustomValidity('')">
+                                    </div>
                                 </div>
                             
                             <small class = "validAB" style="color:red;"></small>

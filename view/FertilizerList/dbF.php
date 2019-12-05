@@ -7,8 +7,7 @@ $request = $_POST['request'];
 
 switch($request){
     case 'select': //--------------------------case select ------------------------------
-        $sql = "SELECT * FROM `db-fertilizer`";
-        
+        $sql = "SELECT * FROM `db-fertilizer` join `DIM-Fertilizer` on (`dbID` = `db-fertilizer`.`FID`) WHERE `db-fertilizer`.`Name` = `DIM-Fertilizer`.`Name` AND `db-fertilizer`.`Alias` = `DIM-Fertilizer`.`Alias`";
         print_r(json_encode(select($sql)));
         break;
     case 'p':
@@ -24,7 +23,7 @@ switch($request){
         }
         $FID = $_POST['id'];
         $dataCondition = selectData(" SELECT * FROM `db-fercondition` WHERE `FID` = $FID");
-        echo $numCon."=".$dataCondition[0]['numrow'];
+        echo"---". $numCon."=".$dataCondition[0]['numrow'];
         break;
     case 'update': //--------------------------case update ------------------------------
         $Name = trim($_POST['name']);
@@ -32,6 +31,11 @@ switch($request){
         $Unit = $_POST['exampleRadios3'];
         $Usage = $_POST['exampleRadios1'];
         $FID = $_POST['id'];
+        $DIMID = $_POST['dimid'];
+        $Icon = $_POST['icon'];
+
+        echo"---". "Iconnnnnn".$Icon;
+        $dataI;
         
         // ------------------------------- check data to update
         $isIcon = false;
@@ -52,66 +56,39 @@ switch($request){
             $End = '3112';
         }
         $EQ1 = $_POST['a'];
-        $EQ2 = "";
-        if($Usage == 3){
-            $EQ2  = 0;
-        }
-        else{
-            $EQ2 = $_POST['b']; 
-        }
+        $EQ2 = $_POST['b']; 
         // ------------------------------------ update db-fertilizer` ---------------------------------
         
-        $sql_insert = '';
+        // $sql_insert = '';
         
-        if(!isset($_POST['imagebase64'])){
-            $sql_insert = "UPDATE `db-fertilizer` 
-            SET `Start` = '$Start', `End`= '$End', `Name` = '$Name',`Alias` = '$Alias', `Usage` = $Usage,
-            `EQ1` = $EQ1, `EQ2` = $EQ2 ,`Unit` = $Unit
-            WHERE `FID` = $FID;";
-        }
-        else{
-           
-            $sql_insert = "UPDATE `db-fertilizer` 
-            SET `Start` = '$Start', `End`= '$End', `Name` = '$Name',`Alias` = '$Alias', `Usage` = $Usage,
-            `EQ1` = $EQ1, `EQ2` = $EQ2 ,`Unit` = $Unit 
-            WHERE `FID` = $FID;";
-           
+        if(isset($_POST['imagebase64'])){
+            $dataI = $_POST['imagebase64'];
+            $img_array = explode(';',$dataI);
+            $img_array2 = explode(",",$img_array[1]);
+            $dataI = base64_decode($img_array2[1]);
+            $Icon = time().'.png';
             $isIcon = true;
-            // insertLogIcon(); //-------------insert log icon ------------------
         }
 
-        
+        $IDInsert = $DIMID;
         $sql = "SELECT * FROM `db-fertilizer` WHERE `FID` = $FID";
         $dataSelect = select($sql);
         $dataAll = $dataSelect[1];
-        
-        if($dataAll['Start'] == $Start && $dataAll['End'] == $End && $dataAll['Alias'] == $Alias && $dataAll['Name'] == $Name && $dataAll['Usage'] == $Usage && $dataAll['EQ1'] == $EQ1
-        && $dataAll['EQ2'] == $EQ2 && $dataAll['Unit'] == $Unit){
+
+        $dataSelect = (select("SELECT * FROM `db-fertilizer` WHERE `FID` = $FID"))[1];
+        if($Start==$dataSelect['Start']&&$End==$dataSelect['End']&&$Name==$dataSelect['Name']&&$Alias==$dataSelect['Alias']
+        &&$Usage==$dataSelect['Usage']&&$EQ1==$dataSelect['EQ1']&&$EQ2==$dataSelect['EQ2']&&$Unit==$dataSelect['Unit']&&$isIcon==false){
             $isData = false;
         }
         else{
-           updateData($sql_insert); 
-        }
-        
-
-        // $sql_del = "DELETE FROM `db-fercondition` WHERE `FID` = $FID;";
-        // deletedata($sql_del);
-        // $Condition = $_POST['condition'];
-        // $size = 1;
-            
-        //     foreach($Condition as $i=>$val){
-        //         if($val != ''){
-        //             $sql_insert = "INSERT INTO `db-fercondition` (`FID`,`Order`,`Condition`) VALUES ($FID,$size,'$val');";
-        //             addinsertData($sql_insert);
-        //             // insertLogCon($Condition[$i],$DIMID);
-        //             $size++;
-        //         }
-        //     }
+            $sql_update = "UPDATE `db-fertilizer` 
+            SET `Start` = '$Start', `End`= '$End', `Name` = '$Name',`Alias` = '$Alias', `Usage` = $Usage,
+            `EQ1` = $EQ1, `EQ2` = $EQ2 ,`Unit` = $Unit ,`Icon` = '$Icon'
+            WHERE `FID` = $FID;";
+            updateData($sql_update); 
         
         // ------------------------------------ insert log ---------------------------------
-        $ID_OLD = select("SELECT * FROM `DIM-Fertilizer` WHERE `dbID` = $FID ORDER BY `ID` DESC LIMIT 1");
-        $IDInsert = $ID_OLD[1]['ID'];
-        if($isData){
+        
         $StartDD = intval(str_split($dataAll['Start'],2)[0]);
         $StartMM = intval(str_split($dataAll['Start'],2)[1]);
         $EndDD = intval(str_split($dataAll['End'],2)[0]);
@@ -120,55 +97,74 @@ switch($request){
         $data = ['FID'=>$FID,'Name'=>$Name,'Alias'=>$Alias,'Unit'=>['Unit'],'Usage'=>$dataAll['Usage'],'EQ1'=>$dataAll['EQ1'],
         'EQ2'=>$dataAll['EQ2'], 'StartDD' => $StartDD,'StartMM' => $StartMM,'EndDD' => $EndDD,
         'EndMM' => $EndMM];
-        // print_r($data);
 
-      
-        // $ID_OLD = select("SELECT * FROM `DIM-Fertilizer` WHERE `dbID` = $FID");
-        updateLog($ID_OLD[1]['ID']);
+        
+
+        updateLog($DIMID);
         $IDInsert = insertLog($data);
         }
+        
          // ------------------------------------ update db fer condition` ---------------------------------
         $Con = $_POST['condition'];
         $numCon = 0;
         $Condition = array();
         foreach($Con as $i=>$val){
-            if($val != ''){
+            if(trim($val) != ''){
+                
+                $Condition[$numCon] = trim($val);
+                echo"---". trim($val)."-----";
                 $numCon++;
-                $Condition[] = $val;
             }
         }
+        $Condition = array_map('trim', $Condition);
         $dataCondition = selectData(" SELECT * FROM `db-fercondition` WHERE `FID` = $FID");
         if(sizeof($Condition)>0){
            if($dataCondition[0]['numrow']>0){
             if($dataCondition[0]['numrow'] == $numCon){
                 foreach($dataCondition as $i => $val){
-                    if($dataCondition[$i]['Condition'] != $Condition[$i]){
+                    if($i>0){
+                       if($dataCondition[$i]['Condition'] != $Condition[($i-1)]){
                         $isCondition = true;
                         // break;
+                    } 
                     }
+                    
                 }
-                if($ID_OLD[1]['ID']!=$IDInsert){
-                    $IDCon = $ID_OLD[1]['ID'];
-                    updateLogCon($ID_OLD[1]['ID']);
+                if($isCondition){
+                    $sql_del = "DELETE FROM `db-fercondition` WHERE `FID` = $FID;";
+                    deletedata($sql_del);
                     $size = 1;
+                    updateLogCon($DIMID);
                     foreach($Condition as $i=>$val){
-                        insertLogCon($Condition[$i],$IDInsert,$size);
-                        $size++;
+                        $val = trim($val);
+                            $sql_insert = "INSERT INTO `db-fercondition` (`FID`,`Order`,`Condition`) VALUES ($FID,$size,'$val');";
+                            addinsertData($sql_insert);
+                            insertLogCon($Condition[$i],$IDInsert,$size);
+                            $size++;
+                }
+                }else{
+                    if($DIMID!=$IDInsert){
+                        $IDCon = $DIMID;
+                        updateLogCon($DIMID);
+                        $size = 1;
+                        foreach($Condition as $i=>$val){
+                            insertLogCon($Condition[$i],$IDInsert,$size);
+                            $size++;
+                        }
                     }
+                    // else break;
                 }
             }
             else{
                  $sql_del = "DELETE FROM `db-fercondition` WHERE `FID` = $FID;";
                 deletedata($sql_del);
                 $size = 1;
-                updateLogCon($ID_OLD[1]['ID']);
+                updateLogCon($DIMID);
                 foreach($Condition as $i=>$val){
-                    if($val != ''){
                         $sql_insert = "INSERT INTO `db-fercondition` (`FID`,`Order`,`Condition`) VALUES ($FID,$size,'$val');";
                         addinsertData($sql_insert);
                         insertLogCon($Condition[$i],$IDInsert,$size);
                         $size++;
-                    }
                 }
                 
             }
@@ -176,129 +172,92 @@ switch($request){
         else{
             $size = 1;
             foreach($Condition as $i=>$val){
-                        if($val != ''){
                             $sql_insert = "INSERT INTO `db-fercondition` (`FID`,`Order`,`Condition`) VALUES ($FID,$size,'$val');";
                             addinsertData($sql_insert);
                             insertLogCon($Condition[$i],$IDInsert,$size);
                             // insertLogCon($Condition[$i],$DIMID);
                             $size++;
-                        }
                     }
         }
         }
         else{
             $sql_del = "DELETE FROM `db-fercondition` WHERE `FID` = $FID;";
             deletedata($sql_del);
-            updateLogCon($ID_OLD[1]['ID']);
+            updateLogCon($DIMID);
         }
         // ---------------------------------------update Icon ----------------------------------
+        // if($isData == false)
         if($isIcon){
-            $data = $_POST['imagebase64'];
-            $img_array = explode(';',$data);
-            $img_array2 = explode(",",$img_array[1]);
-            $data = base64_decode($img_array2[1]);
-            $Icon = time().'.png';
-            $sql = "UPDATE `db-fertilizer` SET  `Icon` = '$Icon' WHERE `FID` = $FID;";
-            updateData($sql);
-            mkdir("../../icon/fertilizer/$FID");
+            if(!file_exists("../../icon/fertilizer/$FID")){
+                mkdir("../../icon/fertilizer/$FID");
+        }   
+            
 
-            file_put_contents("../../icon/fertilizer/$FID/$Icon",$data);
-            // if(move_uploaded_file($_FILES["icon"]["tmp_name"],"../../icon/fertilizer/$FID/$Icon"))
-            // {
-            
-            // }
-            
+            file_put_contents("../../icon/fertilizer/$FID/$Icon",$dataI);
+
             $dataIcon = [];
             $StartT = time();
             $StartID = getDIMDate()[1]['ID'];
-            $path = "icon/fertilizer/$FID/$Icon";
-            $dataIcon = ['Path' =>  $path,'Type' => 2,'FileName' => $dataAll['Icon']];
-            $dataIcon['StartT'] = $StartT;
-            $dataIcon['LOGloginID'] =  $_SESSION[md5('LOG_LOGIN')][1]['ID'];;
-            $dataIcon['StartID'] = $StartID; 
+            $path = "icon/fertilizer/$FID";
+            $dataIcon = ['Path' =>  $path,'FileName' => $Icon];
+            // $dataIcon['StartT'] = $StartT;
+            // $dataIcon['LOGloginID'] =  $_SESSION[md5('LOG_LOGIN')][1]['ID'];;
+            // $dataIcon['StartID'] = $StartID; 
             $dataIcon['DIMIconID'] = $IDInsert;
-            updateLogIcon($ID_OLD[1]['ID']);
+
+            updateLogIcon($DIMID);
             insertLogIcon($dataIcon);
         }
         else{
-            if($ID_OLD[1]['ID']!=$IDInsert){
-                echo"insertttttttttttt";
+            if($DIMID!=$IDInsert){
+                echo"---"."insertttttttttttt";
                 $StartT = time();
                 $StartID = getDIMDate()[1]['ID'];
-                $IDICON = $ID_OLD[1]['ID'];
-                $sql = "SELECT * FROM `db-fertilizer` WHERE `FID` = '$FID'";
-                echo $sql;
-                $data = select($sql);
-                echo $data;
-                // echo $data;
+                $IDICON = $DIMID;
+                // $sql = "SELECT * FROM `db-fertilizer` WHERE `FID` = '$FID'";
+                // echo"---". $sql;
+                // $data = select($sql);
+                // echo"---". $data;
+
                 $dataIcon = [];
-                $dataIcon['FileName'] = $data[1]['Icon'];
-                $fileName = $dataIcon['FileName'];
-                $dataIcon['Type'] = 2;
-                $dataIcon['Path'] = "icon/fertilizer/$FID/$fileName";
-                $dataIcon['StartT'] = $StartT;
-                $dataIcon['LOGloginID'] =  $_SESSION[md5('LOG_LOGIN')][1]['ID'];
-                $dataIcon['StartID'] = $StartID; 
+                $dataIcon['FileName'] = "$Icon";
+                // $fileName = $Icon;
+                // $dataIcon['Type'] = 2;
+                $dataIcon['Path'] = "icon/fertilizer/$FID";
+                // $dataIcon['StartT'] = $StartT;
+                // $dataIcon['LOGloginID'] =  $_SESSION[md5('LOG_LOGIN')][1]['ID'];
+                // $dataIcon['StartID'] = $StartID; 
                 $dataIcon['DIMIconID'] = $IDInsert;
-                // echo $dataIcon;
-                updateLogIcon($ID_OLD[1]['ID']);
+
+                updateLogIcon($DIMID);
                 insertLogIcon($dataIcon);
             }
         }
         
         break;
-    case 'insert2':
-        if(isset($_POST['imagebase64'])){
-            $data = $_POST['imagebase64'];
-            $img_array = explode(';',$data);
-            $img_array2 = explode(",",$img_array[1]);
-            $data = base64_decode($img_array2[1]);
-
-            $imgName = time().'.png';
-
-            file_put_contents('upload/'.$imgName,$data);
-            $img_file = addslashes(file_get_contents('upload/'.$imgName));
-            echo( base64_encode($img_file));
-        }
-        print_r($_POST);    
-        break;
     case 'insert':
         $Name =  trim($_POST['name_insert']);
         $Alias = trim($_POST['alias_insert']);
-        $Icon;
+        $isIcon = false;
+        $Icon = NULL;
+        $dataI;
         $path;
-        // $t=time();
-      //  $file = $_FILES['icon_insert']['name'];
-        // $type = end(explode(".", "$file"));
-      //  $Icon = "$t.$type";
        
-        
-        
-       
-       
-        if(isset($_POST['imagebase64'])){
+        if($_POST['imagebase64']!=''){
             $data = $_POST['imagebase64'];
             $img_array = explode(';',$data);
             $img_array2 = explode(",",$img_array[1]);
-            $data = base64_decode($img_array2[1]);
+            $dataI = base64_decode($img_array2[1]);
             
-
-
-           
             $Icon = time().'.png';
-            $sql = "INSERT INTO `db-fertilizer` (`Name`,`Alias`,`Icon`) VALUES ('$Name','$Alias','$Icon');";
-            $insertData = addinsertData($sql);
-            $sql = "SELECT `FID` FROM `db-fertilizer` ORDER BY `FID` DESC LIMIT 1";
-            $id = selectDataOne($sql)['FID'];
-            $path = "../../icon/fertilizer/$id";
-            mkdir($path);
-
-            file_put_contents("../../icon/fertilizer/$id/$Icon",$data);
+            $isIcon = true;
         }
-       
+        
+        $sql = "INSERT INTO `db-fertilizer` (`Name`,`Alias`,`Icon`) VALUES ('$Name','$Alias','$Icon');";
+        $id = addinsertData($sql);
+
        
         // ------------------------------------ insert log ---------------------------------
-        $id = selectDataOne($sql)['FID'];
         $sql = "SELECT * FROM `db-fertilizer` WHERE `FID` = $id";
         $dataSelect = select($sql);
         $dataAll = $dataSelect[1];
@@ -311,16 +270,17 @@ switch($request){
         'EQ2'=>$dataAll['EQ2'], 'StartDD' => $StartDD,'StartMM' => $StartMM,'EndDD' => $EndDD,
         'EndMM' => $EndMM];
 
-
-        // $path = "icon/fertilizer/$id/$Icon";
-        // $dataIcon = ['Icon' => $dataAll['EQ2'],'Path' =>  $path,'DIMIconID'=>$id,'Type' => 2,'FileName' => $dataAll['Icon']];
-
-        // $path = "icon/fertilizer/$id/$Icon";
-        // $dataIcon = ['Path' =>  $path,'Type' => 2,'FileName' => $dataAll['Icon']];
         $DIMID = insertLog($data);
         
-        if(isset($_POST['imagebase64'])){
-            $path = "icon/fertilizer/$id/$Icon";
+        if($isIcon){
+            if(!file_exists("../../icon/fertilizer/$id")){
+                mkdir("../../icon/fertilizer/$id");
+        }   
+            $path = "../../icon/fertilizer/$id";
+            // mkdir($path);
+            file_put_contents("../../icon/fertilizer/$id/$Icon",$dataI);
+
+            $path = "icon/fertilizer/$id";
             $dataIcon = ['Path' =>  $path,'DIMIconID'=>$DIMID,'FileName' => $Icon];
             insertLogIcon($dataIcon);
         }
@@ -334,15 +294,15 @@ switch($request){
         break;
     case 'delete': //--------------------------case delete ------------------------------
         $FID = $_POST['id'];
-        $sql = "SELECT * FROM `DIM-Fertilizer` WHERE `dbID` = $FID  ,`Name` = $Name,`Alias` = $Alias";
-        $DIMID = selectData($sql)[1]['ID'];
+        $DIMID = $_POST['dimid'];
         updateLog($DIMID);
-        updateLogIcon($DIMID);
+        updateLogCon($DIMID);
         updateLogIcon($DIMID);
         $sql = "DELETE FROM `db-fercondition` WHERE `FID` = $FID";
         delete($sql);
         $sql = "DELETE FROM `db-fertilizer` WHERE `FID` = $FID";
-        delete($sql);
+        $result = delete($sql);
+        print_r($_POST);
         break;
 }
 function insertLog($data){
@@ -367,50 +327,26 @@ function insertLog($data){
     //     $dataIcon['StartID'] = $StartID; 
     // }
    
-    $sql = "SELECT * FROM `DIM-Fertilizer` WHERE `dbID` = $FID  ,`Name` = $Name,`Alias` = $Alias";
-    $DIMfertID = selectData($sql)[1]['ID'];
-    // echo $DIMfertID;
-    $checkDIM = selectData($sql)[0]['numrow'];
-    if($checkDIM>0){
-
-        $checkDIM = selectData($sql);
-        $DIMName = $checkDIM[1]['Name'];
-        $DIMAlias = $checkDIM[1]['Alias'];
-        if( $DIMName == $Name && $DIMAlias == $Alias){
-
-        }
-        else{
-            $sql = "SELECT * FROM `DIM-Fertilizer`";
-            $data = select($sql);
-            $same = false;
-            foreach( $data as $val){
-                if( $val['Name'] == $Name && $val['Alias']  == $Alias && $FID == $val['dbID']){
-                    $same = true;
-                    $DIMfertID = $val['ID'];
-                    echo "trongggggggggggggg";
-                    break;
-                }
-            }
-            if(!$same){
-              $sqlDIM_Fertilizer = "INSERT INTO `DIM-Fertilizer` (`dbID`,`Name`,`Alias`) VALUE ($FID,'$Name','$Alias')";
-              $DIMfertID = addinsertData($sqlDIM_Fertilizer);
-              echo "trongggggggsgssssssssssssssssgggggg";
-              echo $sqlDIM_Fertilizer;  
-            }
-            
-        }
-
+    $sql = "SELECT * FROM `DIM-Fertilizer` WHERE `dbID` = $FID  AND `Name` = '$Name' AND`Alias` = '$Alias'";
+    // $DIMfertID = selectData($sql)[1]['ID'];
+    // echo"---". $DIMfertID;
+    $checkDIM = selectData($sql);
+    if($checkDIM[0]['numrow']>0){
+        $DIMfertID = $checkDIM[1]['ID'];
     }else{
+        // echo"---". "elsessssss";
     $sqlDIM_Fertilizer = "INSERT INTO `DIM-Fertilizer` (`dbID`,`Name`,`Alias`) VALUE ($FID,'$Name','$Alias')";
     $DIMfertID = addinsertData($sqlDIM_Fertilizer);
-    // echo $sqlDIM_Fertilizer;
+    echo"---". "insertDIM";
+    // echo"---". $sqlDIM_Fertilizer;
     }
 
     $sqlLog_Fertilizer = "INSERT INTO `log-fertilizer` (`LOGloginID`,`StartT`,`StartID`,`DIMfertID`,`StartDD`,`StartMM`,`EndDD`
     ,`EndMM`,`Usage`,`EQ1`,`EQ2`) 
     VALUES ($LOGloginID,$StartT,$StartID,$DIMfertID,$StartDD,$StartMM,$EndDD,$EndMM,$Usage,$EQ1,$EQ2);";
-    echo "insert       $DIMfertID";
+    // echo"---". "insert       $DIMfertID";
     addinsertData($sqlLog_Fertilizer);
+    echo"---". "insertdata";
     return $DIMfertID;
 }
 function insertLogIcon($data){
@@ -423,22 +359,12 @@ function insertLogIcon($data){
     $Path = $data['Path'];
     $sql = "INSERT INTO `LOG-Icon` (`LOGloginID`,`StartT`,`StartID`,`DIMIconID`,`Type`,`FileName`,`Path`)
     VALUES ($LOGloginID,$StartT,$StartID,$DIMIconID,2,'$FileName','$Path');";
-    addinsertData($sql);
-    echo $sql;
+    // echo"---". $sql;
+//    echo"---". addinsertData($sql);
+    //  $sql;
+    echo"---". "insertLogIcon";
 }
-function insertLogIcon2($data){
-    $LOGloginID = $_SESSION[md5('LOG_LOGIN')][1]['ID'];
-    $StartT = $data['StartT'];
-    $StartID = $data['StartID'];
-    $DIMIconID = $data['DIMIconID'];
-    $Type = $data['Type'];
-    $FileName = $data['FileName'];
-    $Path = $data['Path'];
-    $sql = "INSERT INTO `LOG-Icon` (`LOGloginID`,`StartT`,`StartID`,`DIMIconID`,`Type`,`FileName`,`Path`)
-    VALUES ($LOGloginID,$StartT,$StartID,$DIMIconID,$Type,'$FileName','$Path');";
-    addinsertData($sql);
-    echo $sql;
-}
+
 function updateLogIcon($ID){
     $EndID = getDIMDate()[1]['ID'];
     $t = time();
@@ -446,6 +372,7 @@ function updateLogIcon($ID){
     SET `EndT`= $t ,`EndID` = $EndID
     WHERE `DIMIconID` = $ID AND `EndID` IS NULL;";
     updateData($sql);
+    echo"---". "updateLogIcon";
 }
 function insertLogCon($item,$id,$Order){
     $StartID = getDIMDate()[1]['ID'];
@@ -455,7 +382,8 @@ function insertLogCon($item,$id,$Order){
     $sqlLog_FerCondition = "INSERT INTO `log-fercondition` (`LOGloginID`,`StartT`,`StartID`,`DIMfertID`,`Order`,`Condition`)
     VALUES ($LOGloginID,$t,$StartID,$id,$Order,'$item');";
     // addinsertData($sqlLog_FerCondition);
-    echo addinsertData($sqlLog_FerCondition);
+   addinsertData($sqlLog_FerCondition);
+    echo"---". "insertLogCon";
 }
 
 function updateLog($ID){
@@ -465,6 +393,7 @@ function updateLog($ID){
     SET `EndT`= $t ,`EndID` = $EndID
     WHERE `DIMfertID` = $ID AND `EndID` IS NULL;";
     updateData($sql);
+    echo"---". "updateLog";
 }
 function updateLogCon($ID){
     $EndID = getDIMDate()[1]['ID'];
@@ -473,6 +402,7 @@ function updateLogCon($ID){
     SET `EndT`= $t ,`EndID` = $EndID
     WHERE `DIMfertID` = $ID AND `EndID` IS NULL;";
     updateData($sql);
+    echo"---". "updateLogCon";
 
 }
 ?>

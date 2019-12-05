@@ -10,7 +10,7 @@ let aF;
 let bF;
 let orderF;
 let aliasF;
-
+let DIMID;
 let dataF; // data fertilizer
 
 let mountYearChecked = false;
@@ -99,42 +99,48 @@ $(document).on('click','.editF',function(){ // set data in edit modal
     $("input[name='b']").val(bF);
     console.log('succes')
 })
-
 $(document).on('click','.editSubmit',function(){ // submit to update
-    $('.editSubmit').attr('type','submit')
+    // $('.editSubmit').attr('type','submit')
+    // check_dep(name,alias,a,b,start,end)
     let name = $("input[name='name']");
     let alias = $("input[name='alias']");
     let a = $("input[name='a']");
     let b = $("input[name='b']");
     let start = $("input[name='start']");
     let end = $("input[name='end']");
+    // let unit = $("input")
     let dataNull = [name,alias,a,b]
     if(start != undefined ){
         dataNull.push[start,end]
     }
     let dataNegative = [a,b]
     // alert('ss')
-    if(!checkNull(dataNull)) return;
-    if(isNaN(a.val())){
-        a[0].setCustomValidity('ต้องใส่ตัวเลขเท่านั้น');
-        return;
-    }
-    if(isNaN(b.val())){
-        b[0].setCustomValidity('ต้องใส่ตัวเลขเท่านั้น');
-        return;
-    }
-    if(!checkNegative(dataNegative)) return;
+    // if(!checkNull(dataNull)) return;
+    // if(isNaN(a.val())){
+    //     a[0].setCustomValidity('ต้องใส่ตัวเลขเท่านั้น');
+    //     return;
+    // }
+    // if(isNaN(b.val())){
+    //     b[0].setCustomValidity('ต้องใส่ตัวเลขเท่านั้น');
+    //     return;
+    // }
+    // if(!checkNegative(dataNegative)) return;
     if(!checkSameName(name,idF)) return;
     if(!checkSameAlias(alias,idF)) return;
     // if(!checkSameName(alias,idF)) return;
-    // event.preventDefault();
+    event.preventDefault();
     // $('#edit').attr("data-dismiss","modal")
     // $('#edit').modal('hide')
     
     
     let form = new FormData($('.modal-update')[0]);
-    if(check_IU)
-    form.append('imagebase64', $('#img-update').attr('src'))
+    if(check_IU){
+        form.append('imagebase64', $('#img-update').attr('src'))
+        check_IU = false
+    }
+    
+    form.append('dimid',DIMID)
+    form.append('icon',iconF)
     // $('.modal').hide();
     // $('.modal-backdrop').hide()
     $.ajax({    // update data
@@ -177,8 +183,11 @@ $(document).on('click','.insertSubmit',function(e){ // insert submit
   
     // console.log('insert');
     let form = new FormData($('#form-insert')[0]);
-    if(check_II)
-    form.append('imagebase64', $('#img-insert').attr('src'))
+    if(check_II){
+        form.append('imagebase64', $('#img-insert').attr('src'))
+        check_II = false
+    }
+    
     insertF(form); // insert data
 })
 function loadDataF(){ // load all data in database and fetch data on wep page
@@ -212,7 +221,7 @@ function loadDataF(){ // load all data in database and fetch data on wep page
                     <a class="dropdown-toggle editF" index=${i}  id="FID${dataF[i].FID}" data-toggle="modal" data-target="#edit" aria-haspopup="true" aria-expanded="false">
                         <i class="fas fa-cog fa-lg mr-3"  style="color:#FDFEFE"></i>
                     </a>
-                    <a class="dropdown-toggle deleteF" index=${i}  id="${dataF[i].FID}">
+                    <a class="dropdown-toggle deleteF" index=${i}  id=${dataF[i].FID} DIMID = ${dataF[i].ID}>
                         <i class="fas fa-trash-alt" style="color:#FDFEFE"></i>
                     </a>
                 </div>
@@ -354,7 +363,8 @@ function deleteF(id){ // function delete is not working
     xhttp.send(`id=${id}`);
 }
 function setValue(i){ // function set value when click edit modal
-    console.log('setvalue');
+    
+      DIMID = dataF[i].ID;  
       idF = dataF[i].FID;  
       startF = dataF[i].Start;
       endF = dataF[i].End;
@@ -366,6 +376,7 @@ function setValue(i){ // function set value when click edit modal
       iconF = dataF[i].Icon;
       aliasF = dataF[i].Alias;
     //   conditionF = "";
+    console.log("DIMID "+DIMID);
       loadCondition(idF)
 
         
@@ -395,28 +406,20 @@ $(document).on('change','#exampleRadios3',function(){ // set check usage
     inputAb();
 })
 function inputAb(){ // set input x y
-    $('.graph').empty()
+    // $('.graph').empty()
     if(abCheck){
-        $('.graph').append(`<div class="form-inline"  >
-        <label  for="" style="margin-right:10px;">a</label>
-        <input type="text" class="form-control" style="width:100px; margin-right:10px;" name="a" id="" 
-        required=""  min='0'  oninput="setCustomValidity('')">
-    </div>
-    <div class="form-inline">
-        <label for="" style="margin-right:10px;">b</label>
-        <input type="text" class="form-control" style="width:100px;" name="b" id=""
-        required=""  min='0'   oninput="setCustomValidity('')">
-    </div>`);
-    }
-    else{
-        $('.graph').append(`<div class="form-inline">
-        <label  for="" style="margin-right:10px;">a</label>
-        <input type="text" class="form-control" style="width:100px; margin-right:10px;" name="a" id=""
-        required=""  min='0'   oninput="setCustomValidity('')">
-    </div>`);
-    }
+        $('.a').show();
+        $('.b').show();
     $("input[name='a']").val(aF);
     $("input[name='b']").val(bF);
+    }
+    else{
+        $('.a').hide();
+        $('.b').show();
+    $("input[name='a']").val(0);
+    $("input[name='b']").val(bF);
+    }
+    
 }
 $(document).on('change','#exampleRadios5',function(){ // set check start end
     inputMountYear();
@@ -731,11 +734,13 @@ $(document).on('click','#cancelCrop2',function(){
     $('.divBCU').hide()
 })
 $(document).on('click','.deleteF',function(){
-    delClick($(this).attr('id'))
+    delClick($(this))
 })
-function delClick(id){
+function delClick(me){
+    let id = me.attr('id');
+    let dimid = me.attr('DIMID')
     swal({
-      title: id,
+      title: "ลบ",
       text: "Once deleted, you will not be able to recover this data!",
       icon: "warning",
       buttons: true,
@@ -743,23 +748,19 @@ function delClick(id){
     })
     .then((willDelete) => {
       if (willDelete) {
-        $.ajax({    // update data
+        $.ajax({
             type: "POST",
             data: {
-                request:"delete",
+                request:'delete',
                 id:id,
+                dimid:dimid
             },
+            async:false,
             url: "dbF.php",
-            async: false,
-            cache: false,
-            contentType: false,
-            processData: false,
-            
             success: function(result) {
                 alert(result)
-              loadDataF();
-            //   $('.modal').show();
-            //   $('.modal-backdrop').show()
+                 loadDataF(result)
+            // alert("sss")
             }
             });
         swal("data has been deleted!", {
