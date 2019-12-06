@@ -108,12 +108,17 @@ $(document).on('click','.editSubmit',function(){ // submit to update
     let b = $("input[name='b']");
     let start = $("input[name='start']");
     let end = $("input[name='end']");
+    let con = $("input[name='condition[]']").map(function(){return $(this).val().trim();}).get();
+    let condition = []
     // let unit = $("input")
     let dataNull = [name,alias,a,b]
     if(start != undefined ){
         dataNull.push[start,end]
     }
     let dataNegative = [a,b]
+
+    // console.log("connnnnn"+String(con[1]).trim())
+    console.log(name.val().trim())
     // alert('ss')
     // if(!checkNull(dataNull)) return;
     // if(isNaN(a.val())){
@@ -138,7 +143,7 @@ $(document).on('click','.editSubmit',function(){ // submit to update
         form.append('imagebase64', $('#img-update').attr('src'))
         check_IU = false
     }
-    
+    // form.append('con',condition)
     form.append('dimid',DIMID)
     form.append('icon',iconF)
     // $('.modal').hide();

@@ -26,8 +26,8 @@ switch($request){
         echo"---". $numCon."=".$dataCondition[0]['numrow'];
         break;
     case 'update': //--------------------------case update ------------------------------
-        $Name = trim($_POST['name']);
-        $Alias = trim($_POST['alias']);
+        $Name = preg_replace('/[[:space:]]+/', ' ', trim($_POST['name']));
+        $Alias = preg_replace('/[[:space:]]+/', ' ', trim($_POST['alias']));
         $Unit = $_POST['exampleRadios3'];
         $Usage = $_POST['exampleRadios1'];
         $FID = $_POST['id'];
@@ -109,14 +109,13 @@ switch($request){
         $numCon = 0;
         $Condition = array();
         foreach($Con as $i=>$val){
-            if(trim($val) != ''){
+            if($val != ''){
                 
-                $Condition[$numCon] = trim($val);
-                echo"---". trim($val)."-----";
+                $Condition[$numCon] = preg_replace('/[[:space:]]+/', ' ', trim($val));
+                // echo"---". trim($val)."-----";
                 $numCon++;
             }
         }
-        $Condition = array_map('trim', $Condition);
         $dataCondition = selectData(" SELECT * FROM `db-fercondition` WHERE `FID` = $FID");
         if(sizeof($Condition)>0){
            if($dataCondition[0]['numrow']>0){
@@ -236,8 +235,8 @@ switch($request){
         
         break;
     case 'insert':
-        $Name =  trim($_POST['name_insert']);
-        $Alias = trim($_POST['alias_insert']);
+        $Name =  preg_replace('/[[:space:]]+/', ' ', trim($_POST['name_insert']));
+        $Alias = preg_replace('/[[:space:]]+/', ' ', trim($_POST['alias_insert']));
         $isIcon = false;
         $Icon = NULL;
         $dataI;
@@ -360,7 +359,7 @@ function insertLogIcon($data){
     $sql = "INSERT INTO `LOG-Icon` (`LOGloginID`,`StartT`,`StartID`,`DIMIconID`,`Type`,`FileName`,`Path`)
     VALUES ($LOGloginID,$StartT,$StartID,$DIMIconID,2,'$FileName','$Path');";
     // echo"---". $sql;
-//    echo"---". addinsertData($sql);
+    addinsertData($sql);
     //  $sql;
     echo"---". "insertLogIcon";
 }
