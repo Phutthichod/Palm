@@ -14,7 +14,7 @@
                        <div class="divName" >
                             <div class="form-group">
                                 <div class="form-inline">
-                                    <label for="" class="col-4">ชื่อปุ๋ย</label>
+                                    <label for="" class="col-4">ชื่อปุ๋ย <span class="ml-2"> *</span></label>
                                     <input   id='name' name='name_insert' 
                                         class='form-control col-8'  required=""
                                     oninput="setCustomValidity(' ')" placeholder="ใส่ชื่อปุ๋ย">
@@ -22,7 +22,7 @@
                             </div>
                             <div class="form-group">
                                 <div class="form-inline">
-                                    <label for="" class="col-4">ชื่ย่อปุ๋ย</label>
+                                    <label for="" class="col-4">ชื่ย่อปุ๋ย <span class="ml-2"> *</span></label>
                                     <input type='text' id='alias' name='alias_insert' 
                                         class='form-control col-8'   required=""
                                         oninput="setCustomValidity(' ')" Placeholder="ใส่ชื่อย่อ">

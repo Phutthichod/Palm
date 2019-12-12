@@ -22,58 +22,39 @@
                     </div>
                     <div class="divU grid-body-modal ">
                         <div  class="grid-icon-name"> 
-                            <div class="form-inline">
-                                <div class="form-group">
-                                    <label>ขื่อปุ๋ย</label>
-                                    <input type="text"  class="form-control" id="nameF" name="name"  required=""
+                                    <label >ขื่อปุ๋ย<span class="ml-2"> *</span></label>
+                                    <input type="text"  class="form-control col-8"id="nameF" name="name"  required=""
                                     oninput="setCustomValidity(' ')">
-                                </div>
-                                <div class="form-group">
-                                </div>
-                            </div>
-                            <br>
-                            <div class="form-inline">
-                                <div class="form-group">
-                                    <label>ขื่อย่อปุ๋ย</label>
-                                    <input type="text"  class="form-control" id="aliasF" name="alias"  required=""
+                                    <label  ">ขื่อย่อปุ๋ย<span class="ml-2"> *</span></label>
+                                    <input type="text"  class="form-control col-8"id="aliasF" name="alias"  required=""
                                     oninput="setCustomValidity(' ')">
-                                </div>
-                                <div class="form-group">
-                                </div>
-                            </div>
-                            <div class="form-group" style="margin-top:25px;">
-                                <div class="form-group mb-2">
                                     <label for="iconF" >ไอคอน</label>
-                                    <div class="grid-one-column">
                                         <!-- <img id="icon" style="width : 100px;height : 150;"  src="" alt=""> -->
                                         <!-- <input  onchange="changeIcon(this);" type="file" accept=".jpg,.png"  id="iconF" name="icon" > -->
-                                        <div class="upload-btn-wrapper">
+                                    <div class="upload-btn-wrapper">
                                         <!-- <button class="btn btn-warning">แก้ไขไอคอน</button> -->
                                         <img id="img-update" src="https://imbindonesia.com/images/placeholder/camera.jpg" alt="" width="200" height="200">
                                         <input  type="file" accept=".jpg,.png"  id="iconF" name="icon" />
-                                        </div>
-                                    </div>   
-                                </div>
-                            </div>
+                                    </div>
                         </div>
                         <!-- end grid name alias icon------------------------------------- -->
                         <!-- start usage             ------------------------------------- -->
                         <div class="grid-form-condition">
                             <div class="form-group" id="parm-age">
                                 <label for="nameF">ปริมาณที่ใส่ตาม</label>
-                                <div class="form-check" >
+                                <div class="form-check ml-5" >
                                     <input class="form-check-input" type="radio" name="exampleRadios1" id="exampleRadios1" value="1">
                                     <label class="form-check-label" for="exampleRadios1">
                                         จำนวนต้นและอายุ
                                     </label>
                                 </div>
-                                <div class="form-check">
+                                <div class="form-check ml-5">
                                     <input class="form-check-input" type="radio" name="exampleRadios1" id="exampleRadios2" value="2">
                                     <label class="form-check-label" for="exampleRadios2">
                                         จำนวนต้นและผลผลิต
                                     </label>
                                 </div>
-                                <div class="form-check">
+                                <div class="form-check ml-5">
                                     <input class="form-check-input" type="radio" name="exampleRadios1" id="exampleRadios3" value="3" >
                                     <label class="form-check-label" for="exampleRadios3">
                                         จำนวนต้น
@@ -83,13 +64,13 @@
                         
                             <div class="form-group" id="unit">
                                 <label for="nameF">หน่วย</label>
-                                <div class="form-check">
+                                <div class="form-check ml-5">
                                     <input class="form-check-input " type="radio" name="exampleRadios3" id="exampleRadios6" value="1" checked>
                                     <label class="form-check-label" for="exampleRadios6">
                                         กิโลกรัม/ต้น/ปี
                                     </label>
                                     </div>
-                                <div class="form-check">
+                                <div class="form-check ml-5">
                                         <input class="form-check-input" type="radio" name="exampleRadios3" id="exampleRadios7" value="2">
                                         <label class="form-check-label" for="exampleRadios7">
                                         กิโลกรัม/ไร่/ปี
@@ -98,7 +79,7 @@
                             </div>
                             <div class="form-group">
                                 <label for="">ปริมาณที่ต้องใส่</label>
-                                <div class="form-inline graph" >
+                                <div class="form-inline graph ml-5" >
                                     <div class="form-inline a"  >
                                         <label  for="" style="margin-right:10px;">a</label>
                                         <input type="text" class="form-control" style="width:100px; margin-right:10px;" name="a" id="" 
@@ -115,13 +96,13 @@
                                 </div>
                                 <div class="form-group" id="year-mount">
                                     <label for="nameF">ช่วงเดือนที่ใส่</label>
-                                    <div class="form-check">
+                                    <div class="form-check   ml-5">
                                         <input class="form-check-input" type="radio" name="exampleRadios2" id="exampleRadios4" value="1" >
                                         <label class="form-check-label" for="exampleRadios4">
                                             ทั้งปี
                                         </label>
                                     </div>
-                                    <div class="form-check">
+                                    <div class="form-check   ml-5">
                                         <input class="form-check-input" type="radio" name="exampleRadios2" id="exampleRadios5" value="2">
                                         <label class="form-check-label" for="exampleRadios5">
                                             ตั้งแต่เดือน

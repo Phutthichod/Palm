@@ -17,6 +17,7 @@
     grid-template-columns: repeat(3,1fr);
     grid-gap: 1em;
     justify-content: center;
+    grid-auto-rows: minmax(min-content, max-content);
 }
 .modal-lg{
     min-width: 1200px;
@@ -93,4 +94,51 @@
 	height: 250px;
   padding-bottom:25px;
   margin-bottom:15px;
+}
+#add-mount-year{
+  display: grid;
+  grid-template-columns: 1fr 4fr 1fr;
+  grid-gap: 1rem;
+  justify-content: center;
+  grid-auto-rows: minmax(min-content, max-content);
+}
+#add-mount-year label{
+  justify-self: center;
+}
+#add-mount-year i{
+  justify-self: center;
+  color: orange;
+}
+label span{
+  color: red;
+}
+.grid-icon-name{
+  display: grid;
+  grid-template-columns: 1fr 3fr;
+  justify-content: center;
+  grid-gap: 1rem;
+  grid-auto-rows: minmax(min-content, max-content);
+}
+.grid-icon-name{
+  justify-self: center;
+}
+.grid-icon-name input{
+  justify-self: center;
+}
+.grid-icon-name .upload-btn-wrapper{
+  justify-self: center;
+}
+#addCondition{
+  display: grid;
+  grid-template-columns: 3fr 1fr;
+  grid-gap: 1rem;
+  justify-content: center;
+  grid-auto-rows: minmax(min-content, max-content);
+}
+#addCondition .btn{
+ justify-self: center;
+}
+.swal-footer{
+  display: flex;
+  flex-direction: row-reverse;
 }

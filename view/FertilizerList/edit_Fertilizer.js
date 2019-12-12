@@ -41,15 +41,15 @@ $(document).on('click','.editF',function(){ // set data in edit modal
         for(i in conditionF){
             if(j>0){
                 $('#addCondition').append(`
-            <input type="text" class="form-control conditionInput" name="condition[]" style="margin-top:15px;" id="">
-            <button type="button"  class="btn btn-danger btn-removeCondition" style="justify-self : flex-end; margin-left:15px; margin-top:15px;">x</button>
+            <input type="text" class="form-control conditionInput" name="condition[]" id="">
+            <button type="button"  class="btn btn-danger btn-removeCondition">x</button>
             `)
             }
             else{
                 $('#addCondition').append(`
             
             <input type="text" class="form-control conditionInput" name="condition[]" id="">
-            <button type="button" id="btn-addCondition" class="btn btn-success" style="justify-self : flex-end;margin-left:15px;">+</button>
+            <button type="button" id="btn-addCondition" class="btn btn-success" ">+</button>
     
                 `)
             }
@@ -100,8 +100,9 @@ $(document).on('click','.editF',function(){ // set data in edit modal
     console.log('succes')
 })
 $(document).on('click','.editSubmit',function(){ // submit to update
-    // $('.editSubmit').attr('type','submit')
+    $('.editSubmit').attr('type','submit')
     // check_dep(name,alias,a,b,start,end)
+    // let re = /^[0-9]/
     let name = $("input[name='name']");
     let alias = $("input[name='alias']");
     let a = $("input[name='a']");
@@ -111,25 +112,29 @@ $(document).on('click','.editSubmit',function(){ // submit to update
     let con = $("input[name='condition[]']").map(function(){return $(this).val().trim();}).get();
     let condition = []
     // let unit = $("input")
+    
+    // console.log("test"+re.test(name.val()))
     let dataNull = [name,alias,a,b]
+    let dataStartNum = [name,alias]
     if(start != undefined ){
         dataNull.push[start,end]
     }
     let dataNegative = [a,b]
 
     // console.log("connnnnn"+String(con[1]).trim())
-    console.log(name.val().trim())
+    // console.log(name.val().trim())
     // alert('ss')
-    // if(!checkNull(dataNull)) return;
-    // if(isNaN(a.val())){
-    //     a[0].setCustomValidity('ต้องใส่ตัวเลขเท่านั้น');
-    //     return;
-    // }
-    // if(isNaN(b.val())){
-    //     b[0].setCustomValidity('ต้องใส่ตัวเลขเท่านั้น');
-    //     return;
-    // }
-    // if(!checkNegative(dataNegative)) return;
+    if(!checkNull(dataNull)) return;
+    if(startInputNum(dataStartNum)) return;
+    if(isNaN(a.val())){
+        a[0].setCustomValidity('ต้องใส่ตัวเลขเท่านั้น');
+        return;
+    }
+    if(isNaN(b.val())){
+        b[0].setCustomValidity('ต้องใส่ตัวเลขเท่านั้น');
+        return;
+    }
+    if(!checkNegative(dataNegative)) return;
     if(!checkSameName(name,idF)) return;
     if(!checkSameAlias(alias,idF)) return;
     // if(!checkSameName(alias,idF)) return;
@@ -169,8 +174,9 @@ $(document).on('click','.editSubmit',function(){ // submit to update
 
 })
 $(document).on('click','.insertSubmit',function(e){ // insert submit
-    console.log('sss');
+    // console.log('sss');
     // e.preventdefault()
+    
     let name = $("input[name='name_insert']");
     // let name = $(this).parent().prev().children().children().children().children().first().next()
     let alias = $("input[name='alias_insert']");
@@ -178,6 +184,8 @@ $(document).on('click','.insertSubmit',function(e){ // insert submit
     // console.log("name = "+name)
 
     let dataNull = [name,alias]
+    let dataStartNum = [name,alias]
+    if(startInputNum(dataStartNum)) return;
     // console.log('sssssssssssssssss');
     if(!checkNull(dataNull)) return;
     // console.log('pppp');
@@ -280,17 +288,30 @@ function loadDataF(){ // load all data in database and fetch data on wep page
             </div><br>
                 `
             }
-            console.log("a " +dataF[i].EQ1+"b" +dataF[i].EQ2)
+            // console.log("a " +dataF[i].EQ1+"b" +dataF[i].EQ2)
             $('.bodyF').append(text);
             $('.amount-fer').html(`${j} ชนิด`)
             for(i in dataF){
-                let unit;
-                if(dataF[i].Unit==1) unit = 'กก./ต้น'
-                else unit = 'กก./ต้น/ไร่'
+                let unitY = ''
+                let unitX = ''
+                // console.log("Usage"+dataF[i].Usage)
+                switch(dataF[i].Usage){
+                    case '1':
+                        unitY = "ต้น"
+                        unitX = "อายุ"
+                        break;
+                    case '2':
+                        unitY = "ต้น"
+                        unitX = "ผลผลิต"
+                        break;
+                    case '3':
+                        unitX = "ต้น"
+                        break;
+                }
                 a2 = dataF[i].EQ1
                 b2 = dataF[i].EQ2
-                console.log("b"+b2);
-                new Chart(document.getElementById("lineChart"+i).getContext("2d"), getChartJs2('line',unit));
+                // console.log("b"+b2);
+                new Chart(document.getElementById("lineChart"+i).getContext("2d"), getChartJs2('line',unitY,unitX));
             }}
            
             
@@ -298,14 +319,14 @@ function loadDataF(){ // load all data in database and fetch data on wep page
         });
   
       }
-      function getChartJs2(type,unit) { // set graph in wep page
+      function getChartJs2(type,unitY,unitX) { // set graph in wep page
         if (type === 'line') {
             config = {
                 type: 'line',
                 data: {
                     labels: [1, 2, 3, 4, 5, 6,7],
                     datasets: [{
-                        label: "y = 2 * อายุ",
+                        label: "y = ax + b",
                         data: [(a2*1) + b2*1, (a2*2) + b2*1,  (a2*3) + b2*1, (a2*4) + b2*1, (a2*5) + b2*1,(a2*6) + b2*1,(a2*7) + b2*1],
                         borderColor: 'rgba(0, 188, 212, 0.75)',
                         backgroundColor: 'rgba(0, 188, 212, 0.3)',
@@ -322,14 +343,14 @@ function loadDataF(){ // load all data in database and fetch data on wep page
                             display: true,
                             scaleLabel: {
                                 display: true,
-                                labelString: 'อายุ (ปี)'
+                                labelString: unitX
                             }
                         }],
                         yAxes: [{
                             display: true,
                             scaleLabel: {
                                 display: true,
-                                labelString: unit
+                                labelString: unitY
                             }
                         }]
                     }
@@ -436,8 +457,8 @@ $(document).on('change','#exampleRadios4',function(){ // set check start end
 })
 $(document).on('click','#btn-addCondition',function(){ // more condition
     $('#addCondition').append(`
-        <input type="text" class="form-control" name="condition[]" style="margin-top:15px;" id="">
-        <button type="button" class="btn btn-danger btn-removeCondition" style="justify-self : flex-end; margin-left:15px; margin-top:15px;">x</button>
+        <input type="text" class="form-control" name="condition[]"  id="">
+        <button type="button" class="btn btn-danger btn-removeCondition" ">x</button>
     `)
 })
 $(document).on('click','.btn-removeCondition',function(){ // delete condition
@@ -449,26 +470,18 @@ function inputMountYear(){ // set input start end
     let radio =  $("#add-mount-year");
         if(!mountYearChecked){
             radio.append(`
-            <div class="form-group">
-                <div class="form-inline">
-                    <label for="" style="margin-right:10px;" class="col-2">ตั้งแต่</label>
-                    <input type="text" class="form-control col-6" id="alternate1" disabled/>
+                    <label for=""  class="">ตั้งแต่</label>
+                    <input type="text" class="form-control" id="alternate1" disabled/>
                     <div class="UI">
-                        <button type="button" class="btn btn-warning ml-2">เลือกวันที่</button>
-                        <input type="text" class="form-control ml-2" style="width:100px; margin-right:10px;" name="start" id="" value=${startF}>
+                         <i class="fas fa-calendar-alt"></i>
+                        <input type="text" class="form-control " name="start" id="" value=${startF}>
                     </div>              
-                </div>
-            </div>
-            <div class="form-group mt-2">
-                <div class="form-inline">
-                    <label for="" style="margin-right:10px;" class="col-2 mr-2">ถึง</label>
-                    <input type="text" class="form-control col-6" id="alternate2" disabled/>
+                    <label for=""  class="">ถึง</label>
+                    <input type="text" class="form-control " id="alternate2" disabled/>
                     <div class="UI">
-                        <button type="button" class="btn btn-warning ml-2">เลือกวันที่</button>
-                        <input type="text" class="form-control ml-2 " style="width:100px;" name="end" id="" value=${endF}>
+                         <i class="fas fa-calendar-alt"></i>
+                        <input type="text" class="form-control " name="end" id="" value=${endF}>
                     </div>
-                </div>
-            </div>
             `)
         }
         mountYearChecked = true;
@@ -561,7 +574,7 @@ function loadCondition(FID){ // load condition from database
     for(i in dataF){
         console.log(dataF[i].Alias);
         if(name.val().trim() == dataF[i].Alias && dataF[i].FID != id){
-            name[0].setCustomValidity('ชื่อนี้ซ้ำ');
+            name[0].setCustomValidity('ชื่อนี้ซ้ำ')
             return false;
         }
         else{
@@ -574,6 +587,20 @@ function loadCondition(FID){ // load condition from database
 return true;
 
 }
+function startInputNum(selecter){
+    let re = /^([ก-ฮA-Za-z])/
+    // let re
+    for(i in selecter){
+        if(!(re.test(selecter[i].val().trim()))){
+            selecter[i][0].setCustomValidity('ต้องขึ้นต้นด้วยตัวอักษร');
+            return true;
+        }
+        else{
+            selecter[i][0].setCustomValidity('');
+        }
+    }
+    return false
+ }
  function checkNull(selecter){  // check name null
     
     for( i in selecter){
@@ -746,7 +773,7 @@ function delClick(me){
     let dimid = me.attr('DIMID')
     swal({
       title: "ลบ",
-      text: "Once deleted, you will not be able to recover this data!",
+      text: "คุณต้องการลบปุ๋ย",
       icon: "warning",
       buttons: true,
       dangerMode: true,
@@ -768,12 +795,12 @@ function delClick(me){
             // alert("sss")
             }
             });
-        swal("data has been deleted!", {
+        swal("ปุ๋ยถูกลบเรียบร้อย", {
           icon: "success",
           
         });
       } else {
-        swal("Your data is safe!");
+        swal("ปุ๋ยไม่ถูกลบ");
       }
     })
     
