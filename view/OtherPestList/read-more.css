@@ -1,0 +1,30 @@
+#more_char {
+    display: none;
+}
+
+#more_danger {
+    display: none;
+}
+
+button {
+    background-color: white;
+    border: none;
+    outline: none;
+    color: dodgerblue;
+}
+
+.morecontent span {
+    display: none;
+}
+
+.morelink {
+    display: block;
+}
+
+.morecontent span {
+    display: none;
+}
+
+.morelink {
+    display: block;
+}

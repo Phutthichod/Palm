@@ -76,7 +76,16 @@ $type = $_GET['type'];
     <div class="row mt-3">
         <div class="col-xl-12 col-12">
             <div class="card">
+                <!------------ Head ------------>
+                <div class="card-header card-bg">
+                    <div>
+                        <span>สวนปาล์มน้ำมันในระบบ</span>
+                        <button type="button" style="float:right;" class="btn btn-success" data-toggle="modal" data-target="#modal-1"><i class="fas fa-plus"></i> เพิ่มระบบให้น้ำ</button>
+                    </div>
+                </div>
                 <div class="card-body">
+
+                    <!------------  Tab Bar ------------>
                     <ul class="nav nav-tabs" id="myTab" role="tablist">
                         <li class="nav-item">
                             <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true">ปฏิทินข้อมูล</a>
@@ -85,11 +94,14 @@ $type = $_GET['type'];
                             <a class="nav-link" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false">ตารางข้อมูล</a>
                         </li>
                     </ul>
+
+                    <!------------ Body ------------>
                     <div class="tab-content" id="myTabContent" style="margin-top:20px;">
+
+                        <!------------ Start Calender ------------>
                         <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
                             <?php
                             $calStr = "";
-
                             if ($type == "1") {
                                 $calStr = "
                                     <div class='row'>
@@ -122,20 +134,14 @@ $type = $_GET['type'];
                                     </div>
                                     ";
                             }
-
                             echo $calStr;
                             ?>
                         </div>
+
+                        <!------------ Start Table ------------>
                         <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
-                            <div class="row mb-2">
-                                <div class="col-xl-3 col-12">
-                                    <button type="button" id="btn_comfirm" class="btn btn-outline-success btn-sm"><i class="fas fa-file-excel"></i> Excel</button>
-                                    <button type="button" id="btn_comfirm" class="btn btn-outline-danger btn-sm"><i class="fas fa-file-pdf"></i> PDF</button>
-                                </div>
-                            </div>
                             <?php
                             $tableStr = "";
-
                             if ($type == "1") {
                                 $tableStr = "
                                     <div class='table-responsive'>
@@ -273,11 +279,10 @@ $type = $_GET['type'];
                                         </table>
                                     </div>";
                             }
-
                             echo $tableStr;
-
                             ?>
                         </div>
+
                     </div>
                 </div>
             </div>
@@ -313,6 +318,7 @@ $type = $_GET['type'];
         event = getByThree();
     }
 
+    //<!------------ Start Calender ------------>
     if (type == "1") {
         var calendarRain = $('#calendarRain').fullCalendar({
             header: {
@@ -346,7 +352,7 @@ $type = $_GET['type'];
                 let getModal;
 
                 if (type == "1") {
-                    getModal = RainModalTemp("ไลอ้อน 2", "19/06/2019 16:00", "19/06/2019 18:00", "2ชั่วโมง", "200", "19/06/1996");
+                    getModal = RainModalTemp("ไลอ้อน xxxxxxxxxxxxxxxxxxxxx", "19/06/2019 16:00", "19/06/2019 18:00", "2ชั่วโมง", "200", "19/06/1996");
 
                     $("body").append(getModal);
                     $("#RainModal").modal('show');

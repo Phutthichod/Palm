@@ -1,3 +1,7 @@
+<head>
+    <link rel="stylesheet" href="read-more.css">
+</head>
+
 <?php
 require('../../dbConnect.php');
 $id = $_POST['id'];
@@ -9,7 +13,7 @@ $result->execute();
 
 <?php
 while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
-    ?>
+?>
     <div class="row">
         <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12 " style="text-align: center;">
             <div style="text-align: center;">
@@ -21,21 +25,22 @@ while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
         </div>
         <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
             <h6>ลักษณะทั่วไป</h6>
-            <?php echo $row["Charactor"]; ?>
+            <span class="more">
+                <?php echo $row["Charactor"]; ?>
+            </span>
+            <br>
             <br>
             <br>
             <div id="carouselExampleControls" class="carousel slide" data-ride="carousel" id="silder">
                 <div class="carousel-inner">
                     <div class="carousel-item active">
-                        <img class="d-block w-100" src=<?php echo $src = "../../picture/Pest/other/style/" . $row["PID"] . "/" . $row["lcon"]; ?> alt="First slide" style="height:200px;">
+                        <img class="d-block w-100" src=<?php echo  $src = "../../picture/Pest/other/style/" . $row["PID"] . "/" . $row["lcon"]; ?> style="height:200px;">
                     </div>
-                    <!--
-                    <div class="carousel-item">
-                        <img class="d-block w-100" src="../../picture/Pest/insect/01.jpg" alt="Second slide" style="height:200px;">
-                    </div>
-                    <div class="carousel-item">
-                        <img class="d-block w-100" src="../../picture/Pest/insect/02.jpg" alt="Third slide" style="height:200px;">
-                    </div>-->
+                    <?php for ($style_index = 0; $style_index < $row["NumPicDanger"] - 1; $style_index++) { ?>
+                        <div class="carousel-item">
+                            <img class="d-block w-100" src=<?php echo  $src = "../../picture/Pest/other/style/" . $row["PID"] . "/" . $style_index . "_" . $row["lcon"]; ?> style="height:200px;">
+                        </div>
+                    <?php } ?>
                 </div>
                 <a class="carousel-control-prev" href="#carouselExampleControls" role="button" data-slide="prev">
                     <span class="carousel-control-prev-icon" aria-hidden="true"></span>
@@ -50,23 +55,23 @@ while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
 
         <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
             <h6>อันตรายของศัตรูพืชอื่นๆ</h6>
-            <?php echo $row["Danger"]; ?>
+            <span class="more">
+                <?php echo $row["Danger"]; ?>
+            </span>
             <br>
             <br>
             <br>
             <div id="carouselExampleControls2" class="carousel slide" data-ride="carousel" id="silder">
                 <div class="carousel-inner">
                     <div class="carousel-item active">
-                        <img class="d-block w-100" src=<?php echo $src = "../../picture/Pest/other/danger/" . $row["PID"] . "/" . $row["lcon"]; ?> alt="First slide" style="height:200px;">
+                        <img class="d-block w-100" src=<?php echo  $src = "../../picture/Pest/other/danger/" . $row["PID"] . "/" . $row["lcon"]; ?> style="height:200px;">
+
                     </div>
-                    <!--
-                    <div class="carousel-item">
-                        <img class="d-block w-100" src="../../picture/Pest/insect/01.jpg" alt="Second slide" style="height:200px;">
-                    </div>
-                    <div class="carousel-item">
-                        <img class="d-block w-100" src="../../picture/Pest/insect/02.jpg" alt="Third slide" style="height:200px;">
-                    </div>
-                -->
+                    <?php for ($danger_index = 0; $danger_index < $row["NumPicDanger"] - 1; $danger_index++) { ?>
+                        <div class="carousel-item">
+                            <img class="d-block w-100" src=<?php echo  $src = "../../picture/Pest/other/danger/" . $row["PID"] . "/" . $danger_index . "_" . $row["lcon"]; ?> style="height:200px;">
+                        </div>
+                    <?php } ?>
                 </div>
                 <a class="carousel-control-prev" href="#carouselExampleControls2" role="button" data-slide="prev">
                     <span class="carousel-control-prev-icon" aria-hidden="true"></span>
@@ -79,6 +84,44 @@ while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
             </div>
         </div>
     </div>
-<?php
-}
-?>
+<?php } ?>
+
+<script>
+    $(document).ready(function() {
+        // Configure/customize these variables.
+        var showChar = 100; // How many characters are shown by default
+        var ellipsestext = "...";
+        var moretext = "Show more";
+        var lesstext = "Show less";
+
+        $('.more').each(function() {
+            var content = $(this).html();
+
+            if (content.length > showChar) {
+
+                var c = content.substr(0, showChar);
+                var h = content.substr(showChar, content.length - showChar);
+
+                var html = c + '<span class="moreellipses">' + ellipsestext + '&nbsp;</span><span class="morecontent"><span>' + h +
+                    '</span>&nbsp;&nbsp;<a href="" class="morelink">' + moretext + '</a></span>';
+
+                $(this).html(html);
+            }
+
+        });
+
+        $(".morelink").click(function() {
+            if ($(this).hasClass("less")) {
+                $(this).removeClass("less");
+                $(this).html(moretext);
+            } else {
+                $(this).addClass("less");
+                $(this).html(lesstext);
+            }
+            $(this).parent().prev().toggle();
+            $(this).prev().toggle();
+            return false;
+
+        });
+    });
+</script>

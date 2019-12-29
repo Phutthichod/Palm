@@ -1,6 +1,6 @@
-function RainModalTemp(subName, startTime, endTime, length, volume, date){
+function RainModalTemp(subName, startTime, endTime, length, volume, date) {
     let modal =
-    `
+        `
     <div class="modal fade" id="RainModal" tabindex="-1" role="dialog">
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
@@ -65,13 +65,13 @@ function RainModalTemp(subName, startTime, endTime, length, volume, date){
     </div>
     
     `;
-    
+
     return modal;
 }
 
-function NonRainModalTemp(subName, startTime, endTime, date){
+function NonRainModalTemp(subName, startTime, endTime, date) {
     let modal =
-    `
+        `
     <div class="modal fade" id="RainModal" tabindex="-1" role="dialog">
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
@@ -120,13 +120,13 @@ function NonRainModalTemp(subName, startTime, endTime, date){
     </div>
     
     `;
-    
+
     return modal;
 }
 
-function SystemModalTemp(subName, startTime, endTime, length, date){
+function SystemModalTemp(subName, startTime, endTime, length, date) {
     let modal =
-    `
+        `
     <div class="modal fade" id="SystemModal" tabindex="-1" role="dialog">
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
@@ -183,13 +183,13 @@ function SystemModalTemp(subName, startTime, endTime, length, date){
     </div>
     
     `;
-    
+
     return modal;
 }
 
-function ManualModalTemp(subName, car, date){
+function ManualModalTemp(subName, car, date) {
     let modal =
-    `
+        `
     <div class="modal fade" id="ManualModal" tabindex="-1" role="dialog">
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
@@ -230,17 +230,15 @@ function ManualModalTemp(subName, car, date){
     </div>
     
     `;
-    
+
     return modal;
 }
 
 
 
 
-function getByOne()
-{
-    let test = [
-        {
+function getByOne() {
+    let test = [{
             title: `ชื่อแปลง : ไลอ้อน 1
                     ปริมาณ : 200 ลบ.ม.`,
             start: new Date(2019, 04, 26, 12, 0),
@@ -291,10 +289,8 @@ function getByOne()
     return test;
 }
 
-function getByOneHalf()
-{
-    let test = [
-        {
+function getByOneHalf() {
+    let test = [{
             title: `ชื่อแปลง : ไลอ้อน 1
                     ปริมาณ : 200 ลบ.ม.`,
             start: new Date(2019, 04, 30, 12, 0),
@@ -345,11 +341,8 @@ function getByOneHalf()
     return test;
 }
 
-
-function getByTwo()
-{
-    let test = [
-        {
+function getByTwo() {
+    let test = [{
             title: `ชื่อแปลง : ไลอ้อน 1
                     ระยะเวลา : 120 นาที`,
             start: new Date(2019, 04, 29, 12, 0),
@@ -400,10 +393,8 @@ function getByTwo()
     return test;
 }
 
-function getByThree()
-{
-    let test = [
-        {
+function getByThree() {
+    let test = [{
             title: `ชื่อแปลง : ไลอ้อน 1
                     จำนวนรถ : 1 คัน`,
             start: new Date(2019, 04, 28, 12, 0),

@@ -79,7 +79,7 @@
                         <div class='col-lg-8 col-md-8 col-sm-9 col-xs-6'>
                             <div class='form-group'>
 
-                                <input type="file" id="pic-style-char" name="picstyle_insert" accept=".jpg" required="" multiple>
+                                <input type="file" id="pic-style-char" name="picstyle_insert[]" accept=".jpg" required="" multiple>
 
                             </div>
                         </div>
@@ -92,7 +92,7 @@
                         <div class='col-lg-8 col-md-8 col-sm-9 col-xs-6'>
                             <div class='form-group'>
 
-                                <input type="file" id="pic-danger" name="picdan_insert" accept=".jpg" required="" multiple>
+                                <input type="file" id="pic-danger" name="picdan_insert[]" accept=".jpg" required="" multiple>
 
                             </div>
                         </div>

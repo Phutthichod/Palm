@@ -19,19 +19,27 @@ switch ($request) {
     $Icon = "$t.$tmp";
 
     // pic-style
-    $file_style = $_FILES['picstyle_insert']['name'];
-    $type_style = explode(".", "$file_style");
-    $tmp_style = end($type_style);
-    $stylechar = "$t.$tmp_style";
+    // Count style images files
+    $countfiles_style = count($_FILES['picstyle_insert']['name']);
+    for ($index_style = 0; $index_style < $countfiles_style; $index_style++) {
+      $file_style = $_FILES['picstyle_insert']['name'][$index_style];
+      $type_style = explode(".", "$file_style");
+      $tmp_style = end($type_style);
+      $stylechar = "$t.$tmp_style";
+    }
 
     // pic-danger
-    $file_danger = $_FILES['picdan_insert']['name'];
-    $type_danger = explode(".", "$file_danger");
-    $tmp_danger = end($type_danger);
-    $dangerous = "$t.$tmp_danger";
+    // Count danger images files
+    $countfiles_danger = count($_FILES['picdan_insert']['name']);
+    for ($index_danger = 0; $index_danger < $countfiles_danger; $index_danger++) {
+      $file_danger = $_FILES['picdan_insert']['name'][$index_danger];
+      $type_danger = explode(".", "$file_danger");
+      $tmp_danger = end($type_danger);
+      $dangerous = "$t.$tmp_danger";
+    }
 
     $sql = "INSERT INTO `db-pestlist` (`PID`, `Name`, `Alias`, `PTID`, `Charactor`, `Danger`, `lcon` , `NumPicChar`, `NumPicDanger`)
-          VALUES ('','$Alias','$Name','1','$Charactor','$Danger','$Icon','1','1')";
+          VALUES ('','$Alias','$Name','1','$Charactor','$Danger','$Icon','$countfiles_style','$countfiles_danger')";
 
     $insertData = addinsertData($sql);
     $sql = "SELECT `PID` FROM `db-pestlist` ORDER BY `PID` DESC LIMIT 1";
@@ -44,10 +52,19 @@ switch ($request) {
       mkdir("../../picture/Pest/insect/danger/$id");
     }
 
-    if (move_uploaded_file($_FILES["icon_insert"]["tmp_name"], "../../picture/Pest/insect/icon/$id/$Icon")) { }
-    if (move_uploaded_file($_FILES["picstyle_insert"]["tmp_name"], "../../picture/Pest/insect/style/$id/$stylechar")) { }
-    if (move_uploaded_file($_FILES["picdan_insert"]["tmp_name"], "../../picture/Pest/insect/danger/$id/$stylechar")) { }
+    if (move_uploaded_file($_FILES["icon_insert"]["tmp_name"], "../../picture/Pest/insect/icon/$id/$Icon")) {
+    }
 
+    for ($index_style = 0; $index_style < $countfiles_style; $index_style++) {
+      if (move_uploaded_file($_FILES["picstyle_insert"]["tmp_name"][$index_style], "../../picture/Pest/insect/style/$id/$stylechar")) {
+      }
+      $stylechar = $index_style . "_" . $t . "." . $tmp_style;
+    }
+    for ($index_danger = 0; $index_danger < $countfiles_danger; $index_danger++) {
+      if (move_uploaded_file($_FILES["picdan_insert"]["tmp_name"][$index_danger], "../../picture/Pest/insect/danger/$id/$dangerous")) {
+      }
+      $dangerous = $index_danger . "_" . $t . "." . $tmp_danger;
+    }
     header("location:InsectList.php");
 
     break;

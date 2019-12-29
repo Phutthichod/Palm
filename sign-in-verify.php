@@ -23,8 +23,8 @@ if ($DATA[0]['numrow'] == 1) {
     if (sizeof($DATA) == 2) {
         if (isset($_POST['remember'])) {
             echo  "<br> test:" . $username . $password . "<br>";
-            setcookie("username", $username, time() + (24 * 60 * 60));
-            setcookie("password", $password, time() + (24 * 60 * 60));
+            setcookie("username", $username, time() + (10 * 365 * 24 * 60 * 60));
+            setcookie("password", $password, time() + (10 * 365 * 24 * 60 * 60));
             echo  "<br> testcookie:" . $_COOKIE['username'] . $_COOKIE['password'] . "<br>";
         } else {
             setcookie("username");

@@ -19,9 +19,6 @@
     justify-content: center;
     grid-auto-rows: minmax(min-content, max-content);
 }
-.modal-lg{
-    min-width: 1200px;
-}
 .grid-icon-name .form-inline .form-group label{
     display: inline-block;
     vertical-align: text-top;
@@ -128,6 +125,12 @@ label span{
 .grid-icon-name .upload-btn-wrapper{
   justify-self: center;
 }
+.grid-form-condition{
+  justify-self: center;
+}
+.grid-volume{
+  justify-self: center;
+}
 #addCondition{
   display: grid;
   grid-template-columns: 3fr 1fr;
@@ -135,10 +138,106 @@ label span{
   justify-content: center;
   grid-auto-rows: minmax(min-content, max-content);
 }
+.grid-fer-card{
+  display: grid;
+  grid-template: 
+    "name fer-con chart" 1fr
+    /1fr 1fr 1fr;
+  grid-gap: 1rem;
+  justify-content: center;
+}
 #addCondition .btn{
  justify-self: center;
+ width: 75%;
 }
 .swal-footer{
   display: flex;
   flex-direction: row-reverse;
 }
+#addCondition input{
+  justify-content: center;
+  
+}
+.curser{
+  cursor: pointer;
+  color: white;
+  transition: 0.3s ease-in-out;
+}
+.fer-column1,.fer-column2,.fer-column3{
+  justify-self: center;
+  align-self: center;
+}
+.fer-column1{
+  grid-area: name;
+}
+.fer-column2{
+  grid-area: fer-con;
+  align-self: center;
+}
+.fer-column3{
+  grid-area: chart;
+}
+/* @media only screen and (max-width: 1203px) { 
+  .grid-body-modal{
+    grid-template-columns: 1fr;
+  }
+  .modal-dialog{
+    max-width: 1050px;
+  }
+ }
+ */
+ .modal-lg2{
+  max-width: 1200px;
+}
+ @media only screen and (max-width: 1204px){
+  .grid-body-modal{
+    grid-template-columns:1fr;
+  }
+  .modal-lg2{
+    max-width: 600px;
+  }
+}
+.chart-fer{
+  width: 500px;
+}
+@media only screen and (max-width: 1170px){
+  .grid-fer-card{
+    grid-template: 
+    "name fer-con" 1fr
+    "chart chart" 1fr
+    /1fr 1fr;
+    justify-content: center;
+  }
+  .fer-column2{
+    align-self: center;
+  }
+  .chart-fer{
+    width: 500px;
+  }
+}
+@media only screen and (max-width: 700px){
+  .chart-fer{
+    max-width: 200px;
+  }
+  .fer-column2{
+  grid-area: fer-con;
+}
+@media only screen and (max-width: 650px){
+  .grid-fer-card{
+    grid-template: 
+    "name" 1fr
+    " fer-con" 1fr
+    "chart " 1fr
+    /1fr;
+    justify-content: center;
+  }
+}
+
+
+  /* .modal-dialog{
+    max-width: 1050px;
+  }
+ }
+ .modal-dialog{
+  max-width: 1050px;
+}  */

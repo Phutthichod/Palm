@@ -1,5 +1,5 @@
 var imageModal =
-`
+    `
 <div class="modal fade" id="imageModal" tabindex="-1" role="dialog">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
@@ -48,7 +48,7 @@ var imageModal =
 `;
 
 var noteModal =
-`
+    `
 <div class="modal fade" id="noteModal" tabindex="-1" role="dialog">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
@@ -68,7 +68,7 @@ var noteModal =
 `;
 
 var infoModal =
-`
+    `
 <div class="modal fade" id="infoModal" tabindex="-1" role="dialog">
     <div class="modal-dialog modal-xl" role="document">
         <div class="modal-content">
@@ -161,7 +161,7 @@ var infoModal =
 `;
 
 var infoModal0 =
-`
+    `
 <div class="row">
 <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4" style="text-align: center;">
     <div style="text-align: center;">
@@ -240,7 +240,7 @@ var infoModal0 =
 `;
 
 var infoModal1 =
-`
+    `
 <div class="row">
 <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4" style="text-align: center;">
     <div style="text-align: center;">

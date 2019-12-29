@@ -9,6 +9,10 @@ $CurrentMenu = "DiseasesList";
 
 <?php include_once("../layout/LayoutHeader.php"); ?>
 
+<head>
+    <link rel="stylesheet" href="read-more.css">
+</head>
+
 <style>
     #serach {
         background-color: #E91E63;
@@ -19,6 +23,14 @@ $CurrentMenu = "DiseasesList";
     #card-detail {
         border-color: #E91E63;
         border-top: none;
+    }
+
+    /* #carousel-item {
+        width : 200px ;
+        height : "120";
+    } */
+    .carouselExampleControls img {
+        height: 200px;
     }
 </style>
 
@@ -63,7 +75,7 @@ $CurrentMenu = "DiseasesList";
                                 <div class="font-weight-bold  text-uppercase mb-1">จำนวนชนิดโรคพืช</div>
                                 <?php
                                 while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
-                                    ?>
+                                ?>
                                     <div class="h5 mb-0 font-weight-bold text-gray-800"><?php echo $row['c']; ?> ชนิด</div>
                                 <?php
                                 }
@@ -105,12 +117,9 @@ $CurrentMenu = "DiseasesList";
             $myConDB = connectDB();
             $result = $myConDB->prepare($sql);
             $result->execute();
-            ?>
-            <?php
+
             if ($row = $result->fetch(PDO::FETCH_ASSOC)) {
-                ?>
-                <?php require("bodyDiseases.php"); ?>
-            <?php
+                require("bodyDiseases.php");
             }
             ?>
         </div>
@@ -118,11 +127,13 @@ $CurrentMenu = "DiseasesList";
         <div>
             <div class="row">
                 <?php
-                while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
-                    ?>
-                    <?php require("itemDiseases.php"); ?>
+                $sql = "SELECT * FROM `db-pestlist` WHERE `PTID` = 2";
+                $myConDB = connectDB();
+                $result = $myConDB->prepare($sql);
+                $result->execute();
 
-                <?php
+                while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
+                    require("itemDiseases.php");
                 }
                 ?>
             </div>
@@ -136,12 +147,6 @@ $CurrentMenu = "DiseasesList";
 
     <script src="DiseasesList.js"></script>
     <!--<script src="DiseasesListModal.js"></script>-->
-
-    <script>
-
-
-    </script>
-
 
 </body>
 

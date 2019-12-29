@@ -5,9 +5,11 @@ $idUT = $_SESSION[md5('typeid')];
 $CurrentMenu = "OtherPestList";
 ?>
 
-
 <?php include_once("../layout/LayoutHeader.php"); ?>
 
+<head>
+    <link rel="stylesheet" href="read-more.css">
+</head>
 
 <style>
     #serach {
@@ -19,6 +21,14 @@ $CurrentMenu = "OtherPestList";
     #card-detail {
         border-color: #E91E63;
         border-top: none;
+    }
+
+    /* #carousel-item {
+        width : 200px ;
+        height : "120";
+    } */
+    .carouselExampleControls img {
+        height: 200px;
     }
 </style>
 
@@ -62,7 +72,7 @@ $CurrentMenu = "OtherPestList";
                                 <div class="font-weight-bold  text-uppercase mb-1">จำนวนชนิดศัตรูพืช</div>
                                 <?php
                                 while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
-                                    ?>
+                                ?>
                                     <div class="h5 mb-0 font-weight-bold text-gray-800"><?php echo $row['c']; ?> ชนิด</div>
                                 <?php
                                 }
@@ -108,8 +118,88 @@ $CurrentMenu = "OtherPestList";
 
             <?php
             if ($row = $result->fetch(PDO::FETCH_ASSOC)) {
+            ?>
+                <div class="body">
+                    <div class="card-body" id="card-pest-orther">
+                        <div class="row">
+                            <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12 " style="text-align: center;">
+                                <div style="text-align: center;">
+                                    <img src=<?php echo $src = "../../picture/Pest/other/icon/" . $row["PID"] . "/" . $row["lcon"]; ?> width="120" height="120" alt="User" style="border-radius: 100px;">
+                                    <br><br>
+                                </div>
+                                <h6>ชื่อ :
+                                    <?php echo $row["Alias"]; ?>
+                                </h6>
+                                <h6>ชื่อทางการ :
+                                    <?php echo $row["Name"]; ?>
+                                </h6>
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                <h6>ลักษณะทั่วไป</h6>
+                                <span class="more">
+                                    <?php echo $row["Charactor"]; ?>
+                                </span>
+                                <br>
+                                <br>
+                                <br>
+                                <div id="carouselExampleControls" class="carousel slide" data-ride="carousel" id="silder">
+                                    <div class="carousel-inner">
+                                        <div class="carousel-item active">
+                                            <img class="d-block w-100" src=<?php echo  $src = "../../picture/Pest/other/style/" . $row["PID"] . "/" . $row["lcon"]; ?> style="height:200px;">
+
+                                        </div>
+                                        <?php for ($style_index = 0; $style_index < $row["NumPicDanger"] - 1; $style_index++) { ?>
+                                            <div class="carousel-item">
+                                                <img class="d-block w-100" src=<?php echo  $src = "../../picture/Pest/other/style/" . $row["PID"] . "/" . $style_index . "_" . $row["lcon"]; ?> style="height:200px;">
+                                            </div>
+                                        <?php } ?>
+                                    </div>
+                                    <a class="carousel-control-prev" href="#carouselExampleControls" role="button" data-slide="prev">
+                                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                        <span class="sr-only">Previous</span>
+                                    </a>
+                                    <a class="carousel-control-next" href="#carouselExampleControls" role="button" data-slide="next">
+                                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                        <span class="sr-only">Next</span>
+                                    </a>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                <h6>อันตรายของศัตรูพืชอื่นๆ</h6>
+                                <span class="more">
+                                    <?php echo $row["Danger"]; ?>
+                                </span>
+                                <br>
+                                <br>
+                                <br>
+                                <div id="carouselExampleControls2" class="carousel slide" data-ride="carousel" id="silder">
+                                    <div class="carousel-inner">
+                                        <div class="carousel-item active">
+                                            <img class="d-block w-100" src=<?php echo  $src = "../../picture/Pest/other/danger/" . $row["PID"] . "/" . $row["lcon"]; ?> style="height:200px;">
+
+                                        </div>
+                                        <?php for ($danger_index = 0; $danger_index < $row["NumPicDanger"] - 1; $danger_index++) { ?>
+                                            <div class="carousel-item">
+                                                <img class="d-block w-100" src=<?php echo  $src = "../../picture/Pest/other/danger/" . $row["PID"] . "/" . $danger_index . "_" . $row["lcon"]; ?> style="height:200px;">
+                                            </div>
+                                        <?php } ?>
+                                    </div>
+                                    <a class="carousel-control-prev" href="#carouselExampleControls2" role="button" data-slide="prev">
+                                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                        <span class="sr-only">Previous</span>
+                                    </a>
+                                    <a class="carousel-control-next" href="#carouselExampleControls2" role="button" data-slide="next">
+                                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                        <span class="sr-only">Next</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <?php //require("bodyOtherPest.php"); 
                 ?>
-                <?php require("bodyOtherPest.php"); ?>
             <?php
             }
             ?>
@@ -126,7 +216,7 @@ $CurrentMenu = "OtherPestList";
 
                 <?php
                 while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
-                    ?>
+                ?>
                     <?php require("itemOtherPest.php"); ?>
                 <?php
                 }
@@ -142,12 +232,6 @@ $CurrentMenu = "OtherPestList";
     <?php require("modalInsert.php"); ?>
     <script src="OtherPestList.js"></script>
     <!--<script src="OtherPestListModal.js"></script>-->
-
-    <script>
-
-    </script>
-
-
 </body>
 
 </html>

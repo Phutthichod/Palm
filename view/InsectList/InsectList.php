@@ -32,9 +32,11 @@ if (isset($_POST['insert'])) {
 }*/
 ?>
 
-
 <?php include_once("../layout/LayoutHeader.php"); ?>
 
+<head>
+    <link rel="stylesheet" href="read-more.css">
+</head>
 
 <style>
     #serach {
@@ -78,7 +80,7 @@ if (isset($_POST['insert'])) {
                 </div>
             </div>
         </div>
-        
+
         <div class="row">
 
             <?php
@@ -96,7 +98,7 @@ if (isset($_POST['insert'])) {
                                 <div class="font-weight-bold  text-uppercase mb-1" style="color:#6F9EF7">จำนวนชนิดแมลง</div>
                                 <?php
                                 while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
-                                    ?>
+                                ?>
                                     <div class="h5 mb-0 font-weight-bold text-gray-800"><?php echo $row['c']; ?> ชนิด</div>
 
                                 <?php
@@ -143,7 +145,7 @@ if (isset($_POST['insert'])) {
 
             <?php
             if ($row = $result->fetch(PDO::FETCH_ASSOC)) {
-                ?>
+            ?>
 
                 <?php require("body.php"); ?>
 
@@ -185,6 +187,7 @@ if (isset($_POST['insert'])) {
         $("#looks").val("xxxxxxxxxxx")
         $('#danger').val("xxxxxxxxxxx")
     </script>
+
 
 
 </body>

@@ -42,6 +42,7 @@ if (isset($_COOKIE['username']) and isset($_COOKIE['password'])) {
 
     <link href='./lib/calendar/css/fullcalendar.css' rel='stylesheet' />
     <link href='./lib/calendar/css/fullcalendar.print.css' rel='stylesheet' media='print' />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-sweetalert/1.0.1/sweetalert.css">
 
 </head>
 <style>
@@ -136,6 +137,7 @@ if (isset($_COOKIE['username']) and isset($_COOKIE['password'])) {
                                                                                                                                 echo " checked ";
                                                                                                                             } ?>>
                                         <label class="custom-control-label" for="remember">บันทึกบัญชีผู้ใช้</label>
+                                        <label style="margin-left: 20px;cursor:pointer;color: blue" id="pass_edit"> ลืมรหัสผ่าน?</label>
                                         <button class="btn btn-success btn-md" style="float:right;" type="submit">ล็อกอิน</button>
 
 
@@ -157,13 +159,61 @@ if (isset($_COOKIE['username']) and isset($_COOKIE['password'])) {
 </body>
 
 </html>
-<script src="lib/jquery/jquery.min.js"></script>
+<!-- Modal -->
+<div class="modal fade" id="ChangeModal" name="ChangeModal" tabindex="-1" role="dialog" style="margin-top: 10%;">
+    <form method="post" id="formAdd" name="formAdd" action="manage.php">
+        <div class="modal-dialog modal-lg" role="document" style="width: 30%">
+            <div class="modal-content">
+                <div class="changepass">
+                    <div class="modal-header header-modal">
+                        <h4 class="modal-title" style="color:white">ตั้ง Password ใหม่</h4>
+                    </div>
+                    <div class="modal-body" id="ChangeModalBody">
+                        <div class="container">
+
+                            <div class="row mb-4" style="margin-left: 10px">
+                                <label for="inputEmail">ชื่อผู้ใช้</label>
+                                <div class="col-12">
+                                    <input type="text" name="username2" id="username2" class="form-control" placeholder="username" required autofocus>
+                                </div>
+                            </div>
+
+
+
+                        </div>
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" name="save" id="save" value="insert" class="btn btn-success save">ยืนยัน</button>
+                        <button type="button" class="btn btn-danger cancel" id="a_cancel" data-dismiss="modal">ยกเลิก</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </form>
+
+</div>
+<script src="lib/jquery/jquery.min.js">
+</script>
+<script src="lib/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+<!-- Core plugin JavaScript-->
+<script src="lib/jquery-easing/jquery.easing.min.js"></script>
+
+<!-- Custom scripts for all pages-->
+<script src="js/sb-admin-2.min.js"></script>
+
+<script src="lib/datatables/jquery.dataTables.min.js"></script>
+<script src="lib/datatables/dataTables.bootstrap4.min.js"></script>
+
 <script type="text/javascript">
     var h1 = document.getElementById('hide1');
     h1.addEventListener('click', show_hide);
 
     function show_hide() {
         console.log("5555");
+
         h1.classList.toggle('active');
         if ($('#password1').attr("type") == "password") {
             $('#password1').attr('type', 'text');
@@ -175,4 +225,59 @@ if (isset($_COOKIE['username']) and isset($_COOKIE['password'])) {
             $('#hide1').removeClass("fa-eye");
         }
     }
+    $(document).ready(function() {
+        $('#pass_edit').click(function() {
+
+            $("#ChangeModal").modal();
+
+
+        });
+        $(document).on('click', '.save', function() {
+            var user = document.getElementById("username2").value;
+            changepassword(user);
+        });
+        $(document).on('click', '.cancel', function() {
+
+            cancel();
+        });
+
+        function changepassword(username2) {
+
+            $.ajax({
+                type: "POST",
+
+                data: {
+                    username: username2
+                },
+                url: "view/ChangePassword/manage.php",
+                async: false,
+
+                success: function(result) {
+
+                    $(".changepass").empty();
+                    $(".changepass").append(result);
+                }
+            });
+        }
+
+        function cancel() {
+
+            $.ajax({
+                type: "POST",
+
+                data: {
+                    cancel: "ccc"
+                },
+                url: "view/ChangePassword/manage.php",
+                async: false,
+
+                success: function(result) {
+
+                    $(".changepass").empty();
+                    $(".changepass").append(result);
+                }
+            });
+        }
+
+    });
 </script>

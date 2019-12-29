@@ -62,7 +62,7 @@ $(document).on('click','.editF',function(){ // set data in edit modal
         $('#addCondition').append(`
             
         <input type="text" class="form-control conditionInput" name="condition[]" id="">
-        <button type="button" id="btn-addCondition" class="btn btn-success" style="justify-self : flex-end;margin-left:15px;">+</button>
+        <button type="button" id="btn-addCondition" class="btn btn-success" s>+</button>
             `)
     }
 
@@ -138,7 +138,7 @@ $(document).on('click','.editSubmit',function(){ // submit to update
     if(!checkSameName(name,idF)) return;
     if(!checkSameAlias(alias,idF)) return;
     // if(!checkSameName(alias,idF)) return;
-    event.preventDefault();
+    // event.preventDefault();
     // $('#edit').attr("data-dismiss","modal")
     // $('#edit').modal('hide')
     
@@ -185,9 +185,10 @@ $(document).on('click','.insertSubmit',function(e){ // insert submit
 
     let dataNull = [name,alias]
     let dataStartNum = [name,alias]
+    if(!checkNull(dataNull)) return;
     if(startInputNum(dataStartNum)) return;
     // console.log('sssssssssssssssss');
-    if(!checkNull(dataNull)) return;
+    
     // console.log('pppp');
     if(!checkSameName(name,-1)) return;
     if(!checkSameAlias(alias,-1)) return;
@@ -224,25 +225,25 @@ function loadDataF(){ // load all data in database and fetch data on wep page
             for(i in dataF){
                 j++;
                 let icon = `<img src="../../icon/fertilizer/${dataF[i].FID}/${dataF[i].Icon}" id="pic-Fertilizer" class="" style="border-radius: 150px;width:200px;"; >`;
-                if(dataF[i].Icon == null){
-                    icon = `<img src="https://via.placeholder.com/150x200.png" id="pic-Fertilizer" class="" width="150px" height="200px" >`;
+                if(dataF[i].Icon == ''){
+                    icon = `<img src="https://imbindonesia.com/images/placeholder/camera.jpg" id="pic-Fertilizer" class="" width="150px" height="200px" >`;
                 }
                 text += `
             <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between" id="card1" >
                 <h6 class="m-0 font-weight-bold text-white">${dataF[i].Name}</h6>
                 <div class="dropdown no-arrow">
                     <a class="dropdown-toggle editF" index=${i}  id="FID${dataF[i].FID}" data-toggle="modal" data-target="#edit" aria-haspopup="true" aria-expanded="false">
-                        <i class="fas fa-cog fa-lg mr-3"  style="color:#FDFEFE"></i>
+                        <i class="fas fa-cog fa-lg mr-3 curser"  style="color:#FDFEFE"></i>
                     </a>
                     <a class="dropdown-toggle deleteF" index=${i}  id=${dataF[i].FID} DIMID = ${dataF[i].ID}>
-                        <i class="fas fa-trash-alt" style="color:#FDFEFE"></i>
+                        <i class="fas fa-trash-alt curser" style="color:#FDFEFE"></i>
                     </a>
                 </div>
             </div>
             <!-- Card Body -->
             <div class="card-body shadow" id="card1-detail">
-                <div class="row">
-                    <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+                <div class="grid-fer-card">
+                    <div class="fer-column1">
                     <br>
                         <center>
                         <div class="upload-btn-wrapper">
@@ -256,7 +257,7 @@ function loadDataF(){ // load all data in database and fetch data on wep page
                             <h5>${dataF[i].Name}</h5>
                         </center>
                     </div>
-                    <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+                    <div class="fer-column2">
                         <h4> เงื่อนไข </h4>
                         <div>
                         `
@@ -275,11 +276,11 @@ function loadDataF(){ // load all data in database and fetch data on wep page
                         text+=`
                         </div>
                     </div>
-                    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                    <div class = "fer-column3">
                         <div class="card shadow mb-4" >                
-                            <div class="card-body">
+                            <div class="card-body chart-fer" >
                             <div class="">
-                                <canvas id="lineChart${i}" height="200" width="400" ></canvas>
+                                <canvas id="lineChart${i}"  style="max-width:500px;" ></canvas>
                             </div>
                             </div>
                         </div>
@@ -297,15 +298,21 @@ function loadDataF(){ // load all data in database and fetch data on wep page
                 // console.log("Usage"+dataF[i].Usage)
                 switch(dataF[i].Usage){
                     case '1':
-                        unitY = "ต้น"
-                        unitX = "อายุ"
+                        unitX = "อายุ (ปี)"
                         break;
                     case '2':
-                        unitY = "ต้น"
-                        unitX = "ผลผลิต"
+                        unitX = "ผลผลิต (กิโลกรัม)"
                         break;
                     case '3':
-                        unitX = "ต้น"
+                        unitX = "อายุ(ปี)"
+                        break;
+                }
+                switch(dataF[i].Unit){
+                    case '1':
+                        unitY = "ปริมาณการใส่ (กิโลกรัม/ต้น/ปี)"
+                        break;
+                    case '2':
+                        unitY = "ปริมาณการใส่ (กิโลกรัม/ไร่/ปี)"
                         break;
                 }
                 a2 = dataF[i].EQ1
@@ -471,7 +478,7 @@ function inputMountYear(){ // set input start end
         if(!mountYearChecked){
             radio.append(`
                     <label for=""  class="">ตั้งแต่</label>
-                    <input type="text" class="form-control" id="alternate1" disabled/>
+                    <input type="text" class="form-control " id="alternate1" disabled/>
                     <div class="UI">
                          <i class="fas fa-calendar-alt"></i>
                         <input type="text" class="form-control " name="start" id="" value=${startF}>
@@ -528,7 +535,7 @@ function loadCondition(FID){ // load condition from database
         regional:'th'
       })
       .on( "change", function() {
-        to.datepicker( "option", "minDate", getDate( this ) );
+        to.datepicker( "option", "minDate", getDate( this )+1 );
       }),
     to = $( "input[name='end']" ).datepicker({
         altField: "#alternate2",
@@ -555,7 +562,7 @@ function loadCondition(FID){ // load condition from database
   
         for(i in dataF){
             console.log(dataF[i].Name);
-            if(name.val().trim() == dataF[i].Name && dataF[i].FID != id){
+            if(name.val().trim().replace(/\s\s+/g,' ')== dataF[i].Name && dataF[i].FID != id){
                 name[0].setCustomValidity('ชื่อนี้ซ้ำ');
                 return false;
             }
@@ -573,7 +580,7 @@ function loadCondition(FID){ // load condition from database
   
     for(i in dataF){
         console.log(dataF[i].Alias);
-        if(name.val().trim() == dataF[i].Alias && dataF[i].FID != id){
+        if(name.val().trim().replace(/\s\s+/g,' ')== dataF[i].Alias && dataF[i].FID != id){
             name[0].setCustomValidity('ชื่อนี้ซ้ำ')
             return false;
         }
@@ -588,7 +595,7 @@ return true;
 
 }
 function startInputNum(selecter){
-    let re = /^([ก-ฮA-Za-z])/
+    let re = /^([ก-ฮA-Za-z0-9])/
     // let re
     for(i in selecter){
         if(!(re.test(selecter[i].val().trim()))){

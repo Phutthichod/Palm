@@ -8,8 +8,11 @@ include_once("../../dbConnect.php");
 include_once("../../set-log-login.php");
 UpdateLogLogin();
 IsBlock();
-if(!isset($_SESSION[md5('LOG_LOGIN')]))
-{
+
+$USER = $_SESSION[md5('user')];
+$userId = $USER[1]['UID'];
+$iconpic = $USER[1]['Icon'];
+if (!isset($_SESSION[md5('LOG_LOGIN')])) {
   header("location:../../index.php");
 }
 //get user info 
@@ -248,7 +251,7 @@ if ($DATAUSER[1]['IsFarmer'] == 1 && $idUT != 4) {
               <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <span class="mr-2 d-none d-lg-inline text-gray-600 small"><?php echo $DATAUSER[1]['UserName'] . " (" . $DATATPYEUSER[1]['UTName'] . ")"; ?></span>
 
-                <img class="img-profile rounded-circle" src="../../picture/default.jpg">
+                <img class="img-radius img-profile" src="../../icon/user/<?php echo $userId; ?>/<?php echo $iconpic; ?>" />
               </a>
               <!-- Dropdown - User Information -->
               <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">

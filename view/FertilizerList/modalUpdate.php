@@ -1,6 +1,6 @@
 <div class="edit-modal" >
     <div class="modal fade mb-6" id="edit" tabindex="-1" tabindex="-1" role="dialog" aria-labelledby="smallModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-dialog modal-lg2" role="document">
         <div class="modal-content">
         <!-- -----------------header------------------------------ -->
             <div class="modal-header header-modal" id="header-card"> 
