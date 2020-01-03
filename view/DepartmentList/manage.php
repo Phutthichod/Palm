@@ -31,6 +31,9 @@ if(isset($_POST['request'])){
             $time = time();
             
                     // echo $time;
+                    $department = preg_replace('/[[:space:]]+/', ' ', trim($department));
+                    $alias = preg_replace('/[[:space:]]+/', ' ', trim($alias));
+                    $note = preg_replace('/[[:space:]]+/', ' ', trim($note));
                     $sql = "INSERT INTO `db-department` (DID,Department,Alias,Note) 
                     VALUES ('','$department','$alias','$note')";
 
@@ -39,8 +42,8 @@ if(isset($_POST['request'])){
                     $i = 1;
                     $check_dim = 1;
                     for($i = 1;$i <= $DATA[0]['numrow'];$i++){                        
-                        if($DATA[$i]['dbID'] == $did && $DATA[$i]['Department'] == $department && $DATA[$i]['Alias'] == $alias  && $DATA[$i]['Note'] == $note ){
-                           
+                        if($DATA[$i]['Department'] == $department && $DATA[$i]['Alias'] == $alias  && $DATA[$i]['Note'] == $note ){
+                           $id_d=$DATA[$i]['ID'] ;
                             $check_dim = 0;
                             break;
                         }
@@ -54,7 +57,9 @@ if(isset($_POST['request'])){
     
                         $id_d = addinsertData($sql);
                         // echo $id_d;
-                        $data_t =  getDIMDate();
+                        
+                    }
+                    $data_t =  getDIMDate();
                         $id_t = $data_t[1]['ID'];
                         // echo $id_t;
 
@@ -68,7 +73,6 @@ if(isset($_POST['request'])){
                         VALUES ('','$id_d','$loglogin_id','$time','$id_t')";
 
                         $did = addinsertData($sql);
-                    }
                     
                 
                     header("location:DepartmentList.php");
@@ -114,6 +118,10 @@ if(isset($_POST['request'])){
             $alias = trim($_POST['e_alias']);
             $note = trim($_POST['e_note']);
 
+            $department = preg_replace('/[[:space:]]+/', ' ', trim($department));
+            $alias = preg_replace('/[[:space:]]+/', ' ', trim($alias));
+            $note = preg_replace('/[[:space:]]+/', ' ', trim($note));
+
             $o_department = trim($_POST['e_o_department']);
             $o_alias = trim($_POST['e_o_alias']);
             $o_note = trim($_POST['e_o_note']);
@@ -139,7 +147,7 @@ if(isset($_POST['request'])){
                 $i = 1;
                 $check_dim = 1;
                 for($i = 1;$i <= $DATA[0]['numrow'];$i++){
-                    if($DATA[$i]['dbID'] == $did && $DATA[$i]['Department'] == $department && $DATA[$i]['Alias'] == $alias  && $DATA[$i]['Note'] == $note ){
+                    if($DATA[$i]['Department'] == $department && $DATA[$i]['Alias'] == $alias  && $DATA[$i]['Note'] == $note ){
                         $id_d=$DATA[$i]['ID'];
                         $check_dim = 0;
                         break;
@@ -163,9 +171,10 @@ if(isset($_POST['request'])){
                 if($o_department == $department && $o_alias ==$alias && $o_note == $note){
 
                 }else{
+                    echo $o_log_id;
                     $sql="UPDATE `log-department` 
                     SET EndT='$time', EndID='$id_t'
-                    WHERE ID='$o_log_id' ";
+                    WHERE ID='$o_log_id' AND EndT IS NULL";
     
                     $o_did = updateData($sql);
     
@@ -194,7 +203,7 @@ function select_dimDepartment(){
 
 }
 function getDIM($did,$o_department,$o_alias,$o_note){
-    $sql = "SELECT * FROM `dim-department` WHERE `dbID`='$did' AND Department='$o_department' AND Alias='$o_alias' AND Note='$o_note' ";
+    $sql = "SELECT * FROM `dim-department` WHERE Department='$o_department' AND Alias='$o_alias' AND Note='$o_note' ";
 
    $DATA = selectData($sql);
    return $DATA;

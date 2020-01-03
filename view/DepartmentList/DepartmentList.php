@@ -24,7 +24,8 @@
 </style>
 <?php 
 include_once("../../dbConnect.php");
-$sql = "SELECT * FROM `db-department`";
+$sql = "SELECT `db-department`.`DID`,`db-department`.`Department`,`db-department`.`Alias`,`db-department`.`Note`,COUNT(`db-user`.`DID`) AS count_de FROM `db-department` 
+LEFT JOIN `db-user` ON `db-department`.DID = `db-user`.DID GROUP BY `db-department`.`DID`,`db-department`.`Department`,`db-department`.`Alias`,`db-department`.`Note`";
 $myConDB = connectDB();
 $result = $myConDB->prepare( $sql ); 
 $result->execute();
@@ -111,6 +112,7 @@ $result->execute();
                         <th>ชื่อหน่วยงาน</th>
                         <th>ชื่อย่อ</th>
                         <th>หมายเหตุ</th>
+                        <th>จำนวนคน</th>
                         <th>จัดการ</th>
                     
                 </tr>
@@ -120,6 +122,7 @@ $result->execute();
                         <th>ชื่อหน่วยงาน</th>
                         <th>ชื่อย่อ</th>
                         <th>หมายเหตุ</th>
+                        <th>จำนวนคน</th>
                         <th>จัดการ</th>
                 </tr>
                 </tfoot>
@@ -127,14 +130,14 @@ $result->execute();
                 
                 <?php 
                     while ($row = $result->fetch(PDO::FETCH_ASSOC)){
-                        
+                        $did = $row["DID"];
 
                 ?>
                 <tr>
                     <td><?php echo $row["Department"]; ?></td>
                     <td><?php echo $row["Alias"]; ?></td>
                     <td><?php echo $row["Note"]; ?></td>
-                
+                    <td><a href="../OtherUsersList/OtherUsersList.php?did=<?=$did?>" ><?php echo $row["count_de"]; ?></a></td>
                     <td style="text-align:center;">
 
                         <button type="button" class="btn btn-warning btn-sm btn_edit" did="<?php echo $row["DID"]; ?>"

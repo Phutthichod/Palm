@@ -1,8 +1,12 @@
 //let modalAdd = 
 $( document ).ready(function() {
     let dataU;
+    let logP;
     let pwd_md5 = 5;
+    let pwd_new_md5 = 5;
+
     pullData();
+    
     $('#addUser').click(function(){
         $("#addModal").modal();    
             
@@ -18,6 +22,22 @@ $( document ).ready(function() {
             xhttp.open("POST", "manage.php", true);
             xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
             xhttp.send(`request=select`);
+    }
+    function pullLogPass(_uid){
+        // console.log("logpass");
+        var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function() {
+              if (this.readyState == 4 && this.status == 200) {
+                logP = JSON.parse(this.responseText);
+                //  alert(this.responseText);       
+                //  alert(logP);        
+                // console.log("pull");
+            };
+            }
+            xhttp.open("POST", "manage.php", false);
+            xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+            xhttp.send(`uid=${_uid}&request=logpass`);
+    
     }
    
     
@@ -134,18 +154,16 @@ $( document ).ready(function() {
         let operator = $("input[name = 'operator']");
         let farmer = $("input[name = 'farmer']");
         let error = $("input[name = 'error']");
-        // let admin = $('#admin').val() ;
-        // let research = $('#research').val();
-        // let operator =$('#operator').val();
-        // let farmer = $('#farmer').val();
-
-        // console.log(admin);
         
         let data = [fname,lname,username,pwd,pwd1,mail];
-  
+        let data1 = [fname,lname,username,mail];
         // if(!check_checkbox()) return;
+        document.getElementById("save").setAttribute("type","submit");
+
         if(!check_blank(data)) return;
-        if(!check_name(title,fname,lname)) return;
+        if(!check_blank_in(data1)) return;
+        if(!check_lan(fname,lname)) return;
+        if(!check_name(fname,lname)) return;
         if(!check_user(username)) return;
         if(!check_long(username)) return;
         if(!check_userName(username)) return;
@@ -157,8 +175,49 @@ $( document ).ready(function() {
         
             
     })
+    function check_blank_in(selecter){
+        for(i in selecter){
+            // console.log(selecter[i].val());
+            var space = selecter[i].val().trim().split(" ").length - 1;
+            // console.log(space);
+            if(space > 0){
+                //  console.log("if");
+                selecter[i][0].setCustomValidity('ห้ามมีช่องว่าง');
+                return false;
+            }else{
+                // console.log("else");
+                selecter[i][0].setCustomValidity('');
+            }            
+
+        }
+        return true;
+    }
+    function check_lan(fname,lname){
+        const TH = /^[ก-๙]+$/;
+        
+        if(TH.test(fname.val().trim()) && TH.test(lname.val().trim())){
+            fname[0].setCustomValidity('');
+            lname[0].setCustomValidity('');
+            return true;
+        }else if(TH.test(fname.val().trim())){
+            // console.log("last name not thi");
+            // console.log("  //-"+lname.val().trim+"-");
+            lname[0].setCustomValidity('กรุณากรอกนามสกุลเป็นภาษาไทย');
+            return false;
+        }else if(TH.test(lname.val().trim())){
+            // console.log("name not thi");
+            fname[0].setCustomValidity('กรุณากรอกชื่อเป็นภาษาไทย');
+            return false;
+            
+        }else{
+            // console.log("name not thi");
+            fname[0].setCustomValidity('กรุณากรอกชื่อเป็นภาษาไทย');
+            return false;
+        }
+
+    }
     function check_long_pass(pwd){
-        if(pwd.val().length<8){
+        if(pwd.val().trim().length<8){
             pwd[0].setCustomValidity('ความยาวต้อง >= 8 ตัวอักษร');
             return false;
 
@@ -168,7 +227,7 @@ $( document ).ready(function() {
         
     }
     function check_pass_format(pwd){
-        if(pwd.val().match(/([a-zA-Z0-9].*[!,@,#,$,%,^,&,*,?,_,~])|([!,@,#,$,%,^,&,*,?,_,~].*[a-zA-Z0-9])/)){
+        if(pwd.val().trim().match(/([0-9].*[a-zA-Z].*[!,@,#,$,%,^,&,*,?,_,~])|([!,@,#,$,%,^,&,*,?,_,~].*[0-9].*[a-zA-Z])|([a-zA-Z].*[0-9].*[!,@,#,$,%,^,&,*,?,_,~])|([!,@,#,$,%,^,&,*,?,_,~].*[a-zA-Z].*[0-9])|([a-zA-Z].*[!,@,#,$,%,^,&,*,?,_,~].*[0-9])|([0-9].*[!,@,#,$,%,^,&,*,?,_,~].*[a-zA-Z])/)){
             pwd[0].setCustomValidity('');
             return true;
 
@@ -179,7 +238,7 @@ $( document ).ready(function() {
     }
     function check_long(username){
         // console.log("check long");
-        if(username.val().length<5 || username.val().length>25 ){
+        if(username.val().trim().length<5 || username.val().trim().length>25 ){
             username[0].setCustomValidity('ความยาว 5 - 25 ตัวอักษรเท่านั้น');
                 return false;
         }else{
@@ -203,10 +262,11 @@ $( document ).ready(function() {
     }
     function check_userName(username){
         // console.log("check userName");
-        let en= /^[a-zA-Z0-9]+$/; 
-        if(!username.val().match(en)){
+        // let en= /([a-zA-Z])|([a-zA-Z].*[0-9])|([0-9].*[a-zA-Z])/; 
+        let en = /^([a-z0-9])+$/;
+        if(!username.val().trim().match(en)){
             // console.log("ต้องเป็นภาษาอังกฤษ หรือ ตัวเลขเท่านั้น");
-            username[0].setCustomValidity('ต้องเป็นภาษาอังกฤษ หรือ ตัวเลขเท่านั้น');
+            username[0].setCustomValidity('ต้องเป็นภาษาอังกฤษหรือตัวเลขเท่านั้น');
                 return false;
         }else{
             username[0].setCustomValidity('');
@@ -216,7 +276,7 @@ $( document ).ready(function() {
     function check_mail(mail){
 
         let email=/^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)?$/i;
-        if(!mail.val().match(email)){
+        if(!mail.val().trim().match(email)){
             mail[0].setCustomValidity('กรอกอีเมลล์ไม่ถูกต้อง');
             return false;
         }else{
@@ -248,11 +308,11 @@ $( document ).ready(function() {
         }
         return true;
     }
-    function check_name(title,fname,lname){
+    function check_name(fname,lname){
         for(i in dataU){
             // console.log(dataU[i].Title);
             // console.log(title.val());
-            if(title.val() == dataU[i].Title && fname.val().trim() == dataU[i].FirstName && lname.val().trim() == dataU[i].LastName){
+            if(fname.val().trim() == dataU[i].FirstName && lname.val().trim() == dataU[i].LastName){
                 fname[0].setCustomValidity('ชื่อ-นามสกุลซ้ำ');
                 return false;
             }
@@ -286,21 +346,25 @@ $( document ).ready(function() {
         let uid = $("input[name = 'uid']");
         
         let data = [fname,lname,username,mail];
-  
+
+        document.getElementById("edit").setAttribute("type","submit");
+
         if(!check_blank(data)) return;
-        if(!check_editName(title,fname,lname,uid)) return;
+        if(!check_blank_in(data)) return;
+        if(!check_lan(fname,lname)) return;
+        if(!check_editName(fname,lname,uid)) return;
         if(!check_editUser(username,uid)) return;
         if(!check_mail(mail)) return;
         if(!check_checkboxEdit()) return;
         
     })
     function check_checkboxEdit(){
-        // console.log("check box");
+         console.log("check box edit");
         if(document.formEdit.e_admin.checked == false && document.formEdit.e_research.checked == false 
             && document.formEdit.e_operator.checked == false && document.formEdit.e_farmer.checked == false)
         {
             // console.log("well box");
-            $('#error').removeAttr('hidden');
+            $('#e_error').removeAttr('hidden');
             document.getElementById("edit").setAttribute("type","button");
             return false;
         }else{
@@ -309,11 +373,9 @@ $( document ).ready(function() {
         
         return true;
     }
-    function check_editName(title,fname,lname,uid){
+    function check_editName(fname,lname,uid){
         for(i in dataU){
-            // console.log(dataU[i].Title);
-            // console.log(title.val());
-            if(title.val() == dataU[i].Title && fname.val().trim() == dataU[i].FirstName && lname.val().trim() == dataU[i].LastName && dataU[i].UID != uid.val()){
+            if(fname.val().trim() == dataU[i].FirstName && lname.val().trim() == dataU[i].LastName && dataU[i].UID != uid.val()){
                 fname[0].setCustomValidity('ชื่อ-นามสกุลซ้ำ');
                 return false;
             }
@@ -347,8 +409,16 @@ $( document ).ready(function() {
         let pass_old = $("input[name = 'pass_old']");
         
         let data = [old_pwd,pwd,pwd1];
+
+        
   
-        call(old_pwd,uid,username);
+        call(old_pwd,uid,username,0);
+        call(pwd,uid,username,1);
+
+        // console.log(i);
+        pullLogPass(uid.val());
+        
+        
         // console.log(old_pwd.val().trim());
         // console.log(pwd.val().trim());
         // if(!check_dup(old_pwd,pwd)) return;
@@ -357,13 +427,31 @@ $( document ).ready(function() {
         if(!check_long_pass(pwd)) return;
         if(!check_pass_format(pwd)) return;
         if(!check_pass(pwd,pwd1)) return;
+        if(!check_passUsed(pwd)) return;
         
         
     })
+
+    function check_passUsed(pwd){
+        // console.log(logP);
+        // console.log("ch password");
+        for(i in logP){
+            
+            if(pwd_new_md5.trim() == logP[i].PWD.trim()){
+                // console.log("*"+pwd_new_md5.trim()+'-'+logP[i].PWD.trim()+"*");
+                // console.log("รหัสผ่านนี้ถูกใช้แล้ว");
+                pwd[0].setCustomValidity('รหัสผ่านนี้ถูกใช้แล้ว');
+                return false;
+            }
+            
+        }
+        pwd[0].setCustomValidity('');
+        return true;
+    }
     function check_blankPass(selecter){
         for(i in selecter){
             // console.log(selecter[i].val());
-            if(selecter[i].val() == ''){
+            if(selecter[i].val().trim() == ''){
                 //  console.log("if");
                 selecter[i][0].setCustomValidity('กรุณากรอกข้อมูล');
                 return false;
@@ -374,11 +462,17 @@ $( document ).ready(function() {
         }
         return true;
     }
-    function call(old_pwd,uid,username){
+    function call(old_pwd,uid,username,ch){
         var us = username.val();
         // console.log(us.toUpperCase());
-        var pwd = uid.val()+us.toUpperCase()+(old_pwd.val());
-        makemd5(pwd);
+        var pwd = uid.val()+us.toUpperCase()+(old_pwd.val().trim());
+        if(ch == 0){
+            makemd5(pwd);
+        }else{
+            makeNewmd5(pwd);
+        }
+                
+
     }
     function check_oldPass(old_pwd,pass_old){
             // console.log(pwd_md5.trim());
@@ -394,6 +488,19 @@ $( document ).ready(function() {
                     }
                     return true;           
         
+    }
+    function makeNewmd5(pwd){
+        $.ajax({    // update data
+            type: "POST",
+            data: {pwd: pwd,request:'md5'},
+            url: "manage.php",
+            async: false,
+            
+            success: function(result) {
+                pwd_new_md5 = result;
+                // console.log(pwd_md5); 
+            }
+            });
     }
     function makemd5(pwd){
         $.ajax({    // update data

@@ -25,6 +25,8 @@
 <?php 
 include_once("../../dbConnect.php");
 $myConDB = connectDB();
+
+
 $admin=0;
 $research=0;
 $operator=0;
@@ -48,8 +50,14 @@ $department = 0;
 if(isset($_POST['s_department'])){
     $department = $_POST['s_department'];
 }
-
-if(!isset($_POST['s_admin']) && !isset($_POST['s_research']) && !isset($_POST['s_operator']) && !isset($_POST['s_farmer']) && 
+if(isset($_GET['did'])){
+    $department = $_GET['did'];
+    // echo "this".$department;
+    $sql = "SELECT * FROM `db-user` 
+        INNER JOIN `db-department` ON `db-user`.`DID` = `db-department`.`DID` 
+        INNER JOIN `db-emailtype` on `db-emailtype`.`ETID` = `db-user`.`ETID`
+        WHERE `db-department`.`DID` = '$department' ";
+}else if(!isset($_POST['s_admin']) && !isset($_POST['s_research']) && !isset($_POST['s_operator']) && !isset($_POST['s_farmer']) && 
     !isset($_POST['s_block']) && !isset($_POST['s_unblock']) && $department == 0){
     $sql = "SELECT * FROM `db-user` 
     INNER JOIN `db-department` ON `db-user`.`DID` = `db-department`.`DID` 

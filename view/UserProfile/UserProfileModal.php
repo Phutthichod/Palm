@@ -25,27 +25,37 @@ $result_e2->execute();
                         <div class="col-xl-3 col-12 text-right">
                             <span>รหัสผ่านเก่า<span class="text-danger"> *</span></span>
                         </div>
-                        <div class="col-xl-9 col-12">
+                        <div class="col-xl-8 col-12">
                             <input type="password" class="form-control" id="old_pwd" name="old_pwd" required=""
                                 oninput="setCustomValidity('')">
                             <i class="far fa-eye-slash eye-setting" id="hide_1"></i>
+                        </div>
+                        <div class="col-lg-1 col-md-1 col-sm-12 col-xs-12">
+                            <i class="fa fa-question-circle tt" style="color:red" data-toggle="tooltip"
+                                data-placement="bottom"
+                                title="-ต้องมีขนาดมากกว่า 7 ตัวอักษร -ต้องมีอักษรภาษาอังกฤษ ตัวเลข และอักขระพิเศษ"></i>
                         </div>
                     </div>
                     <div class="row mb-4">
                         <div class="col-xl-3 col-12 text-right">
                             <span>รหัสผ่านใหม่<span class="text-danger"> *</span></span>
                         </div>
-                        <div class="col-xl-9 col-12">
+                        <div class="col-xl-8 col-12">
                             <input type="password" class="form-control" id="e_pwd" name="e_pwd" required=""
                                 oninput="setCustomValidity('')">
                             <i class="far fa-eye-slash eye-setting" id="hide_2"></i>
                         </div>
+                        <!-- <div class="col-lg-1 col-md-1 col-sm-12 col-xs-12">
+                            <i class="fa fa-question-circle tt" style="color:red" data-toggle="tooltip"
+                                data-placement="bottom"
+                                title="-ต้องมีขนาดมากกว่า 7 ตัวอักษร -ต้องมีอักษรภาษาอังกฤษ ตัวเลข และอักขระพิเศษ"></i>
+                        </div> -->
                     </div>
                     <div class="row mb-4">
                         <div class="col-xl-3 col-12 text-right">
                             <span>ยืนยันรหัสผ่านใหม่<span class="text-danger"> *</span></span>
                         </div>
-                        <div class="col-xl-9 col-12">
+                        <div class="col-xl-8 col-12">
                             <input type="password" class="form-control" id="e_pwd1" name="e_pwd1" required=""
                                 oninput="setCustomValidity('')">
                             <i class="far fa-eye-slash eye-setting" id="hide_3"></i>
@@ -59,6 +69,11 @@ $result_e2->execute();
                             <input type="text" hidden class="form-control" name="p_fname" id="p_fname" value="">
                             <input type="text" hidden class="form-control" name="p_lname" id="p_lname" value="">
                         </div>
+                        <!-- <div class="col-lg-1 col-md-1 col-sm-12 col-xs-12">
+                            <i class="fa fa-question-circle tt" style="color:red" data-toggle="tooltip"
+                                data-placement="bottom"
+                                title="-ต้องมีขนาดมากกว่า 7 ตัวอักษร -ต้องมีอักษรภาษาอังกฤษ ตัวเลข และอักขระพิเศษ"></i>
+                        </div> -->
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -134,9 +149,11 @@ $result_e2->execute();
                             <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12 text-right">
                                 <span>อีเมล์<span class="text-danger"> *</span></span>
                             </div>
-                            <div class="col-lg-9 col-md-8 col-sm-12 col-xs-12 ">
+                            <div class="col-lg-5 col-md-4 col-sm-12 col-xs-12 ">
                                 <input type="text" class="form-control" id="e_mail" name="e_mail" placeholder="อีเมล์"
                                     required="" oninput="setCustomValidity('')">
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12 ">
                                 <select class="form-control" id="e_type" name="e_type">
                                     <?php while ($row = $result_e2->fetch(PDO::FETCH_ASSOC)){ ?>
                                     <option value=<?php echo $row["ETID"]; ?>>@<?php echo $row["Type"]; ?></option>
@@ -226,8 +243,8 @@ $result_e2->execute();
                 </div>
                 <div class="modal-body" id="passModalBody">
                     <div class="form-group divHolder">
-                        <div class="form-inline">
-                            <div class="UI" center>
+                        <div class="" align="center">
+                            <div class="UI" >
                                 <input id='pic-logo' type='file' class='item-img file center-block'
                                     name='icon_insert' />
                                 <img id="img-insert" src="https://via.placeholder.com/200x200.png" alt="" width="200"
@@ -256,7 +273,7 @@ $result_e2->execute();
                     <div class="buttonCrop">
                         <button type="button" id="cropImageBtn" class="btn btn-primary">Crop</button>
                         <button type="button" class="btn btn-default" id="cancelCrop">Close</button>
-                       
+
                     </div>
                 </div>
     </form>
@@ -293,3 +310,10 @@ $result_e2->execute();
         </div>
     </form>
 </div> -->
+<script>
+$(document).ready(function() {
+
+    $('.tt').tooltip();
+
+});
+</script>

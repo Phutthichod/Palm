@@ -94,18 +94,24 @@
 }
 #add-mount-year{
   display: grid;
-  grid-template-columns: 1fr 4fr 1fr;
+  grid-template-columns: 1fr;
+  grid-gap: 1rem;
+}
+.inner-MY{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   grid-gap: 1rem;
   justify-content: center;
   grid-auto-rows: minmax(min-content, max-content);
 }
+.inner-MY p{
+  justify-self: flex-end;
+  margin-left: 20px;
+}
 #add-mount-year label{
-  justify-self: center;
+  justify-self: flex-start;
 }
-#add-mount-year i{
-  justify-self: center;
-  color: orange;
-}
+
 label span{
   color: red;
 }
@@ -152,7 +158,8 @@ label span{
 }
 .swal-footer{
   display: flex;
-  flex-direction: row-reverse;
+  flex-direction: row;
+  justify-content: flex-end;
 }
 #addCondition input{
   justify-content: center;

@@ -38,9 +38,9 @@
     // echo $icon;
 
 ?>
-    <!-- ----------------------- crop photo ------------------------- -->
-    <link href="../../croppie/croppie.css" rel="stylesheet" />
-    <link href="style.css" rel="stylesheet" />
+<!-- ----------------------- crop photo ------------------------- -->
+<link href="../../croppie/croppie.css" rel="stylesheet" />
+<link href="style.css" rel="stylesheet" />
 
 <div class="container">
     <div class="row">
@@ -62,13 +62,26 @@
                         </div>
                         <div class="card-body">
                             <div class="row">
-                                <img class="img-radius img-profile" src="../../icon/user/<?php echo $userId; ?>/<?php echo $icon; ?>" />
+                                <img class="img-radius img-profile"
+                                    <?php
+                                    if($icon == "default.jpg"){
+                                    ?>
+                                    src="../../icon/user/0/default.jpg" />
+                                    <?php
+                                    }else{
+                                    ?>
+                                    src="../../icon/user/<?php echo $userId; ?>/<?php echo $icon; ?>" />
+                                    <?php
+                                    }
+                                    
+                                    ?>
                             </div>
                             <div class="row mt-3">
                                 <div class="col-xl-12 col-12">
-                                <!-- <input type="file" id="input_upload" style="display:none" /> -->
+                                    <!-- <input type="file" id="input_upload" style="display:none" /> -->
                                     <button type="button" id="edit_photo"
-                                        class="btn btn-primary btn-sm form-control mb-3" uid="<?php echo $USER[1]['UID']; ?>">
+                                        class="btn btn-primary btn-sm form-control mb-3"
+                                        uid="<?php echo $USER[1]['UID']; ?>">
                                         เปลี่ยนรูปโปรไฟล์</button>
                                 </div>
                             </div>
@@ -93,12 +106,10 @@
                                     <button type="button" id="btn_pass"
                                         class="btn btn-success btn-sm pass_edit form-control"
                                         uid="<?php echo $USER[1]['UID']; ?>"
-                                        username="<?php echo $USER[1]['UserName']; ?>"
-                                        pass="<?php echo $get_idUser; ?>"
-                                        title="<?php echo $USER[1]['Title']; ?>" 
-                                        fname="<?php echo $USER[1]['FirstName']; ?>" 
-                                        lname="<?php echo $USER[1]['LastName']; ?>"
-                                        >เปลี่ยนรหัสผ่าน</button>
+                                        username="<?php echo $USER[1]['UserName']; ?>" pass="<?php echo $get_idUser; ?>"
+                                        title="<?php echo $USER[1]['Title']; ?>"
+                                        fname="<?php echo $USER[1]['FirstName']; ?>"
+                                        lname="<?php echo $USER[1]['LastName']; ?>">เปลี่ยนรหัสผ่าน</button>
                                 </div>
                             </div>
                         </div>
@@ -150,7 +161,7 @@
                         </div>
                         <div class="col-xl-9 col-12">
                             <input type="text" class="form-control" id="firstname"
-                                value=<?php echo $USER[1]['FirstName']; ?> disabled>
+                                value='<?php echo $USER[1]['FirstName']; ?>'' disabled>
                         </div>
                     </div>
                     <div class="row mb-4">
@@ -159,7 +170,7 @@
                         </div>
                         <div class="col-xl-9 col-12">
                             <input type="text" class="form-control" id="lastname"
-                                value=<?php echo $USER[1]['LastName'] ?> disabled>
+                                value='<?php echo $USER[1]['LastName'] ?>'disabled>
                         </div>
                     </div>
                     <div class="row mb-4">
@@ -242,14 +253,16 @@
 $(document).ready(function() {
     // console.log("uu");
     let dataU;
+    let logP;
     let pwd_md5 = 5;
+    let pwd_new_md5 = 5;
     pullData();
 
     function pullData() {
         var xhttp = new XMLHttpRequest();
         xhttp.onreadystatechange = function() {
             if (this.readyState == 4 && this.status == 200) {
-                // dataU = JSON.parse(this.responseText);
+                 dataU = JSON.parse(this.responseText);
                 // console.log(dataU);               
             };
         }
@@ -257,12 +270,29 @@ $(document).ready(function() {
         xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
         xhttp.send(`request=select`);
     }
+
+    function pullLogPass(_uid) {
+        // console.log("logpass");
+        var xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+                logP = JSON.parse(this.responseText);
+                //  alert(this.responseText);       
+                //  alert(logP);        
+                // console.log("pull");
+            };
+        }
+        xhttp.open("POST", "manage.php", false);
+        xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+        xhttp.send(`uid=${_uid}&request=logpass`);
+
+    }
     $("#edit_photo").click(function() {
         console.log("photo");
         $("#photoModal").modal();
         var uid = $(this).attr('uid');
         $('#p_uid').val(uid);
-        
+
     });
 
     $("#btn_info").click(function() {
@@ -318,7 +348,7 @@ $(document).ready(function() {
         var uid = $(this).attr('uid');
         var username = $(this).attr('username');
         var pass_old = $(this).attr('pass');
-        
+
         var title = $(this).attr('title');
         var fname = $(this).attr('fname');
         var lname = $(this).attr('lname');
@@ -344,17 +374,39 @@ $(document).ready(function() {
 
         let data = [old_pwd, pwd, pwd1];
 
-        call(old_pwd, uid, username);
+        call(old_pwd, uid, username, 0);
+        call(pwd, uid, username, 1);
+
+        // console.log(i);
+        pullLogPass(uid.val());
+
+
         if (!check_blankPass(data)) return;
         if (!check_oldPass(old_pwd, pass_old)) return;
         if (!check_long_pass(pwd)) return;
         if (!check_pass_format(pwd)) return;
         if (!check_pass(pwd, pwd1)) return;
+        if(!check_passUsed(pwd)) return;
 
     })
-
+    function check_passUsed(pwd){
+        // console.log(logP);
+        // console.log("ch password");
+        for(i in logP){
+            
+            if(pwd_new_md5.trim() == logP[i].PWD.trim()){
+                // console.log("*"+pwd_new_md5.trim()+'-'+logP[i].PWD.trim()+"*");
+                // console.log("รหัสผ่านนี้ถูกใช้แล้ว");
+                pwd[0].setCustomValidity('รหัสผ่านนี้ถูกใช้แล้ว');
+                return false;
+            }
+            
+        }
+        pwd[0].setCustomValidity('');
+        return true;
+    }
     function check_long_pass(pwd) {
-        if (pwd.val().length < 8) {
+        if (pwd.val().trim().length < 8) {
             pwd[0].setCustomValidity('ความยาวต้อง >= 8 ตัวอักษร');
             return false;
 
@@ -365,7 +417,9 @@ $(document).ready(function() {
     }
 
     function check_pass_format(pwd) {
-        if (pwd.val().match(/([a-zA-Z0-9].*[!,@,#,$,%,^,&,*,?,_,~])|([!,@,#,$,%,^,&,*,?,_,~].*[a-zA-Z0-9])/)) {
+        if (pwd.val().trim().match(
+                /([0-9].*[a-zA-Z].*[!,@,#,$,%,^,&,*,?,_,~])|([!,@,#,$,%,^,&,*,?,_,~].*[0-9].*[a-zA-Z])|([a-zA-Z].*[0-9].*[!,@,#,$,%,^,&,*,?,_,~])|([!,@,#,$,%,^,&,*,?,_,~].*[a-zA-Z].*[0-9])|([a-zA-Z].*[!,@,#,$,%,^,&,*,?,_,~].*[0-9])|([0-9].*[!,@,#,$,%,^,&,*,?,_,~].*[a-zA-Z])/
+                )) {
             pwd[0].setCustomValidity('');
             return true;
 
@@ -388,7 +442,7 @@ $(document).ready(function() {
     function check_blankPass(selecter) {
         for (i in selecter) {
             // console.log(selecter[i].val());
-            if (selecter[i].val() == '') {
+            if (selecter[i].val().trim() == '') {
                 //  console.log("if");
                 selecter[i][0].setCustomValidity('กรุณากรอกข้อมูล');
                 return false;
@@ -400,10 +454,17 @@ $(document).ready(function() {
         return true;
     }
 
-    function call(old_pwd, uid, username) {
+    function call(old_pwd, uid, username, ch) {
         var us = username.val();
+        // console.log(us.toUpperCase());
         var pwd = uid.val() + us.toUpperCase() + (old_pwd.val());
-        makemd5(pwd);
+        if (ch == 0) {
+            makemd5(pwd);
+        } else {
+            makeNewmd5(pwd);
+        }
+
+
     }
 
     function check_oldPass(old_pwd, pass_old) {
@@ -419,6 +480,23 @@ $(document).ready(function() {
         }
         return true;
 
+    }
+
+    function makeNewmd5(pwd) {
+        $.ajax({ // update data
+            type: "POST",
+            data: {
+                pwd: pwd,
+                request: 'md5'
+            },
+            url: "manage.php",
+            async: false,
+
+            success: function(result) {
+                pwd_new_md5 = result;
+                // console.log(pwd_md5); 
+            }
+        });
     }
 
     function makemd5(pwd) {
@@ -448,14 +526,58 @@ $(document).ready(function() {
 
         let data = [fname, lname, username, mail];
 
+        document.getElementById("edit").setAttribute("type","submit");
+        
+        // console.log("edit");
         if (!check_blank(data)) return;
-        if (!check_editName(title, fname, lname, uid)) return;
+        if(!check_blank_in(data)) return;
+        if(!check_lan(fname,lname)) return;
+        if (!check_editName(fname, lname, uid)) return;
         // if(!check_editUser(username,uid)) return;
         if (!check_mail(mail)) return;
         if (!check_checkboxEdit()) return;
 
     })
+    function check_blank_in(selecter){
+        for(i in selecter){
+            // console.log(selecter[i].val());
+            var space = selecter[i].val().trim().split(" ").length - 1;
+            // console.log(space);
+            if(space > 0){
+                //  console.log("if");
+                selecter[i][0].setCustomValidity('ห้ามมีช่องว่าง');
+                return false;
+            }else{
+                // console.log("else");
+                selecter[i][0].setCustomValidity('');
+            }            
 
+        }
+        return true;
+    }
+    function check_lan(fname,lname){
+        const TH = /^[ก-๙]+$/;
+        
+        if(TH.test(fname.val().trim()) && TH.test(lname.val().trim())){
+            fname[0].setCustomValidity('');
+            lname[0].setCustomValidity('');
+            return true;
+        }else if(TH.test(fname.val().trim())){
+            // console.log("last name not thi");
+            lname[0].setCustomValidity('กรุณากรอกนามสกุลเป็นภาษาไทย');
+            return false;
+        }else if(TH.test(lname.val().trim())){
+            // console.log("name not thi");
+            fname[0].setCustomValidity('กรุณากรอกชื่อเป็นภาษาไทย');
+            return false;
+            
+        }else{
+            // console.log("name not thi");
+            fname[0].setCustomValidity('กรุณากรอกชื่อเป็นภาษาไทย');
+            return false;
+        }
+
+    }
     function check_checkboxEdit() {
         // console.log("check box");
         if (document.formEdit.e_admin.checked == false && document.formEdit.e_research.checked == false &&
@@ -473,7 +595,7 @@ $(document).ready(function() {
     function check_mail(mail) {
 
         let email = /^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)?$/i;
-        if (!mail.val().match(email)) {
+        if (!mail.val().trim().match(email)) {
             mail[0].setCustomValidity('กรอกอีเมลล์ไม่ถูกต้อง');
             return false;
         } else {
@@ -497,12 +619,13 @@ $(document).ready(function() {
         return true;
     }
 
-    function check_editName(title, fname, lname, uid) {
+    function check_editName(fname, lname, uid) {
+        // console.log("editname");
         for (i in dataU) {
-            // console.log(dataU[i].Title);
-            // console.log(title.val());
-            if (title.val() == dataU[i].Title && fname.val().trim() == dataU[i].FirstName && lname.val()
-            .trim() == dataU[i].LastName && dataU[i].UID != uid.val()) {
+            // console.log(dataU[i].FirstName);
+            // console.log(fname.val().trim());
+            if (fname.val().trim() == dataU[i].FirstName && lname.val().trim() == dataU[i].LastName && dataU[i].UID != uid.val()) {
+                // console.log("ซ้ำ");
                 fname[0].setCustomValidity('ชื่อ-นามสกุลซ้ำ');
                 return false;
             } else {
@@ -619,13 +742,13 @@ function show_hide3() {
 
 // --------------------------------------- crop photo ------------------------------------------------------
 
-$(document).on('change','.item-img', function () { 
+$(document).on('change', '.item-img', function() {
     console.log("ssssssssss")
     // $('.cl').collapse('toggle')
     // $('#insert').modal('show');
-    imageId = $(this).data('id'); 
+    imageId = $(this).data('id');
     tempFilename = $(this).val();
-    
+
     // $('.add-button').append(`<center>
     //                             <button id='cancelCrop' type="button" class="btn btn-default" >Close</button>
     //                             <button type="button" id="cropImageBtn"  class="btn btn-primary">Crop</button>
@@ -633,27 +756,28 @@ $(document).on('change','.item-img', function () {
     // item_output = $(this).prev();																 
     // $('#cancelCropBtn').data('id', imageId);  
     readFile(this);
-    
+
 });
+
 function readFile(input) {
     if (input.files && input.files[0]) {
-     var reader = new FileReader();
-       reader.onload = function (e) {
-           $('#cropImagePop').addClass('show');
-           console.log("lllllllll")
-           rawImg = e.target.result;
+        var reader = new FileReader();
+        reader.onload = function(e) {
+            $('#cropImagePop').addClass('show');
+            console.log("lllllllll")
+            rawImg = e.target.result;
 
-        loadIm();
-       }
-       reader.readAsDataURL(input.files[0]);
-   }
-   else {
-    //    swal("Sorry - you're browser doesn't support the FileReader API");
-   }
+            loadIm();
+        }
+        reader.readAsDataURL(input.files[0]);
+    } else {
+        //    swal("Sorry - you're browser doesn't support the FileReader API");
+    }
 }
 $('.divCrop').hide()
 $('.buttonCrop').hide()
-function loadIm(){
+
+function loadIm() {
     $('.divName').hide()
     $('.divHolder').hide()
     $('.divCrop').show()
@@ -661,66 +785,70 @@ function loadIm(){
     $('.buttonSubmit').hide()
     // $('.UI').append(`<div id="upload-demo" class="center-block"></div>`)
     $uploadCrop = $('#upload-demo').croppie({
-            viewport: {
-                width: 200,
-                height: 200,
-                type:'circle'
-            },
-            enforceBoundary: false,
-            enableExif: true
-        });
+        viewport: {
+            width: 200,
+            height: 200,
+            type: 'circle'
+        },
+        enforceBoundary: false,
+        enableExif: true
+    });
     $uploadCrop.croppie('bind', {
         url: rawImg
-    }).then(function(){
+    }).then(function() {
         console.log('jQuery bind complete');
     });
     $('.item-img').val('');
-    
+
 }
-$(document).on('click','#cropImageBtn', function (ev) {
-   
-   $('#upload-demo').croppie('result',
-   {type:'canvas',size:'viewport'})
-   .then(function(r) { 
-       $('.buttonSubmit').show()
-       $('.divName').show()
-       $('.buttonCrop').hide()
-        $('.divHolder').show()
-       $('#img-insert').attr('src', r);
-       $('#imagebase64').val(r);
-       $('.divCrop').hide()
-    });
+$(document).on('click', '#cropImageBtn', function(ev) {
+
+    $('#upload-demo').croppie('result', {
+            type: 'canvas',
+            size: 'viewport'
+        })
+        .then(function(r) {
+            $('.buttonSubmit').show()
+            $('.divName').show()
+            $('.buttonCrop').hide()
+            $('.divHolder').show()
+            $('#img-insert').attr('src', r);
+            $('#imagebase64').val(r);
+            $('.divCrop').hide()
+        });
     $('#upload-demo').croppie('destroy')
-  
+
 });
-$(document).on('click','#cancelCrop',function(){
-   $('#upload-demo').croppie('destroy')
-   $('.divName').show()
-   $('.divHolder').show()
-   $('.divCrop').hide()
-   $('.buttonCrop').hide()
-   $('.buttonSubmit').show()
-   // $('#img-insert').attr('src', "https://via.placeholder.com/200x200.png");
+$(document).on('click', '#cancelCrop', function() {
+    $('#upload-demo').croppie('destroy')
+    $('.divName').show()
+    $('.divHolder').show()
+    $('.divCrop').hide()
+    $('.buttonCrop').hide()
+    $('.buttonSubmit').show()
+    // $('#img-insert').attr('src', "https://via.placeholder.com/200x200.png");
 })
 
-$(document).on('click','.insertSubmit',function(e){ // insert submit
+$(document).on('click', '.insertSubmit', function(e) { // insert submit
     console.log('sss');
-    
+
     let icon = $("#pic-logo");
 
-    if(!checkNull(icon)) return;
-  
+    if (!checkNull(icon)) return;
+
     // let form = new FormData($('#formPhoto')[0]);
     // form.append('imagebase64', $('#img-insert').attr('src'))
     // insertPh(form); // insert data
 })
-function checkNull(icon){
-    if(icon == ''){
+
+function checkNull(icon) {
+    if (icon == '') {
         return false;
     }
     return true;
 }
-function insertPh(data){ // function insert data
+
+function insertPh(data) { // function insert data
     $.ajax({
         type: "POST",
         data: data,
@@ -729,11 +857,10 @@ function insertPh(data){ // function insert data
         cache: false,
         contentType: false,
         processData: false,
-        
+
         success: function(result) {
             // alert(result);
         }
-        });
+    });
 }
-
 </script>

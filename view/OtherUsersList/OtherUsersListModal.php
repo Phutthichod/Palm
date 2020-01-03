@@ -64,38 +64,55 @@ $result_e2->execute();
                             <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12 text-right">
                                 <span>ชื่อผู้ใช้<span class="text-danger"> *</span></span>
                             </div>
-                            <div class="col-lg-9 col-md-8 col-sm-12 col-xs-12">
+                            <div class="col-lg-8 col-md-7 col-sm-12 col-xs-12">
                                 <input type="text" class="form-control" id="username" name="username"
                                     placeholder="ชื่อผู้ใช้" required="" oninput="setCustomValidity(' ')">
+                            </div>
+                            <div class="col-lg-1 col-md-1 col-sm-12 col-xs-12">
+                                <i class="fa fa-question-circle tt" style="color:red;" data-toggle="tooltip"
+                                    data-placement="bottom"
+                                    title="-ต้องมีขนาด 5-25 ตัวอักษร -ต้องเป็นภาษาอังกฤษหรือตัวเลขเท่านั้น"></i>
                             </div>
                         </div>
                         <div class="row mb-4">
                             <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12 text-right">
                                 <span>รหัสผ่าน<span class="text-danger"> *</span></span>
                             </div>
-                            <div class="col-lg-9 col-md-8 col-sm-12 col-xs-12">
+                            <div class="col-lg-8 col-md-7 col-sm-12 col-xs-12">
                                 <input type="password" class="form-control" id="pwd" name="pwd" placeholder="Password"
                                     required="" oninput="setCustomValidity(' ')">
                                 <i class="far fa-eye-slash eye-setting" id="h_1"></i>
+                            </div>
+                            <div class="col-lg-1 col-md-1 col-sm-12 col-xs-12">
+                                <i class="fa fa-question-circle tt" style="color:red" data-toggle="tooltip"
+                                    data-placement="bottom"
+                                    title="-ต้องมีขนาดมากกว่า 7 ตัวอักษร -ต้องมีอักษรภาษาอังกฤษ ตัวเลข และอักขระพิเศษ"></i>
                             </div>
                         </div>
                         <div class="row mb-4">
                             <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12 text-right">
                                 <span>ยืนยันรหัสผ่าน<span class="text-danger"> *</span></span>
                             </div>
-                            <div class="col-lg-9 col-md-8 col-sm-12 col-xs-12">
+                            <div class="col-lg-8 col-md-7 col-sm-12 col-xs-12">
                                 <input type="password" class="form-control" id="pwd1" name="pwd1" placeholder="Password"
                                     required="" oninput="setCustomValidity(' ')">
                                 <i class="far fa-eye-slash eye-setting" id="h_2"></i>
                             </div>
+                            <!-- <div class="col-lg-1 col-md-1 col-sm-12 col-xs-12">
+                                <i class="fa fa-question-circle tt" style="color:red" data-toggle="tooltip"
+                                    data-placement="bottom"
+                                    title="-ต้องมีขนาดมากกว่า 7 ตัวอักษร -ต้องมีอักษรภาษาอังกฤษ ตัวเลข และอักขระพิเศษ"></i>
+                            </div> -->
                         </div>
                         <div class="row mb-4">
                             <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12 text-right">
                                 <span>อีเมล์<span class="text-danger"> *</span></span>
                             </div>
-                            <div class="col-lg-9 col-md-8 col-sm-12 col-xs-12 ">
+                            <div class="col-lg-5 col-md-4 col-sm-12 col-xs-12 ">
                                 <input type="text" class="form-control" id="mail" name="mail" placeholder="อีเมล์"
                                     required="" oninput="setCustomValidity(' ')">
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
                                 <select class="form-control" id="type" name="type">
                                     <?php while ($row = $result_e1->fetch(PDO::FETCH_ASSOC)){ ?>
                                     <option value=<?php echo $row["ETID"]; ?>>@<?php echo $row["Type"]; ?></option>
@@ -239,9 +256,11 @@ $result_e2->execute();
                             <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12 text-right">
                                 <span>อีเมล์<span class="text-danger"> *</span></span>
                             </div>
-                            <div class="col-lg-9 col-md-8 col-sm-12 col-xs-12 ">
+                            <div class="col-lg-5 col-md-4 col-sm-12 col-xs-12 ">
                                 <input type="text" class="form-control" id="e_mail" name="e_mail" placeholder="อีเมล์"
                                     required="" oninput="setCustomValidity('')">
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12 ">
                                 <select class="form-control" id="e_type" name="e_type">
                                     <?php while ($row = $result_e2->fetch(PDO::FETCH_ASSOC)){ ?>
                                     <option value=<?php echo $row["ETID"]; ?>>@<?php echo $row["Type"]; ?></option>
@@ -306,7 +325,7 @@ $result_e2->execute();
 
                             </div>
                             <div class="col-lg-9 col-md-8 col-sm-12 col-xs-12">
-                                <label hidden id="error" style='color:red'>กรุณาเลือกสิทธิ์การเข้าใช้งาน</label>
+                                <label hidden id="e_error" style='color:red'>กรุณาเลือกสิทธิ์การเข้าใช้งาน</label>
                             </div>
                         </div>
                     </div>
@@ -334,31 +353,41 @@ $result_e2->execute();
                         <div class="col-xl-3 col-12 text-right">
                             <span>รหัสผ่านเก่า<span class="text-danger"> *</span></span>
                         </div>
-                        <div class="col-xl-9 col-12">
+                        <div class="col-xl-8 col-12">
                             <input type="password" class="form-control" id="old_pwd" name="old_pwd" required=""
                                 oninput="setCustomValidity('')">
                             <i class="far fa-eye-slash eye-setting" id="hide_1"></i>
+                        </div>
+                        <div class="col-lg-1 col-md-1 col-sm-12 col-xs-12">
+                            <i class="fa fa-question-circle tt" style="color:red" data-toggle="tooltip"
+                                data-placement="bottom"
+                                title="-ต้องมีขนาดมากกว่า 7 ตัวอักษร -ต้องมีอักษรภาษาอังกฤษ ตัวเลข และอักขระพิเศษ"></i>
                         </div>
                     </div>
                     <div class="row mb-4">
                         <div class="col-xl-3 col-12 text-right">
                             <span>รหัสผ่านใหม่<span class="text-danger"> *</span></span>
                         </div>
-                        <div class="col-xl-9 col-12">
+                        <div class="col-xl-8 col-12">
                             <input type="password" class="form-control" id="e_pwd" name="e_pwd" required=""
                                 oninput="setCustomValidity('')">
                             <i class="far fa-eye-slash eye-setting" id="hide_2"></i>
                         </div>
+                        <!-- <div class="col-lg-1 col-md-1 col-sm-12 col-xs-12">
+                            <i class="fa fa-question-circle tt" style="color:red" data-toggle="tooltip"
+                                data-placement="bottom"
+                                title="-ต้องมีขนาดมากกว่า 7 ตัวอักษร -ต้องมีอักษรภาษาอังกฤษ ตัวเลข และอักขระพิเศษ"></i>
+                        </div> -->
                     </div>
                     <div class="row mb-4">
                         <div class="col-xl-3 col-12 text-right">
                             <span>ยืนยันรหัสผ่านใหม่<span class="text-danger"> *</span></span>
                         </div>
-                        <div class="col-xl-9 col-12">
-                                <input type="password" class="form-control" id="e_pwd1" name="e_pwd1" required=""
-                                    oninput="setCustomValidity('')">
-                                <i class="far fa-eye-slash eye-setting" id="hide_3"></i>
-                            
+                        <div class="col-xl-8 col-12">
+                            <input type="password" class="form-control" id="e_pwd1" name="e_pwd1" required=""
+                                oninput="setCustomValidity('')">
+                            <i class="far fa-eye-slash eye-setting" id="hide_3"></i>
+
                             <input type="text" hidden class="form-control" name="request" value="changePass">
                             <input type="text" hidden class="form-control" name="pass_uid" id="pass_uid" value="">
                             <input type="text" hidden class="form-control" name="pass_old" id="pass_old" value="">
@@ -369,15 +398,30 @@ $result_e2->execute();
                             <input type="text" hidden class="form-control" name="p_fname" id="p_fname" value="">
                             <input type="text" hidden class="form-control" name="p_lname" id="p_lname" value="">
                         </div>
+                        <!-- <div class="col-lg-1 col-md-1 col-sm-12 col-xs-12">
+                            <i class="fa fa-question-circle tt" style="color:red" data-toggle="tooltip"
+                                data-placement="bottom"
+                                title="-ต้องมีขนาดมากกว่า 7 ตัวอักษร -ต้องมีอักษรภาษาอังกฤษ ตัวเลข และอักขระพิเศษ"></i>
+                        </div> -->
                     </div>
                 </div>
                 <div class="modal-footer">
 
                     <button type="submit" id="edit_pass" name="edit_pass" class="btn btn-success">ยืนยัน</button>
-                    <button type="button" id="edit_cancel" name="edit_cancel" class="btn btn-danger" data-dismiss="modal">ยกเลิก</button>
+                    <button type="button" id="edit_cancel" name="edit_cancel" class="btn btn-danger"
+                        data-dismiss="modal">ยกเลิก</button>
 
                 </div>
             </div>
         </div>
     </form>
 </div>
+
+
+<script>
+$(document).ready(function() {
+
+    $('.tt').tooltip();
+
+});
+</script>

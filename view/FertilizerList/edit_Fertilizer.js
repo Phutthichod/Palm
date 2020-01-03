@@ -65,7 +65,6 @@ $(document).on('click','.editF',function(){ // set data in edit modal
         <button type="button" id="btn-addCondition" class="btn btn-success" s>+</button>
             `)
     }
-
     if(startF == '0101' && endF == '3112'){ // set start end
         console.log('set4');
         $("#exampleRadios4").prop('checked', true);
@@ -74,7 +73,11 @@ $(document).on('click','.editF',function(){ // set data in edit modal
     }
     else{
         $("#exampleRadios5").prop('checked', true);
-        inputMountYear();
+        var date1 = startF.substr(0,2);
+        var date2 = endF.substr(0,2);
+        var mount1 = startF.substr(2,2);
+        var mount2  = endF.substr(2,2);
+        inputMountYear(parseInt(mount1),parseInt(mount2),parseInt(date1),parseInt(date2));
        
     }
     $("input[name='start']").val(startF);
@@ -99,6 +102,12 @@ $(document).on('click','.editF',function(){ // set data in edit modal
     $("input[name='b']").val(bF);
     console.log('succes')
 })
+function setZero(number){
+    if(parseInt(number) < 10){
+        return '0'+String(number)
+    }
+    return String(number)
+} 
 $(document).on('click','.editSubmit',function(){ // submit to update
     $('.editSubmit').attr('type','submit')
     // check_dep(name,alias,a,b,start,end)
@@ -107,8 +116,13 @@ $(document).on('click','.editSubmit',function(){ // submit to update
     let alias = $("input[name='alias']");
     let a = $("input[name='a']");
     let b = $("input[name='b']");
-    let start = $("input[name='start']");
-    let end = $("input[name='end']");
+    let d1 = setZero($('#D1').val());
+    let d2 = setZero($('#D2').val());
+    let m1 = setZero($('#M1').val());
+    let m2 = setZero($('#M2').val());
+    let start = d1+m1
+    let end = d2+m2
+    alert(end)
     let con = $("input[name='condition[]']").map(function(){return $(this).val().trim();}).get();
     let condition = []
     // let unit = $("input")
@@ -148,7 +162,8 @@ $(document).on('click','.editSubmit',function(){ // submit to update
         form.append('imagebase64', $('#img-update').attr('src'))
         check_IU = false
     }
-    // form.append('con',condition)
+    form.append('start',start)
+    form.append('end',end)
     form.append('dimid',DIMID)
     form.append('icon',iconF)
     // $('.modal').hide();
@@ -235,7 +250,7 @@ function loadDataF(){ // load all data in database and fetch data on wep page
                     <a class="dropdown-toggle editF" index=${i}  id="FID${dataF[i].FID}" data-toggle="modal" data-target="#edit" aria-haspopup="true" aria-expanded="false">
                         <i class="fas fa-cog fa-lg mr-3 curser"  style="color:#FDFEFE"></i>
                     </a>
-                    <a class="dropdown-toggle deleteF" index=${i}  id=${dataF[i].FID} DIMID = ${dataF[i].ID}>
+                    <a class="dropdown-toggle deleteF" index=${i}  id=${dataF[i].FID} DIMID = ${dataF[i].ID} data-name=${dataF[i].Name}>
                         <i class="fas fa-trash-alt curser" style="color:#FDFEFE"></i>
                     </a>
                 </div>
@@ -455,7 +470,12 @@ function inputAb(){ // set input x y
     
 }
 $(document).on('change','#exampleRadios5',function(){ // set check start end
-    inputMountYear();
+    let d1 = startF.substr(0,2)
+    let m1 = startF.substr(2,2)
+    let d2 = endF.substr(0,2)
+    let m2 = endF.substr(2,2)
+    inputMountYear(parseInt(m1),parseInt(m2),parseInt(d1),parseInt(d2));
+    
 
 })
 $(document).on('change','#exampleRadios4',function(){ // set check start end
@@ -472,36 +492,181 @@ $(document).on('click','.btn-removeCondition',function(){ // delete condition
     $(this).prev().remove();
     $(this).remove();
 })
-function inputMountYear(){ // set input start end
-    
-    let radio =  $("#add-mount-year");
-        if(!mountYearChecked){
-            radio.append(`
-                    <label for=""  class="">ตั้งแต่</label>
-                    <input type="text" class="form-control " id="alternate1" disabled/>
-                    <div class="UI">
-                         <i class="fas fa-calendar-alt"></i>
-                        <input type="text" class="form-control " name="start" id="" value=${startF}>
-                    </div>              
-                    <label for=""  class="">ถึง</label>
-                    <input type="text" class="form-control " id="alternate2" disabled/>
-                    <div class="UI">
-                         <i class="fas fa-calendar-alt"></i>
-                        <input type="text" class="form-control " name="end" id="" value=${endF}>
-                    </div>
-            `)
+function dateOfMount(mount){
+    let dateM;
+    if(mount==1||mount==3||mount==5||mount==7||mount==8||mount==10||mount==12){
+            dateM = 31
         }
-        mountYearChecked = true;
-        setDate()
-        $( "input[name='start']" ).datepicker( $.datepicker.regional[ "fr" ] );
-        $( "input[name='start']" ).datepicker( "option", "dateFormat", "ddmm" );
-        $( "input[name='end']" ).datepicker( "option", "dateFormat", "ddmm" );
-        $( "input[name='start']" ).datepicker( "option", "maxDate",endF );
-        $( "input[name='end']" ).datepicker( "option", "minDate",startF );
-        $( "input[name='start']" ).datepicker( "setDate", startF );
-        $( "input[name='end']" ).datepicker( "setDate", endF );
+        else if(mount == 2){
+            dateM = 28
+        }
+        else dateM = 30
+    return dateM;
+}
+function getDateAll(mount1,mount2,date1,date2,isStart){
+    if(isStart){
+        if(mount2!=mount1) return [1,dateOfMount(mount1)]
+        else{
+            if(dateOfMount(mount1)>date2){
+                return [1,date2];
+            }
+            return [1,dateOfMount(mount1)]
+        }
+    }else{
+        if(mount2!=mount1) return [1,dateOfMount(mount2)]
+        else return [date1,dateOfMount(mount2)]
+    }
+}
+function getMountAll(date,date3,mount1,mount2,isStart){
+    let arrMount = [1,2,3,4,5,6,7,8,9,10,11,12];
+    let arrDate;
+    if(isStart){
+        if(date > date3) arrMount[mount2-1] = undefined
+    }
+    else{
+        if(date < date3) arrMount[mount1-1] = undefined
+    }
+    if(date<=28 && isStart){
+        arrMount =  arrMount.filter(function(item){
+            if(item < parseInt(mount2)){
+                // console.log(item+" "+mount2)
+             return item;
+            }
+           });
+           return arrMount
+    }
+    else if(date<=28 && !isStart){
+        arrMount = arrMount.filter(function(item){
+            if(item >= mount1){
+         return item;
+        }
+        });
+        return arrMount
+    }
+    if(isStart) {
+       
+                 arrMount =  arrMount.filter(function(item){
+                if(item < parseInt(mount2)){
+                    // console.log(item+" "+mount2)
+                 return item;
+                }
+               });
+    }
+    else{
+            arrMount = arrMount.filter(function(item){
+                if(item >= mount1){
+             return item;
+            }
+            
+           });
+               
+        }
         
-     
+    
+    if(date>28){
+        for(i = 0 ; i < 12 ; i++){
+            if(arrMount[i] == 2){
+                arrMount[i] = undefined
+            }
+        }
+    }
+    if(date>30){
+        for(i = 0 ; i < 12 ; i++){
+            if(arrMount[i] == 4 || arrMount[i] == 6 || arrMount[i] == 9 || arrMount[i] == 11){
+                arrMount[i] = undefined
+            }
+        }
+    }
+    
+    return arrMount;
+}
+function getTextYearMount(text_mount,text_mount2,text_date,text_date2){
+   let text = ` <label for=""  class="">ตั้งแต่</label>
+                    <div class="inner-MY">
+                        <p for=""  class="">เดือน</p>
+                        <select id="M1" class="form-control ">
+                            ${text_mount}
+                        </select>
+                        <p for=""  class="">วันที่</p>
+                        <select id="D1" class="form-control ">
+                            ${text_date}
+                        </select>
+                    </div>
+                    <label for=""  class="">ถึง</label>
+                    <div class="inner-MY">
+                        <p for=""  class="">เดือน</p>
+                        <select id="M2" class="form-control ">
+                            ${text_mount2}
+                        </select>
+                        <p for=""  class="">วันที่</p>
+                        <select id="D2" class="form-control ">
+                            ${text_date2}
+                        </select>     
+                    </div>`;
+    return text
+}
+function setInputYearMount(arrMount1,arrDate1,arrMount2,arrDate2){
+    let mount  = {1:"มกราคม",2:"กุมภาพันธ์",3:"มีนาคม",4:"เมษายน",5:"พฤษภาคม",6:"มิถุนายน",7:"กรกฎาคม",8:"สิงหาคม",9:"กันยายน",10:"ตุลาคม",11:"พฤศจิกายน",12:"ธันวาคม"};
+    let radio =  $("#add-mount-year");
+    let text_date,text_date2,text_mount,text_mount2
+    for(i in arrMount1){
+        if(arrMount1[i]!=undefined)
+        text_mount += `
+                    <option value=${arrMount1[i]}>${mount[arrMount1[i]]}</option>
+                `
+    }
+    for(i in [...Array(arrDate1[1]+1).keys()]){
+        if(i>=arrDate1[0]){
+            text_date += `
+                    <option value=${i}>${i}</option>
+            `
+        }
+    }
+    for(i in arrMount2){
+        if(arrMount2[i]!=undefined)
+        text_mount2 += `
+                    <option value=${arrMount2[i]}>${mount[arrMount2[i]]}</option>
+                `
+    }
+    for(i in [...Array(arrDate2[1]+1).keys()]){
+        if(i>=arrDate2[0]){
+            text_date2 += `
+                    <option value=${i}>${i}</option>
+            `
+        }
+    }
+    let text = getTextYearMount(text_mount,text_mount2,text_date,text_date2)
+    radio.html(text)
+    
+}
+function setInputAll(m1,m2,d1,d2){
+    $('#M1').val(m1)
+    $('#M2').val(m2)
+    $('#D1').val(d1)
+    $('#D2').val(d2)
+}
+$(document).on('change','#M1,#M2,#D1,#D2',function(){
+    alert('s')
+    let d1 = parseInt($('#D1').val())
+    let d2 = parseInt($('#D2').val())
+    let m1 = parseInt($('#M1').val())
+    let m2 = parseInt($('#M2').val())
+    let arrMount1 = getMountAll(d1,d2,m1,m2,true)
+    let arrDate1 = getDateAll(m1,m2,d1,d2,true) 
+    let arrMount2 = getMountAll(d2,d1,m1,m2,false)
+    let arrDate2 = getDateAll(m1,m2,d1,d2,false)
+    setInputYearMount(arrMount1,arrDate1,arrMount2,arrDate2)
+    setInputAll(m1,m2,d1,d2)
+})
+
+function inputMountYear(m1,m2,d1,d2){ // set input start end
+            let arrMount1 = getMountAll(d1,d2,m1,m2,true)
+            let arrDate1 = getDateAll(m1,m2,d1,d2,true) 
+            let arrMount2 = getMountAll(d2,d1,m1,m2,false)
+            let arrDate2 = getDateAll(m1,m2,d1,d2,false)
+            setInputYearMount(arrMount1,arrDate1,arrMount2,arrDate2)
+            setInputAll(m1,m2,d1,d2)
+            mountYearChecked = true;
 }
 function loadCondition(FID){ // load condition from database
     conditionF =  "";
@@ -777,13 +942,18 @@ $(document).on('click','.deleteF',function(){
 })
 function delClick(me){
     let id = me.attr('id');
+    let name = me.attr('data-name')
     let dimid = me.attr('DIMID')
     swal({
-      title: "ลบ",
-      text: "คุณต้องการลบปุ๋ย",
+      title: "คุณต้องการลบ",
+      text: "ปุ๋ย "+name+" หรือไม่?",
       icon: "warning",
-      buttons: true,
       dangerMode: true,
+      buttons: {
+        button:"ยืนยัน",
+        cancel:"ยกเลิก"
+      },
+        closeOnConfirm: false,
     })
     .then((willDelete) => {
       if (willDelete) {
@@ -802,12 +972,16 @@ function delClick(me){
             // alert("sss")
             }
             });
-        swal("ปุ๋ยถูกลบเรียบร้อย", {
+        swal("ปุ๋ย " +me.attr('data-name') +" ถูกลบเรียบร้อย", {
           icon: "success",
+          button:"เรียบร้อย"
           
         });
       } else {
-        swal("ปุ๋ยไม่ถูกลบ");
+        swal("ปุ๋ย " +me.attr('data-name') +" ปุ๋ยไม่ถูกลบ",{
+           button:"ตกลง"
+        }
+        );
       }
     })
     

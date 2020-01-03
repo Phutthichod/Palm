@@ -68,9 +68,10 @@ $( document ).ready(function() {
         return true;
     }
     function check_department(name){
+        // console.log("check department");
         for(i in dataD){
-            console.log(dataD[i].Department);
-            if(name.val().trim() == dataD[i].Department){
+            // console.log(name.val().trim().replace(/\s\s+/g, ' '));
+            if(name.val().trim().replace(/\s\s+/g,' ') == dataD[i].Department){
                 name[0].setCustomValidity('ชื่อหน่วยงานซ้ำ');
                 return false;
             }
@@ -85,7 +86,7 @@ $( document ).ready(function() {
 
         for(i in dataD){
             console.log(dataD[i].Alias);
-            if(name.val().trim() == dataD[i].Alias){
+            if(name.val().trim().replace(/\s\s+/g,' ') == dataD[i].Alias){
                 name[0].setCustomValidity('ชื่อย่อหน่วยงานซ้ำ');
                 return false;
             }
@@ -125,7 +126,7 @@ $( document ).ready(function() {
         console.log("check_de");
         for(i in dataD){
             console.log(dataD[i].Department);
-            if(name.val().trim() == dataD[i].Department && dataD[i].DID != did.val()){
+            if(name.val().trim().replace(/\s\s+/g,' ') == dataD[i].Department && dataD[i].DID != did.val()){
                 console.log("du");
                 name[0].setCustomValidity('ชื่อหน่วยงานซ้ำ');
                 return false;
@@ -141,7 +142,7 @@ $( document ).ready(function() {
         console.log("check_ali");
         for(i in dataD){
             console.log(dataD[i].Alias);
-            if(name.val().trim() == dataD[i].Alias && dataD[i].DID != did.val()){
+            if(name.val().trim().replace(/\s\s+/g,' ') == dataD[i].Alias && dataD[i].DID != did.val()){
                 name[0].setCustomValidity('ชื่อย่อหน่วยงานซ้ำ');
                 return false;
             }
