@@ -3,7 +3,7 @@
         <div class="card-body">
             <div class="row">
                 <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12" style="text-align: center;">
-                    <img src=<?php echo $src = "../../picture/Pest/insect/icon/" . $row["PID"] . "/" . $row["lcon"]; ?> width="100" height="100" alt="User" style="border-radius: 100px;">
+                    <img src=<?php echo $src = "../../picture/Pest/insect/icon/" . $row["PID"] . "/" . $row["Icon"]; ?> width="100" height="100" alt="User" style="border-radius: 100px;">
                 </div>
                 <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12 card-pest" id="changeInsect">
                     <h6>

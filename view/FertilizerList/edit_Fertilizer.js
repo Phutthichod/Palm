@@ -36,8 +36,8 @@ $(document).on('click','.editF',function(){ // set data in edit modal
     $('#addCondition').empty();
 
     let j = 0;
-    console.log("numcon :"+Object.keys(conditionF).length); // fetch data condition
-    if(Object.keys(conditionF).length > 0){
+    // console.log("numcon :"+Object.keys(conditionF).length); // fetch data condition
+    if(conditionF != null){
         for(i in conditionF){
             if(j>0){
                 $('#addCondition').append(`
@@ -122,7 +122,7 @@ $(document).on('click','.editSubmit',function(){ // submit to update
     let m2 = setZero($('#M2').val());
     let start = d1+m1
     let end = d2+m2
-    alert(end)
+    // alert(end)
     let con = $("input[name='condition[]']").map(function(){return $(this).val().trim();}).get();
     let condition = []
     // let unit = $("input")
@@ -178,7 +178,7 @@ $(document).on('click','.editSubmit',function(){ // submit to update
         processData: false,
         
         success: function(result) {
-            alert(result)
+            // alert(result)
           loadDataF();
         //   $('.modal').show();
         //   $('.modal-backdrop').show()
@@ -221,6 +221,7 @@ $(document).on('click','.insertSubmit',function(e){ // insert submit
 })
 function loadDataF(){ // load all data in database and fetch data on wep page
     $('.bodyF').empty();
+    $('.amount-fer').html(`0 ชนิด`)
     $.ajax({
         type: "POST",
         dataType: 'json',
@@ -235,10 +236,10 @@ function loadDataF(){ // load all data in database and fetch data on wep page
        
         // alert(data)
         let text = '';
-        if(Object.keys(dataF).length>0){
-            let j = 0;
+        let j =0
+        if(dataF!=null){
             for(i in dataF){
-                j++;
+                j++
                 let icon = `<img src="../../icon/fertilizer/${dataF[i].FID}/${dataF[i].Icon}" id="pic-Fertilizer" class="" style="border-radius: 150px;width:200px;"; >`;
                 if(dataF[i].Icon == ''){
                     icon = `<img src="https://imbindonesia.com/images/placeholder/camera.jpg" id="pic-Fertilizer" class="" width="150px" height="200px" >`;
@@ -277,7 +278,7 @@ function loadDataF(){ // load all data in database and fetch data on wep page
                         <div>
                         `
                         loadCondition(dataF[i].FID);
-                        if(Object.keys(conditionF).length>0){
+                        if(conditionF!=null){
                             for(k in conditionF){
                                 text += `
                                 <h5>${conditionF[k].Order}. ${conditionF[k].Condition}</h5>
@@ -306,7 +307,7 @@ function loadDataF(){ // load all data in database and fetch data on wep page
             }
             // console.log("a " +dataF[i].EQ1+"b" +dataF[i].EQ2)
             $('.bodyF').append(text);
-            $('.amount-fer').html(`${j} ชนิด`)
+            
             for(i in dataF){
                 let unitY = ''
                 let unitX = ''
@@ -336,10 +337,11 @@ function loadDataF(){ // load all data in database and fetch data on wep page
                 new Chart(document.getElementById("lineChart"+i).getContext("2d"), getChartJs2('line',unitY,unitX));
             }}
            
-            
+            $('.amount-fer').html(`${j} ชนิด`)
         }
         });
-  
+        
+        
       }
       function getChartJs2(type,unitY,unitX) { // set graph in wep page
         if (type === 'line') {
@@ -394,7 +396,7 @@ function insertF(data){ // function insert data
         processData: false,
         
         success: function(result) {
-            alert(result);
+            // alert(result);
           loadDataF();
         }
         });
@@ -508,27 +510,27 @@ function getDateAll(mount1,mount2,date1,date2,isStart){
         if(mount2!=mount1) return [1,dateOfMount(mount1)]
         else{
             if(dateOfMount(mount1)>date2){
-                return [1,date2];
+                return [1,date2-1];
             }
             return [1,dateOfMount(mount1)]
         }
     }else{
         if(mount2!=mount1) return [1,dateOfMount(mount2)]
-        else return [date1,dateOfMount(mount2)]
+        else return [date1+1,dateOfMount(mount2)]
     }
 }
 function getMountAll(date,date3,mount1,mount2,isStart){
     let arrMount = [1,2,3,4,5,6,7,8,9,10,11,12];
     let arrDate;
     if(isStart){
-        if(date > date3) arrMount[mount2-1] = undefined
+        if(date >= date3) arrMount[mount2-1] = undefined
     }
     else{
-        if(date < date3) arrMount[mount1-1] = undefined
+        if(date <= date3) arrMount[mount1-1] = undefined
     }
     if(date<=28 && isStart){
         arrMount =  arrMount.filter(function(item){
-            if(item < parseInt(mount2)){
+            if(item <= parseInt(mount2)){
                 // console.log(item+" "+mount2)
              return item;
             }
@@ -646,7 +648,7 @@ function setInputAll(m1,m2,d1,d2){
     $('#D2').val(d2)
 }
 $(document).on('change','#M1,#M2,#D1,#D2',function(){
-    alert('s')
+    // alert('s')
     let d1 = parseInt($('#D1').val())
     let d2 = parseInt($('#D2').val())
     let m1 = parseInt($('#M1').val())
@@ -688,41 +690,7 @@ function loadCondition(FID){ // load condition from database
 } 
 
     
- function setDate(){ // set form date data
-    var dateFormat = "ddmm"
-    from = $( "input[name='start']" )
-      .datepicker({
-        altField: "#alternate1",
-        altFormat: "DD, d MM",
-        defaultDate: "+1w",
-        changeMonth: true,
-        numberOfMonths: 1,
-        regional:'th'
-      })
-      .on( "change", function() {
-        to.datepicker( "option", "minDate", getDate( this )+1 );
-      }),
-    to = $( "input[name='end']" ).datepicker({
-        altField: "#alternate2",
-       altFormat: "DD, d MM",
-      defaultDate: "+1w",
-      changeMonth: true,
-      numberOfMonths: 1
-    })
-    .on( "change", function() {
-      from.datepicker( "option", "maxDate", getDate( this ) );
-    });
-    function getDate( element ) {
-        var date;
-        try {
-          date = $.datepicker.parseDate( dateFormat, element.value );
-        } catch( error ) {
-          date = null;
-        }
-   
-        return date;
-      }
- }
+ 
  function checkSameName(name,id){ // check same name
   
         for(i in dataF){
@@ -795,37 +763,27 @@ function startInputNum(selecter){
 }
     return true;
 }
-let $uploadCrop;
-let re,
-    rawImg,
-    imageId;
-let item_output;
-function readFile(input) {
+function cropImage(input,imgCrop,imgOutput){
+    let rawImg
     if (input.files && input.files[0]) {
-     var reader = new FileReader();
-       reader.onload = function (e) {
-           $('#cropImagePop').addClass('show');
-           console.log("lllllllll")
-           rawImg = e.target.result;
-           check_II = true;
-        loadIm();
-       }
-       reader.readAsDataURL(input.files[0]);
-   }
-   else {
-    //    swal("Sorry - you're browser doesn't support the FileReader API");
-   }
+        var reader = new FileReader();
+          reader.onload = function (e) {
+            rawImg = e.target.result;
+            check_II = true;
+            loadIm(rawImg,imgCrop,imgOutput);
+          }
+          reader.readAsDataURL(input.files[0]);
+      }
 }
 $('.divCrop').hide()
 $('.buttonCrop').hide()
-function loadIm(){
+function loadIm(rawImg,imgCrop,imgOutput){
     $('.divName').hide()
     $('.divHolder').hide()
     $('.divCrop').show()
     $('.buttonCrop').show()
     $('.buttonSubmit').hide()
-    // $('.UI').append(`<div id="upload-demo" class="center-block"></div>`)
-    $uploadCrop = $('#upload-demo').croppie({
+    let $uploadCrop = $(imgCrop).croppie({
             viewport: {
                 width: 200,
                 height: 200,
@@ -839,12 +797,11 @@ function loadIm(){
     }).then(function(){
         console.log('jQuery bind complete');
     });
-    $('.item-img').val('');
+    $(imgOutput).val('');
     
 }
 $(document).on('change','.item-img', function () { 
-
-    readFile(this);
+    cropImage(this,'#upload-demo','.item-img')
     
 });
 $(document).on('click','#cropImageBtn', function (ev) {
@@ -967,7 +924,7 @@ function delClick(me){
             async:false,
             url: "dbF.php",
             success: function(result) {
-                alert(result)
+                // alert(result)
                  loadDataF(result)
             // alert("sss")
             }

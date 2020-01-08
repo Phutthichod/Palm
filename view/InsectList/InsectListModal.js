@@ -62,12 +62,15 @@ var addModal =
 
                     <div class='row clearfix'>
                         <div class='col-lg-3 col-md-3 col-sm-3 col-xs-6 form-control-label text-right'>
-                            <label>รูปแมลง : </label>
+                            <label>รูปแมลงssssssssssss : </label>
                         </div>
                         <div class='col-lg-8 col-md-8 col-sm-9 col-xs-6'>
                             <div class='form-group'>
-
-                                <input type="file" id="pic-logo" name="icon_insert" accept=".jpg,.png" required="">
+                                <div class="marge-img">
+                                    <img src="" width="200px" height="200px" >
+                                    <input type="file" id="pic-logo" name="icon_insert" accept=".jpg,.png" required="">
+                                </div>
+                                
 
                             </div>
                         </div>

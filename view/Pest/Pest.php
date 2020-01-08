@@ -1,12 +1,24 @@
 <?php
 session_start();
 $idUT = $_SESSION[md5('typeid')];
-$CurrentMenu = "Pest";
+// $idUTLOG = $_SESSION[md5('LOG_LOGIN')];
+$CurrentMenu = "OilPalmAreaVol";
+$currentYear = date("Y") + 543;
+$backYear = date("Y") + 543 - 1;
 ?>
 
 <?php include_once("../layout/LayoutHeader.php"); ?>
 
 <style>
+    .margin-photo {
+        margin-top: 25px;
+    }
+
+    .set-images {
+        width: 100%;
+        height: 250px;
+    }
+
     .padding {
         padding-top: 10px;
     }
@@ -82,6 +94,9 @@ $CurrentMenu = "Pest";
 
     <link href="https://cdn.jsdelivr.net/npm/select2@4.0.12/dist/css/select2.min.css" rel="stylesheet" />
     <link href="https://unpkg.com/gijgo@1.9.13/css/gijgo.min.css" rel="stylesheet" type="text/css" />
+
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="../../croppie/croppie.css">
 
     <!------------ Start Head ------------>
     <div class="row">
@@ -291,13 +306,13 @@ $CurrentMenu = "Pest";
                 <div class="card-header card-bg">
                     <div>
                         <span>ศัตรูพืชสวนปาล์มน้ำมันในระบบ</span>
-                        <button type="button" style="float:right;" class="btn btn-success" data-toggle="modal" data-target="#modal-1"><i class="fas fa-plus"></i> เพิ่มศัตรูพืช</button>
+                        <button type="button" id="btn-modal5" style="float:right;" class="btn btn-success" data-toggle="modal" data-target="#modal-5"><i class="fas fa-plus"></i>เพิ่มการตรวจพบศัตรูพืช</button>
                         <!-- <span style="float:right;">ปี 2562</span> -->
                     </div>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
-                        <table id="example1" class="table table-bordered table-striped table-hover table-data" width="100%">
+                        <table id="example" class="table table-bordered table-striped table-hover table-data">
                             <thead>
                                 <tr>
                                     <th>ชื่อเกษตรกร</th>
@@ -306,7 +321,6 @@ $CurrentMenu = "Pest";
                                     <th>พื้นที่ปลูก</th>
                                     <th>จำนวนต้น</th>
                                     <th>ชนิด</th>
-                                    <th>ความรุนแรง</th>
                                     <th>วันที่พบ</th>
                                     <th>จัดการ</th>
                                 </tr>
@@ -319,44 +333,12 @@ $CurrentMenu = "Pest";
                                     <th>พื้นที่ปลูก</th>
                                     <th>จำนวนต้น</th>
                                     <th>ชนิด</th>
-                                    <th>ความรุนแรง</th>
                                     <th>วันที่พบ</th>
                                     <th>จัดการ</th>
                                 </tr>
                             </tfoot>
-                            <tbody>
-                                <tr>
-                                    <td>บรรยาวัชร</td>
-                                    <td>ไลอ้อน</td>
-                                    <td>150</td>
-                                    <td>200</td>
-                                    <td>300</td>
-                                    <td>วัชพืช</td>
-                                    <td>3</td>
-                                    <td>19/02/2016</td>
-                                    <td style="text-align:center;">
-                                        <button type="button" id="btn_info" class="btn btn-info btn-sm" data-toggle="modal" data-target="#modal-1"><i class="fas fa-bars"></i></button>
-                                        <button type="button" id="btn_image" class="btn btn-info btn-sm" data-toggle="modal" data-target="#modal-2"><i class="far fa-images"></i></button>
-                                        <button type="button" id="btn_note" class="btn btn-warning btn-sm" data-toggle="modal" data-target="#modal-3"><i class="far fa-sticky-note"></i></button>
-                                        <button type="button" id="btn_delete" class="btn btn-danger btn-sm"><i class="far fa-trash-alt"></i></button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>บรรยาวัชร</td>
-                                    <td>ไลอ้อน</td>
-                                    <td>150</td>
-                                    <td>200</td>
-                                    <td>300</td>
-                                    <td>โรคพืช</td>
-                                    <td>5</td>
-                                    <td>19/02/2016</td>
-                                    <td style="text-align:center;">
-                                        <button type="button" id="btn_info" class="btn btn-info btn-sm" data-toggle="modal" data-target="#modal-1"><i class="fas fa-bars"></i></button>
-                                        <button type="button" id="btn_image" class="btn btn-info btn-sm" data-toggle="modal" data-target="#modal-2"><i class="far fa-images"></i></button>
-                                        <button type="button" id="btn_note" class="btn btn-warning btn-sm" data-toggle="modal" data-target="#modal-3"><i class="far fa-sticky-note"></i></button>
-                                        <button type="button" id="btn_delete" class="btn btn-danger btn-sm"><i class="far fa-trash-alt"></i></button>
-                                    </td>
-                                </tr>
+                            <tbody id="fetchDataTable">
+
                             </tbody>
                         </table>
                     </div>
@@ -365,84 +347,40 @@ $CurrentMenu = "Pest";
         </div>
     </div>
 
-    <div class="modal fade" id="modal-1" tabindex="-1" role="dialog">
-        <div class="modal-dialog modal-xl" role="document">
+    <!------------ Start Modal ------------>
+
+    <div class="modal fade" id="modal-1" role="dialog">
+        <div class="modal-dialog modal-xl " role="document">
+            <!-- modal-dialog-scrollable -->
             <div class="modal-content">
                 <div class="modal-header header-modal">
                     <h4 class="modal-title">ข้อมูลลักษณะทั่วไปของศัตรูพืช</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
                 </div>
                 <div class="modal-body" id="infoModalBody">
-                    <div class="row">
+                    <div class="row mb-4">
                         <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4" style="text-align: center;">
                             <div style="text-align: center;">
-                                <img class="img-radius" src="../../picture/default.jpg" />
+                                <img id="img-icon" class="img-radius" height="180px" width="180px" />
                             </div>
                             <hr>
-                            <h4>ชื่อ : แมลง 1</h4>
-                            <h4>ชื่อทางการ : แมลงเต่าทอง</h4>
-                            <button type="button" id="M_btn_edit" class="test btn btn-warning btn-sm form-control mt-3" value="0">แก้ไขข้อมูล</button>
+                            <h4 id="PAlias"></h4>
+                            <h4 id="PName"></h4>
                         </div>
                         <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
                             <h4>ลักษณะ</h4>
-                            <textarea rows="10" cols="40" style="margin-bottom:20px; max-width: 270px;" readonly>ข้อมูลลักษณะ</textarea>
-
+                            <textarea id="Charactor" rows="10" cols="40" style="margin-bottom:20px; max-width: 270px;" readonly></textarea>
                             <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
-                                <ol class="carousel-indicators">
-                                    <li data-target="#carouselExampleIndicators" data-slide-to="0" class="active"></li>
-                                    <li data-target="#carouselExampleIndicators" data-slide-to="1"></li>
-                                    <li data-target="#carouselExampleIndicators" data-slide-to="2"></li>
-                                </ol>
-                                <div class="carousel-inner">
-                                    <div class="carousel-item active">
-                                        <img class="" src="../../picture/defaultPalm.jpg">
-                                    </div>
-                                    <div class="carousel-item">
-                                        <img class="" src="../../picture/defaultPalm.jpg">
-                                    </div>
-                                    <div class="carousel-item">
-                                        <img class="" src="../../picture/defaultPalm.jpg">
-                                    </div>
-                                </div>
-                                <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
-                                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                                    <span class="sr-only">Previous</span>
-                                </a>
-                                <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
-                                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                                    <span class="sr-only">Next</span>
-                                </a>
-                            </div>
 
+                            </div>
                         </div>
                         <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
                             <h4>อันตราย</h4>
-                            <textarea rows="10" cols="40" style="margin-bottom:20px; max-width: 270px;" readonly>ข้อมูลอันตราย</textarea>
-
+                            <textarea id="Danger" rows="10" cols="40" style="margin-bottom:20px; max-width: 270px;" readonly>ข้อมูลอันตราย</textarea>
                             <div id="carouselExampleIndicators2" class="carousel slide" data-ride="carousel">
-                                <ol class="carousel-indicators">
-                                    <li data-target="#carouselExampleIndicators2" data-slide-to="0" class="active"></li>
-                                    <li data-target="#carouselExampleIndicators2" data-slide-to="1"></li>
-                                    <li data-target="#carouselExampleIndicators2" data-slide-to="2"></li>
-                                </ol>
-                                <div class="carousel-inner">
-                                    <div class="carousel-item active">
-                                        <img class="" src="../../picture/defaultPalm.jpg">
-                                    </div>
-                                    <div class="carousel-item">
-                                        <img class="" src="../../picture/defaultPalm.jpg">
-                                    </div>
-                                    <div class="carousel-item">
-                                        <img class="" src="../../picture/defaultPalm.jpg">
-                                    </div>
-                                </div>
-                                <a class="carousel-control-prev" href="#carouselExampleIndicators2" role="button" data-slide="prev">
-                                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                                    <span class="sr-only">Previous</span>
-                                </a>
-                                <a class="carousel-control-next" href="#carouselExampleIndicators2" role="button" data-slide="next">
-                                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                                    <span class="sr-only">Next</span>
-                                </a>
+
                             </div>
                         </div>
                     </div>
@@ -453,41 +391,17 @@ $CurrentMenu = "Pest";
             </div>
         </div>
     </div>
-    <div class="modal fade" id="modal-2" tabindex="-1" role="dialog">
+
+    <div class="modal fade" id="modal-2" role="dialog">
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header header-modal">
                     <h4 class="modal-title">รูปภาพศัตรูพืช</h4>
                 </div>
-                <div class="modal-body" id="imageModalBody">
+                <div class="modal-body">
                     <div class="container">
-                        <div class="row margin-gal">
-                            <a href="picture/defaultPest/01.jpg" class="col-xl-3 col-3">
-                                <img src="../../picture/defaultPest/01.jpg" class="img-gal">
-                            </a>
-                            <a href="picture/defaultPest/02.jpg" class="col-xl-3 col-3">
-                                <img src="../../picture/defaultPest/02.jpg" class="img-gal">
-                            </a>
-                            <a href="picture/defaultPest/03.jpg" class="col-xl-3 col-3">
-                                <img src="../../picture/defaultPest/03.jpg" class="img-gal">
-                            </a>
-                            <a href="picture/defaultPest/04.jpg" class="col-xl-3 col-3">
-                                <img src="../../picture/defaultPest/04.jpg" class="img-gal">
-                            </a>
-                        </div>
-                        <div class="row margin-gal">
-                            <a href="picture/defaultPest/05.jpg" class="col-xl-3 col-3">
-                                <img src="../../picture/defaultPest/05.jpg" class="img-gal">
-                            </a>
-                            <a href="picture/defaultPest/06.jpg" class="col-xl-3 col-3">
-                                <img src="../../picture/defaultPest/06.jpg" class="img-gal">
-                            </a>
-                            <a href="picture/defaultPest/07.jpg" class="col-xl-3 col-3">
-                                <img src="../../picture/defaultPest/07.jpg" class="img-gal">
-                            </a>
-                            <a href="picture/defaultPest/08.jpg" class="col-xl-3 col-3">
-                                <img src="../../picture/defaultPest/08.jpg" class="img-gal">
-                            </a>
+                        <div class="row margin-gal" id="fetchPhoto">
+
                         </div>
                     </div>
                 </div>
@@ -497,14 +411,15 @@ $CurrentMenu = "Pest";
             </div>
         </div>
     </div>
-    <div class="modal fade" id="modal-3" tabindex="-1" role="dialog">
+
+    <div class="modal fade" id="modal-3" role="dialog">
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header header-modal">
                     <h4 class="modal-title">ข้อมูลสำคัญของศัตรูพืช</h4>
                 </div>
                 <div class="modal-body" id="noteModalBody">
-                    <span>ข้อมูล</span>
+                    <span id="Note"></span>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">ปิด</button>
@@ -512,7 +427,8 @@ $CurrentMenu = "Pest";
             </div>
         </div>
     </div>
-    <div class="row modal fade" id="modal-4" tabindex="-1" role="dialog">
+
+    <div class="row modal fade" id="modal-4" role="dialog">
         <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4" style="text-align: center;">
             <div style="text-align: center;">
                 <img class="img-radius" src="../../picture/default.jpg" />
@@ -587,6 +503,107 @@ $CurrentMenu = "Pest";
         </div>
     </div>
 
+    <div class="modal fade" id="modal-5"  role="dialog">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header header-modal">
+                    <h4 class="modal-title">เพิ่มการตรวจพบศัตรูพืช</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="main">
+                    <div class="row mb-4">
+                                <div class="col-xl-3 col-12 text-right">
+                                    <span>วันที่</span>
+                                </div>
+                                <div class="col-xl-9 col-12">
+                                    <input class="form-control" width="auto" class="" id="p_date" />
+                                </div>
+                            </div>
+                            <div class="row mb-4">
+                                <div class="col-xl-3 col-12 text-right">
+                                    <span>จากสวน</span>
+                                </div>
+                                <div class="col-xl-9 col-12">
+                                    <select class="js-example-basic-single" id="p_farm">
+
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row mb-4">
+                                <div class="col-xl-3 col-12 text-right">
+                                    <span>จากแปลง</span>
+                                </div>
+                                <div class="col-xl-9 col-12">
+                                    <select class="js-example-basic-single" id="p_subfarm">
+
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row mb-4">
+                                <div class="col-xl-3 col-12 text-right">
+                                    <span>ชนิดศัตรูพืช</span>
+                                </div>
+                                <div class="col-xl-9 col-12">
+                                    <select class="js-example-basic-single" id="p_rank">
+
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row mb-4">
+                                <div class="col-xl-3 col-12 text-right">
+                                    <span>ศัตรูพืช</span>
+                                </div>
+                                <div class="col-xl-9 col-12">
+                                    <select class="js-example-basic-single" id="p_pest">
+
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row mb-4">
+                                <div class="col-xl-3 col-12 text-right">
+                                    <span>ลักษณะ</span>
+                                </div>
+                                <div class="col-xl-9 col-12">
+                                    <textarea name="" class="form-control" id="p_note" cols="30" rows="5"></textarea>
+                                </div>
+                            </div>
+                        <div class="row mb-4">
+                            <div class="col-xl-3 col-12 text-right">
+                                <span>รูปภาพ</span>
+                            </div>
+                            <div class="col-xl-9 col-12">
+                                <div class="grid-img-multiple">
+
+                                    <div class="img-reletive">
+                                        <img src="https://ast.kaidee.com/blackpearl/v6.18.0/_next/static/images/gallery-filled-48x48-p30-6477f4477287e770745b82b7f1793745.svg" width="50px" height="50px" alt="">
+                                        <input type="file" class="form-control" id="p_photo" name="p_photo[]" accept=".jpg,.png" multiple>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="crop-img">
+                        <center>
+                            <!-- <input id='pic-logo' type='file' class='item-img file center-block' name='icon_insert' /> -->
+                            <!-- <img id="img-insert" src="https://via.placeholder.com/200x200.png" alt="" width="200" height="200"> -->
+                            <div id="upload-demo"  class="center-block"></div>
+                        </center>
+                    </div>
+                </div>
+                <div class="modal-footer normal-button">
+                    <button id="m_success" type="button" class="btn btn-success">ยืนยัน</button>
+                    <button id="m_not_success" type="button" class="btn btn-danger" data-dismiss="modal">ยกเลิก</button>
+                </div>
+                <div class="modal-footer crop-button">
+                    <button  type="button" class="btn btn-success btn-crop">ยืนยัน</button>
+                    <button  type="button" class="btn btn-danger btn-cancel-crop" data-dismiss="modal">ยกเลิก</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
 </div>
 
 </div>
@@ -603,11 +620,13 @@ $CurrentMenu = "Pest";
 
 </html>
 
-<script src="PestModal.js"></script>
+<!-- <script src="PestModal.js"></script> -->
 <script src="https://cdn.jsdelivr.net/npm/select2@4.0.12/dist/js/select2.min.js"></script>
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBMLhtSzox02ZCq2p9IIuihhMv5WS2isyo&callback=initMap&language=th" async defer></script>
 
 <script src="https://unpkg.com/gijgo@1.9.13/js/gijgo.min.js" type="text/javascript"></script>
+
+<script src="../../croppie/croppie.js"></script>
 
 <script>
     pdfMake.fonts = {
@@ -618,6 +637,7 @@ $CurrentMenu = "Pest";
             bolditalics: 'THSarabun-BoldItalic.ttf'
         }
     }
+
     $(document).ready(function() {
 
         $('.js-example-basic-single').select2();
@@ -628,64 +648,502 @@ $CurrentMenu = "Pest";
             $(this).next().removeClass("border-from-control");
         });
 
-        $('#example1').DataTable({
-            dom: '<"row"<"col-sm-12"B>>' +
-                '<"row"<"col-sm-6"l><"col-sm-6"f>>' +
-                '<"row"<"col-sm-12"tr>>' +
-                '<"row"<"col-sm-5"i><"col-sm-7"p>>',
-            buttons: [{
-                    extend: 'excel',
-                    text: '<i class="fas fa-file-excel"> <font> Excel</font> </i>',
-                    className: 'btn btn-outline-success btn-sm export-button'
-                },
-                {
-                    extend: 'pdf',
-                    text: '<i class="fas fa-file-pdf"> <font> PDF</font> </i>',
-                    className: 'btn btn-outline-danger btn-sm export-button',
-                    pageSize: 'A4',
-                    customize: function(doc) {
-                        doc.defaultStyle = {
-                            font: 'THSarabun',
-                            fontSize: 16
-                        };
-                    }
-                }
-            ]
+        $('#p_date').datepicker({
+            showOtherMonths: true
         });
 
+    });
+    // LoadMap
+    function initMap() {
+        // The location of Uluru
+        //alert(coordinate[0].lat);
+        var marker = {
+            lat: 12.815300,
+            lng: 101.490997
+        };
 
-        $("#M_btn_edit").click(function() {
-            console.log("xxx");
-            $('#modal-1').modal('hide');
-            $('#modal-4').modal('show');
-        });
-
-        // function testfun() {
-        //     return function() {
-        //         let i = $("#btn_edit").val();
-
-        //         if (i == 0) {
-        //             $("#infoModalBody").html(infoModal1);
-        //             $("#btn_edit").click(testfun());
-
-        //             $("#image_upload").click(function() {
-        //                 $("#file_upload").click();
-        //             });
-        //         } else if (i == 1) {
-        //             $("#infoModalBody").html(infoModal0);
-        //             $("#btn_edit").click(testfun());
-        //         }
-        //     }
-        // }
-
-        $("#btn_delete").click(function() {
-            swal({
-                title: "ยืนยันการลบข้อมูล",
-                icon: "warning",
-                buttons: ["ยกเลิก", "ยืนยัน"],
+        // The map, centered at Uluru
+        var map = new google.maps.Map(
+            document.getElementById('map'), {
+                zoom: 16,
+                center: marker
             });
+        // The marker, positioned at Uluru
+        var marker = new google.maps.Marker({
+            position: marker,
+            map: map
+        });
+        // Construct the polygon.
+        var area = new google.maps.Polygon({
+            paths: zone,
+            strokeColor: '#FF0000',
+            strokeOpacity: 0.8,
+            strokeWeight: 2,
+            fillColor: '#FF0000',
+            fillOpacity: 0.35
+        });
+        area.setMap(map);
+    }
+
+    let dataProvince;
+    let dataDistrinct;
+    let numProvince = 0;
+    let ID_Province = null;
+    let ID_Distrinct = null;
+
+    let dataFarm;
+    let dataSubFarm;
+    let ID_Farm = null;
+    let ID_SubFarm = null;
+
+    let dataPest;
+    let ID_TypePest = null;
+    let ID_Pest = null;
+    let type = ["insect", "disease", "weed", "other"];
+
+    let data;
+
+    let year = null;
+    let score_From = 0;
+    let score_To = 0;
+    let name = null;
+    let passport = null;
+
+    document.getElementById("province").addEventListener("load", loadProvince());
+    document.getElementById("example").addEventListener("load", loadData());
+
+    // โหลดจังหวัด
+    function loadProvince() {
+        let xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+                dataProvince = JSON.parse(this.responseText);
+                let text = "";
+                for (i in dataProvince) {
+                    text += ` <option value="${dataProvince[i].AD1ID}">${dataProvince[i].Province}</option> `
+                    numProvince++;
+                }
+                $("#province").append(text);
+
+            }
+        };
+        xhttp.open("GET", "./loadProvince.php", true);
+        xhttp.send();
+    }
+    // โหลดอำเภอ
+    function loadDistrinct(id) {
+        let xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+                dataDistrinct = JSON.parse(this.responseText);
+                let text = "<option disabled selected>เลือกอำเภอ</option>";
+                for (i in dataDistrinct) {
+                    text += ` <option value="${dataDistrinct[i].AD2ID}">${dataDistrinct[i].Distrinct}</option> `
+                }
+                $("#amp").append(text);
+            }
+        };
+        xhttp.open("GET", "./loadDistrinct.php?id=" + id, true);
+        xhttp.send();
+    }
+    // โหลด Farm
+    function loadFarm() {
+        let xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+                dataFarm = JSON.parse(this.responseText);
+                console.log(dataFarm)
+                let text = "<option disabled selected>เลือกสวน</option>";
+                for (i in dataFarm) {
+                    text += ` <option value="${dataFarm[i].FMID}">${dataFarm[i].Name}</option> `
+                }
+                $("#p_farm").html(text);
+            }
+        };
+        xhttp.open("GET", "./loadFarm.php", true);
+        xhttp.send();
+    }
+    // โหลด SubFarm
+    function loadSubFarm(farm) {
+        let xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+                dataSubFarm = JSON.parse(this.responseText);
+                console.log(dataSubFarm);
+                let text = "<option value='-1' disabled selected>ทุกแปลง</option>";
+                for (i in dataSubFarm) {
+                    text += ` <option value="${dataSubFarm[i].FSID}">${dataSubFarm[i].Name}</option> `
+                }
+                $("#p_subfarm").html(text);
+            }
+        };
+        xhttp.open("GET", "./loadSubFarm.php?farm=" + farm, true);
+        xhttp.send();
+    }
+    // โหลด Pest
+    function loadPest(id) {
+        let xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+                dataPest = JSON.parse(this.responseText);
+                console.log(dataPest);
+                let text = "<option disabled selected>เลือกศัตรูพืช</option>";
+                for (i in dataPest) {
+                    text += ` <option value="${dataPest[i].PID}">${dataPest[i].Alias}</option> `
+                }
+                $("#p_pest").html(text);
+            }
+        };
+        xhttp.open("GET", "./loadPest.php?id=" + id, true);
+        xhttp.send();
+    }
+    // โหลด Photo [log-pest]
+    function loadPhoto_LogPest(PID, TYPE1, TYPE2, ID, numPIC) {
+        let path = "../../picture/Pest/" + TYPE1 + "/" + TYPE2 + "/" + PID;
+        let xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+                let data1 = JSON.parse(this.responseText);
+                let text = `<ol class="carousel-indicators">
+                                <li data-target="${ID}" data-slide-to="0" class="active"></li>`;
+                for (i = 1; i < numPIC; i++)
+                    text += `<li data-target="${ID}" data-slide-to="${i}"></li>`;
+                text += `</ol>`;
+                text += `<div class="carousel-inner">
+                                    <div class="carousel-item active">
+                                        <img class="set-images" src="${path+"/"+data1[0]}">
+                                    </div>`;
+                for (i = 1; i < numPIC; i++)
+                    text += `<div class="carousel-item">
+                                <img class="set-images" src="${path+"/"+data1[i]}">
+                             </div>`
+                text += `</div>
+                        <a class="carousel-control-prev" href="${ID}" role="button" data-slide="prev">
+                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                            <span class="sr-only">Previous</span>
+                        </a>
+                        <a class="carousel-control-next" href="${ID}" role="button" data-slide="next">
+                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                            <span class="sr-only">Next</span>
+                        </a>`;
+                $(ID).html(text);
+            }
+        };
+        xhttp.open("POST", "./scanDir.php", true);
+        xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+        xhttp.send(`path=${path}`);
+    }
+    // โหลด Photo Gallary [log-pestAlarm] -> PICS
+    function loadPhoto_LogPestAlarm(PID, TYPE1, TYPE2, ) {
+        let path = "../../picture/Pest/" + TYPE1 + "/" + TYPE2 + "/" + PID;
+        let xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+                let data1 = JSON.parse(this.responseText);
+                let text = "";
+                for (i in data1) {
+                    text += `<a href="${path+"/"+data1[i]}" class="col-xl-3 col-3 margin-photo" target="_blank">
+                                      <img src="${path+"/"+data1[i]}"" class="img-gal">
+                                  </a>`
+                }
+                $("#fetchPhoto").append(text);
+            }
+        };
+        xhttp.open("POST", "./scanDir.php", true);
+        xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+        xhttp.send(`path=${path}`);
+    }
+    // โหลด Datatable 
+    function loadData() {
+        // $('#example').DataTable().destroy();
+        let xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+                data = JSON.parse(this.responseText);
+                console.log(data);
+                let text = "";
+                for (i in data) {
+                    text += `<tr>
+                            <td>${data[i].Name}</td>
+                            <td>${data[i].FName}</td>
+                            <td>${data[i].SumSubFarm}</td>
+                            <td>${data[i].SumArea}</td>
+                            <td>${data[i].SumNumTree}</td>
+                            <td>${data[i].TypeTH}</td>
+                            <td>${data[i].Date}</td>
+                            <td style="text-align:center;">
+                                <button type="button" id='${i}' Pid='${data[i].ID}' class="btn btn-info btn-sm btn-Pest" data-toggle="modal" data-target="#modal-1"><i class="fas fa-bars"></i></button>
+                                <button type="button" id='${i}' Pid='${data[i].ID}' class="btn btn-info btn-sm btn-photo" data-toggle="modal" data-target="#modal-2"><i class="far fa-images"></i></button>
+                                <button type="button" id='${i}' Pid='${data[i].ID}' class="btn btn-warning btn-sm btn-note" data-toggle="modal" data-target="#modal-3"><i class="far fa-sticky-note"></i></button>
+                                <button type="button" id='${i}' Pid='${data[i].ID}' class="btn btn-danger btn-sm btn-delete"><i class="far fa-trash-alt"></i></button>
+                            </td>
+                        </tr>`
+                }
+                $("#fetchDataTable").html(text);
+                $('#example').DataTable({
+                    dom: '<"row"<"col-sm-12"B>>' +
+                        '<"row"<"col-sm-6"l><"col-sm-6"f>>' +
+                        '<"row"<"col-sm-12"tr>>' +
+                        '<"row"<"col-sm-5"i><"col-sm-7"p>>',
+                    buttons: [{
+                            extend: 'excel',
+                            text: '<i class="fas fa-file-excel"> <font> Excel</font> </i>',
+                            className: 'btn btn-outline-success btn-sm export-button'
+                        },
+                        {
+                            extend: 'pdf',
+                            text: '<i class="fas fa-file-pdf"> <font> PDF</font> </i>',
+                            className: 'btn btn-outline-danger btn-sm export-button',
+                            pageSize: 'A4',
+                            customize: function(doc) {
+                                doc.defaultStyle = {
+                                    font: 'THSarabun',
+                                    fontSize: 16
+                                };
+                            }
+                        }
+                    ]
+                });
+            }
+        };
+        xhttp.open("GET", "./loadPestAlarm.php", true);
+        xhttp.send();
+    }
+
+
+    /*<! -------------------------------------------------------------------------------------------------------------------------- !>*/
+
+
+    //Start Event Select_จังหวัด 
+    $("#province").on('change', function() {
+        $("#amp").empty();
+        let x = document.getElementById("province").value;
+        for (let i = 0; i < numProvince; i++)
+            if (dataProvince[i].AD1ID == x) {
+                ID_Province = x;
+                ID_Distrinct = null;
+                loadDistrinct(dataProvince[i].AD1ID);
+            }
+    });
+    //Start Event Select_อำเภอ
+    $("#amp").on('change', function() {
+        let x = document.getElementById("amp").value;
+        ID_Distrinct = x;
+    });
+
+    //Start Event load Farm
+    $("#btn-modal5").on('click', function() {
+        $('#p_farm').html("<option disabled selected>เลือกสวน</option>");
+        $('#p_subfarm').html("<option disabled selected>เลือกแปลง</option>");
+        $('#p_rank').html(`<option disabled selected>เลือกชนิดศัตรูพืช</option>
+                            <option value="1">แมลงศัตรูพืช</option>
+                            <option value="2">โรคพืช</option>
+                            <option value="3">วัชพืช</option>
+                            <option value="4">ศัตรูพืชอื่นๆ</option>`);
+        $('#p_pest').html("<option disabled selected>เลือกศัตรูพืช</option>");
+        document.getElementById("p_note").value = "";
+        let current_datetime = new Date()
+        let formatted_date = (current_datetime.getMonth() + 1) + "/" + current_datetime.getDate() + "/" + current_datetime.getFullYear();
+        $('#p_date').val(formatted_date);
+
+        loadFarm();
+    });
+    //Start Event Select_สวน
+    $("#p_farm").on('change', function() {
+        $("#p_subfarm").empty();
+        let x = document.getElementById("p_farm").value;
+        ID_Farm = x;
+        loadSubFarm(x);
+    });
+    //Start Event Select_แปลง
+    $("#p_subfarm").on('change', function() {
+        let x = document.getElementById("p_subfarm").value;
+        ID_SubFarm = x;
+    });
+
+    //Start Event Select_TypePest
+    $("#p_rank").on('change', function() {
+        $("#p_pest").empty();
+        let x = document.getElementById("p_rank").value;
+        ID_TypePest = x;
+        loadPest(x);
+    });
+    //Start Event Select_Pest
+    $("#p_pest").on('change', function() {
+        let x = document.getElementById("p_pest").value;
+        ID_Pest = x;
+    });
+
+    //
+    $(document).on('click', '.btn-Pest', function() {
+        let id = $(this).attr('id');
+        let nameType = type[data[id].dbpestTID - 1];
+        document.getElementById("PAlias").innerHTML = "ชื่อ : " + data[id].PAlias;
+        document.getElementById("PName").innerHTML = "ชื่อทางการ : " + data[id].PName;
+        document.getElementById("Charactor").innerHTML = data[id].Charactor;
+        document.getElementById("Danger").innerHTML = data[id].Danger;
+        document.getElementById("img-icon").src = "../../picture/Pest/" + nameType + "/icon/" + data[id].dbpestLID + "/" + data[id].Icon;
+
+        loadPhoto_LogPest(data[id].dbpestLID, nameType, "danger", "#carouselExampleIndicators", data[id].NumPicDanger);
+        loadPhoto_LogPest(data[id].dbpestLID, nameType, "style", "#carouselExampleIndicators2", data[id].NumPicChar);
+    });
+    //
+    $(document).on('click', '.btn-note', function() {
+        let id = $(this).attr('id');
+        document.getElementById("Note").innerHTML = data[id].Note;
+    });
+    //
+    $(document).on('click', '.btn-delete', function() {
+        let id = $(this).attr('id');
+        let pid = $(this).attr('Pid');
+
+        swal({
+                title: "ยืนยันการลบข้อมูล",
+                // text: `Id_diary : ${id} ?`,
+                icon: "warning",
+                buttons: {
+                    confirm: "ยืนยัน",
+                    cancel: "ยกเลิก"
+                },
+                dangerMode: true,
+            })
+            .then((willDelete) => {
+                if (willDelete) {
+                    swal("ดำเนินการลบสำเร็จ !!", {
+                        icon: "success",
+                    }).then((willDelete) => {
+                        let xhttp = new XMLHttpRequest();
+                        xhttp.onreadystatechange = function() {
+                            if (this.readyState == 4 && this.status == 200) {
+                                data.splice(id, 1);
+                                let text = "";
+                                for (i in data) {
+                                    text += `<tr>
+                                                <td>${data[i].Name}</td>
+                                                <td>${data[i].FName}</td>
+                                                <td>${data[i].SumSubFarm}</td>
+                                                <td>${data[i].SumArea}</td>
+                                                <td>${data[i].SumNumTree}</td>
+                                                <td>${data[i].TypeTH}</td>
+                                                <td>${data[i].Date}</td>
+                                                <td style="text-align:center;">
+                                                    <button type="button" id='${i}' Pid='${data[i].ID}' class="btn btn-info btn-sm btn-Pest" data-toggle="modal" data-target="#modal-1"><i class="fas fa-bars"></i></button>
+                                                    <button type="button" id='${i}' Pid='${data[i].ID}' class="btn btn-info btn-sm btn-photo" data-toggle="modal" data-target="#modal-2"><i class="far fa-images"></i></button>
+                                                    <button type="button" id='${i}' Pid='${data[i].ID}' class="btn btn-warning btn-sm btn-note" data-toggle="modal" data-target="#modal-3"><i class="far fa-sticky-note"></i></button>
+                                                    <button type="button" id='${i}' Pid='${data[i].ID}' class="btn btn-danger btn-sm btn-delete"><i class="far fa-trash-alt"></i></button>
+                                                </td>
+                                            </tr>`
+                                }
+                                $("#fetchDataTable").html(text);
+                            }
+                        };
+                        xhttp.open("POST", "./deletePest.php", true);
+                        xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+                        xhttp.send(`ID=${pid}`);
+                    });
+                } else {
+                    swal("ยกเลิกการดำเนินการลบ !!");
+                }
+            });
+    });
+    //
+    $(document).on('click', '.btn-photo', function() {
+        let id = $(this).attr('id');
+        let nameType = type[data[id].dbpestTID - 1];
+        $("#fetchPhoto").html("");
+        loadPhoto_LogPestAlarm(data[id].dbpestLID, nameType, "danger");
+        loadPhoto_LogPestAlarm(data[id].dbpestLID, nameType, "style");
+    });
+
+    //
+    $("#btn_search").on('click', function() {
+        year = document.getElementById("year").value;
+        name = document.getElementById("name").value;
+        passport = document.getElementById("idcard").value;
+        console.log(" [ " + year + " " + ID_Province + " " + ID_Distrinct + " " + name + " " + passport + " ] ");
+    });
+
+
+    /*<! -------------------------------------------------------------------------------------------------------------------------- !>*/
+
+
+    let xxx = 0;
+    $('.crop-img').hide()
+    $('.crop-button').hide()
+    // Start Insert Photo
+    $('#p_photo').on('change', function() {
+        img_Preview_Upload(this, '.grid-img-multiple');
+    });
+    // Show Preview Photo --> After Insert
+    function img_Preview_Upload(input, Target) {
+        if (input.files) {
+            var filesAmount = input.files.length;
+            for (i = 0; i < filesAmount; i++) {
+                var reader = new FileReader();
+                reader.onload = function(event) {
+                    $(Target).prepend(`<div class="card" width="70px" hight="70px">
+                                            <div class="card-body" style="padding:0;">
+                                                <img src = "${event.target.result}" id="img-${+new Date()}" width="100%" hight="100%" />
+                                            </div>
+                                            <div class="card-footer">
+                                                <button class="btn btn-warning edit-img">แก้ไข</button>
+                                                <button class="btn btn-danger delete-img">ลบ</button>
+                                            </div>
+                                        </div>`)
+                }
+                reader.readAsDataURL(input.files[i]);
+            }
+        }
+        $(input).val('');
+    }
+    // Start Delete Photo
+    $(document).on('click', '.delete-img', function() {
+        $(this).parent().parent().remove()
+    });
+    // Start Edit-Crop Photo
+    let idImg;
+    $(document).on('click', '.edit-img', function() {
+        let me = $(this).parent().prev().children().attr('src');
+        idImg = $(this).parent().prev().children().attr('id');
+        $('.main').hide();
+        $('.normal-button').hide();
+        $('.crop-img').show();
+        $('.crop-button').show();
+        let UC = $('#upload-demo').croppie({
+            viewport: {
+                width: 200,
+                height: 200,
+            },
+            enforceBoundary: false,
+            enableExif: true
+        });
+        UC.croppie('bind', {
+            url: me
+        }).then(function() {
+            console.log('jQuery bind complete');
         });
     });
+    // Start Cancel-Crop Photo
+    $(document).on('click', '.btn-cancel-crop', function(ev) {
+        $('.main').toggle();
+        $('.normal-button').toggle();
+        $('.crop-img').toggle();
+        $('.crop-button').toggle();
+        $('#upload-demo').croppie('destroy');
+    });
+    // Start Crop Photo
+    $(document).on('click', '.btn-crop', function(ev) {
+        $('#upload-demo').croppie('result', {
+                type: 'canvas',
+                size: 'viewport'
+            })
+            .then(function(r) {
+                $('.main').show();
+                $('.normal-button').show();
+                $('.crop-img').hide();
+                $('.crop-button').hide();
+                $("#" + idImg).attr('src', r);
+            });
+        $('#upload-demo').croppie('destroy');
+    });
 </script>
-
-<script src="Pest.js"></script>

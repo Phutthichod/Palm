@@ -2,16 +2,22 @@
 session_start();
 
 $idUT = $_SESSION[md5('typeid')];
+$idUTLOG = $_SESSION[md5('LOG_LOGIN')];
 $CurrentMenu = "OilPalmAreaVol";
 $currentYear = date("Y") + 543;
 $backYear = date("Y") + 543 - 1;
+
+include_once("../layout/LayoutHeader.php"); 
+include_once("../../dbConnect.php"); 
+
+$DIMownerID = $idUTLOG[1]['DIMuserID'];
+
+
+
 ?>
 
-
-<?php include_once("../layout/LayoutHeader.php"); ?>
-
 <body>
-    <?php include_once("connect_db.php"); ?>
+    
     <div class="container">
         <div class="row">
             <div class="col-xl-12 col-12 mb-4">
@@ -39,8 +45,18 @@ $backYear = date("Y") + 543 - 1;
                         <div class="row no-gutters align-items-center">
                             <div class="col mr-2">
                                 <div class="font-weight-bold  text-uppercase mb-1">ผลผลิตปี <?php echo $currentYear ?></div>
-                                <?php ?>
-                                <div class="h5 mb-0 font-weight-bold text-gray-800">21 ก.ก.</div>
+                                <?php 
+                                    $sql = "SELECT * FROM `log-harvest` WHERE `DIMownerID` = $DIMownerID AND `isDelete` =0";
+                                    $myConDB = connectDB();
+                                    $result = $myConDB->prepare( $sql ); 
+                                    $result->execute(); 
+                                    $weightCard = 0;
+                                    while ($row = $result->fetch(PDO::FETCH_ASSOC)){
+                                        if((int)date('Y',$row["Modify"]) + 543==(int)$currentYear)
+                                            $weightCard = $weightCard + $row['Weight'];
+                                    }
+                                ?>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800"><?php echo $weightCard; ?> ก.ก.</div>
                                 
                             </div>
                             <div class="col-auto">
@@ -56,7 +72,18 @@ $backYear = date("Y") + 543 - 1;
                         <div class="row no-gutters align-items-center">
                             <div class="col mr-2">
                                 <div class="font-weight-bold  text-uppercase mb-1">ผลผลิตปี <?php echo $backYear ?></div>
-                                <div class="h5 mb-0 font-weight-bold text-gray-800">30 ก.ก.</div>
+                                <?php
+                                    $sql = "SELECT * FROM `log-harvest` WHERE `DIMownerID` = $DIMownerID AND `isDelete` =0";
+                                    $myConDB = connectDB();
+                                    $result = $myConDB->prepare( $sql ); 
+                                    $result->execute(); 
+                                    $weightCardBY = 0;
+                                    while ($row = $result->fetch(PDO::FETCH_ASSOC)){
+                                        if((int)date('Y',$row["Modify"]) + 543==(int)$backYear)
+                                            $weightCardBY = $weightCardBY + $row['Weight'];
+                                    } 
+                                ?>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800"><?php echo $weightCardBY;?> ก.ก.</div>
                             </div>
                             <div class="col-auto">
                                 <i class="material-icons icon-big">filter_vintage</i>
@@ -71,7 +98,22 @@ $backYear = date("Y") + 543 - 1;
                         <div class="row no-gutters align-items-center">
                             <div class="col mr-2">
                                 <div class="font-weight-bold  text-uppercase mb-1">พื้นที่ทั้งหมด</div>
-                                <div class="h5 mb-0 font-weight-bold text-gray-800">10 ไร่</div>
+                                <?php
+                                    $sql = "SELECT `log-farm`.`DIMfarmID` , `db-subfarm`.`AreaRai` FROM `log-farm`
+                                    JOIN `dim-farm` ON `log-farm`.`DIMsubfID` = `dim-farm`.`ID`
+                                    JOIN `db-subfarm` ON `dim-farm`.`dbID` = `db-subfarm`.`FSID`
+                                    WHERE `dim-farm`.`isFarm` = 0 AND `DIMownerID` = $DIMownerID
+                                    ";
+                                $myConDB = connectDB();
+                                $result = $myConDB->prepare( $sql ); 
+                                $result->execute();
+                                $areaCard = 0;
+                                while ($row = $result->fetch(PDO::FETCH_ASSOC)){ 
+                                    $areaCard= $areaCard + $row['AreaRai'];
+                                
+                                }
+                                ?>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800"><?php echo $areaCard; ?> ไร่</div>
                             </div>
                             <div class="col-auto">
                                 <i class="material-icons icon-big">dashboard</i>
@@ -86,7 +128,18 @@ $backYear = date("Y") + 543 - 1;
                         <div class="row no-gutters align-items-center">
                             <div class="col mr-2">
                                 <div class="font-weight-bold  text-uppercase mb-1">จำนวนต้นไม้ทั้งหทด</div>
-                                <div class="h5 mb-0 font-weight-bold text-gray-800">150 ต้น</div>
+                                <?php
+                                     $sql = "SELECT * FROM `log-planting` WHERE  `DIMownerID` = $DIMownerID AND `isDelete`= 0";
+                                     $myConDB = connectDB();
+                                     $result = $myConDB->prepare( $sql ); 
+                                     $result->execute(); 
+                                     $numTreeCard = 0;
+                                     while ($row = $result->fetch(PDO::FETCH_ASSOC)){
+                                         if((int)date('Y',$row["Modify"]) + 543==(int)$currentYear)
+                                             $numTreeCard = $numTreeCard + $row['NumGrowth1'] + $row['NumGrowth2'] - $row['NumDead'];
+                                     }
+                                ?>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800"><?php echo $numTreeCard; ?> ต้น</div>
                             </div>
                             <div class="col-auto">
                                 <i class="material-icons icon-big">format_size</i>
@@ -98,10 +151,16 @@ $backYear = date("Y") + 543 - 1;
         </div>
         <div class="row">
             <div class="col-xl-12 col-12">
-                <div class="card">
-                    <div class="card-header card-bg">
-                        ตำแหน่งผลผลิตสวนปาล์มน้ำมัน
+                <div id="accordion">
+                    <div class="card">
+                        <div class="card-header collapsed" id="headingOne" data-toggle="collapse" data-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne" style="cursor:pointer; background-color: #E91E63; color: white;">
+                        <div class="row">
+                            <div class="col-6">
+                                <i class="fas fa-search"> ตำแหน่งผลผลิตสวนปาล์มน้ำมัน</i>
+                            </div>
+                        </div>
                     </div>
+                    <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordion">
                     <div class="card-body">
                         <div class="row">
                             <div class="col-xl-6 col-12">
@@ -142,16 +201,16 @@ $backYear = date("Y") + 543 - 1;
                                             <option selected>เลือกจังหวัด</option>
                                             <?php
                                             $sql = "SELECT * FROM `db-province` ";
-                                            $result = $conn->query($sql);
-                                            if ($result->num_rows > 0) {
-                                                while ($row = $result->fetch_assoc()) {
+                                            $myConDB = connectDB();
+                                            $result = $myConDB->prepare( $sql ); 
+                                            $result->execute();
+                                        
+                                            while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
                                                     ?>
                                                     <option> <?php echo $row["Province"]; ?> </option>
                                             <?php
                                                 }
-                                            } else {
-                                                echo "0 row";
-                                            }
+                                            
                                             //$conn->close();
                                             ?>
                                         </select>
@@ -168,17 +227,17 @@ $backYear = date("Y") + 543 - 1;
                                             <option selected>เลือกอำเภอ</option>
                                             <?php
                                             $sql = "SELECT * FROM `db-distrinct` ";
-                                            $result = $conn->query($sql);
-                                            if ($result->num_rows > 0) {
-                                                while ($row = $result->fetch_assoc()) {
+                                            $myConDB = connectDB();
+                                            $result = $myConDB->prepare( $sql ); 
+                                            $result->execute();
+                                        
+                                            while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
                                                     ?>
                                                     <option> <?php echo $row["Distrinct"]; ?> </option>
                                             <?php
                                                 }
-                                            } else {
-                                                echo "0 row";
-                                            }
-                                            //$conn->close();
+                                          
+                                            //$conn->close();*/
                                             ?>
 
                                         </select>
@@ -208,16 +267,18 @@ $backYear = date("Y") + 543 - 1;
                             </div>
                         </div>
                     </div>
+                    </div>
                 </div>
             </div>
         </div>
+    </div>
         <div class="row mt-4">
             <div class="col-xl-12 col-12">
                 <div class="card">
                     <div class="card-header card-bg">
                         <div>
                             <span>ผลผลิตสวนปาล์มน้ำมันในระบบ</span>
-                            <span style="float:right;">ปี 2562</span>
+                            <span style="float:right;">ปี <?php echo $currentYear; ?></span>
                         </div>
                     </div>
                     <div class="card-body">
@@ -254,48 +315,133 @@ $backYear = date("Y") + 543 - 1;
                                     </tr>
                                 </tfoot>
                                 <tbody>
-                                    <tr>
+                                <?php
+                                        echo "Owner ID = " ,$idUTLOG[1]['DIMuserID']." ".$idUTLOG[1]['ID'];
 
-                                    <!--SELECT FirstName , `LastName`, Distrinct , Province , FMID 
-                                    FROM db-farmer JOIN db-subdistrinct ON `db-subdistrinct`.`AD3ID` = `db-farmer`.`AD3ID` 
-                                    JOIN db-distrinct ON `db-subdistrinct`.`AD2ID` = `db-distrinct`.`AD2ID` 
-                                    JOIN db-province ON `db-distrinct`.`AD1ID` = `db-province`.`AD1ID` 
-                                    JOIN db-farm ON `db-farm`.`UFID` = `db-farmer`.`UFID
-                            
-                                    
-                                    SELECT  `dim-user`.`Alias`, `dim-farm`.`Alias`  FROM `dim-user` 
-                                    JOIN `dim-farm` ON `dim-user`.`dbID`=`dim-farm`.`dbID`
-                                    JOIN `log-farm` ON `log-farm`.`ID` = `dim-user`.`dbID`
+                                         // ID ของ farm
+                                        $sql = "SELECT `log-farm`.`DIMfarmID` FROM `log-farm` 
+                                                JOIN `dim-farm` ON `log-farm`.`DIMSubfID`=`dim-farm`.`ID`
+                                                WHERE `log-farm`.`DIMownerID` = $DIMownerID 
+                                         ";
+                                        $myConDB = connectDB();
+                                        $result = $myConDB->prepare( $sql ); 
+                                        $result->execute();
+                                        $num = 0;    
+                                        $A1 = array();    
+                                        while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
+                                            $A1[$num] = $row['DIMfarmID'];
+                                            $num += 1;
+                                        }
+                                        $A = array_unique($A1);
+                                        rsort($A);
+                                        $x = count($A);
+                                        for($i=0;$i<$x;$i++){
+                                            $subFarm["$A[$i]"]=0;
+                                            $area["$A[$i]"]=0;
+                                            $numTree["$A[$i]"]=0;
+                                            $weight["$A[$i]"]=0;
+                                        }
+                                        //
 
-                                    -->
-
-                                        <?php
-                                        $sql = "SELECT `dim-user`.`Alias`, `dim-farm`.`Alias` as Alias2,  `NumSubFarm`, `NumTree`, `AreaRai` ,`Weight` FROM `log-farm` 
-                                                JOIN `dim-user` ON `log-farm`.`DIMownerID` = `dim-user`.`ID` 
-                                                JOIN `dim-farm` ON `log-farm`.`DIMfarmID`=`dim-farm`.`ID`
-                                                JOIN `log-harvest` ON `log-farm`.`DIMfarmID` = `log-harvest`.`DIMfarmID`
+                                        // จำนวนแปลง
+                                        $sql = "SELECT * FROM `log-farm`
+                                                JOIN `dim-farm` ON `log-farm`.`DIMsubfID` = `dim-farm`.`ID`
+                                                JOIN `db-subfarm` ON `dim-farm`.`dbID` = `db-subfarm`.`FSID`
+                                                WHERE `dim-farm`.`isFarm` = 0 AND `DIMownerID` = $DIMownerID 
                                                 ";
-                                        $result = $conn->query($sql);
-                                        if ($result->num_rows > 0) {
-                                            while ($row = $result->fetch_assoc()) {
+                                        $myConDB = connectDB();
+                                        $result = $myConDB->prepare( $sql ); 
+                                        $result->execute(); 
+                                        while ($row = $result->fetch(PDO::FETCH_ASSOC)){
+                                                $subFarm[$row['DIMfarmID']] = $subFarm[$row['DIMfarmID']] + 1;
+                                        }
+                                        //
+
+                                        // จำนวนไร่
+                                        $sql = "SELECT `log-farm`.`DIMfarmID` , `db-subfarm`.`AreaRai` FROM `log-farm`
+                                                JOIN `dim-farm` ON `log-farm`.`DIMsubfID` = `dim-farm`.`ID`
+                                                JOIN `db-subfarm` ON `dim-farm`.`dbID` = `db-subfarm`.`FSID`
+                                                WHERE `dim-farm`.`isFarm` = 0 AND `DIMownerID` = $DIMownerID
+                                                ";
+                                        $myConDB = connectDB();
+                                        $result = $myConDB->prepare( $sql ); 
+                                        $result->execute(); 
+                                        
+                                        while ($row = $result->fetch(PDO::FETCH_ASSOC)){ 
+                                            $area[$row['DIMfarmID']] = $area[$row['DIMfarmID']] + $row['AreaRai'];
+                                            
+                                        }
+                                        //
+
+                                        // จำนวนต้นไม้
+                                        $sql = "SELECT * FROM `log-planting` WHERE  `DIMownerID` = $DIMownerID AND `isDelete`= 0";
+                                        $myConDB = connectDB();
+                                        $result = $myConDB->prepare( $sql ); 
+                                        $result->execute(); 
+                                        
+                                        while ($row = $result->fetch(PDO::FETCH_ASSOC)){
+                                            if((int)date('Y',$row["Modify"]) + 543==$currentYear)
+                                                $numTree[$row['DIMfarmID']] = $numTree[$row['DIMfarmID']] + $row['NumGrowth1'] + $row['NumGrowth2']-$row['NumDead'];
+                                        }
+                                        //
+
+                                        // น้ำหนักรวม
+                                        $sql = "SELECT * FROM `log-harvest` WHERE `DIMownerID` = $DIMownerID AND `isDelete`= 0";
+                                        $myConDB = connectDB();
+                                        $result = $myConDB->prepare( $sql ); 
+                                        $result->execute(); 
+                                        
+                                        while ($row = $result->fetch(PDO::FETCH_ASSOC)){
+                                            if((int)date('Y',$row["Modify"]) + 543==$currentYear)
+                                                $weight[$row['DIMfarmID']] = $weight[$row['DIMfarmID']] + $row['Weight'];
+                                        }
+                                        //
+
+                                        // ชื่อ
+                                        $sql = "SELECT * FROM `dim-user` WHERE `dim-user`.`ID` = $DIMownerID ";
+                                        $myConDB = connectDB();
+                                        $result = $myConDB->prepare( $sql ); 
+                                        $result->execute();
+                                        while ($row = $result->fetch(PDO::FETCH_ASSOC)){
+                                            $uname= $row['Alias'];
+                                        }
+                                        //
+
+                                        //แสดงค่าในตาราง
+                                        
+                                            for($i=0;$i<$x;$i++){
+                                                $DIMfarmID = $A[$i];
                                                 ?>
-                                                <td><?php echo $row["Alias"]; ?></td>
-                                                <td><?php echo $row["Alias2"]; ?></td>
-                                                <td><?php echo $row["NumSubFarm"]; ?></td>
-                                                <td><?php echo $row["NumTree"]; ?></td>
-                                                <td><?php echo $row["AreaRai"]; ?></td>
-                                                <td><?php echo $row["Weight"]; ?></td>
+                                            <tr>
+                                                <td><?php echo $uname; ?></td>
+                                                <td><?php $sql = "SELECT * FROM `log-farm` JOIN `dim-farm` ON `log-farm`.`DIMFarmID` = `dim-farm`.`ID`
+                                                            WHERE `dim-farm`.`ID` = $A[$i]";
+                                                            $myConDB = connectDB();
+                                                            $result = $myConDB->prepare($sql); 
+                                                            $result->execute();
+                                                        while ($row = $result->fetch(PDO::FETCH_ASSOC)){
+                                                            $fname = $row["Alias"];
+                                                        } 
+                                                        echo $fname;
+                                                    ?></td>
+                                                <td style="text-align:right;"><?php echo $subFarm["$DIMfarmID"]; ?></td>
+                                                <td style="text-align:right;"><?php echo $area["$DIMfarmID"]; ?></td>
+                                                <td style="text-align:right;"><?php echo $numTree["$DIMfarmID"]; ?></td>
+                                                <td style="text-align:right;"><?php echo $weight["$DIMfarmID"];?></td>
+                                                <td style="text-align:center;">
+                                                <?php 
+                                                   $farmID=$A[$i];
+                                                ?>
+                                                <form method="post" id="ID" name = "formID" action="OilPalmAreaVolDetail.php">
+                                                    <input type="text" hidden class="form-control" name="farmID" id="farmID" value="<?php echo "$farmID"?>">
+                                                    <button type="submit"  id="btn_info" class="btn btn-info btn-sm"><i class="fas fa-bars"></i></button></a>
+                                                </form>
+                                                </td>
+                                            </tr>       
                                         <?php
                                             }
-                                        } else {
-                                            echo "0 row";
-                                        }
-                                        $conn->close();
+                                        
                                         ?>
-                                        <td style="text-align:center;">
-                                            <a href="OilPalmAreaVolDetail.php"><button type="button" id="btn_info" class="btn btn-info btn-sm"><i class="fas fa-bars"></i></button></a>
-                                        </td>
-                                    </tr>
                                     <!-- <tr>
                                     <td>บรรยาวัชร</td>
                                     <td>ไลอ้อน</td>

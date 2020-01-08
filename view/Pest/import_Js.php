@@ -21,15 +21,16 @@
   <script src="./DataTable_Js/buttons.html5.min.js"></script>
 
   <!-- <script src="./buttons.print.min.js"></script>
-    <script src="./buttons.colVis.min.js"></script> -->
+  <script src="./buttons.colVis.min.js"></script> -->
 
   <!-- Modal -->
   <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 
   <!-- RangeSlider Plugin Js -->
   <script src="../../lib/ion-rangeslider/js/ion.rangeSlider.js"></script>
+
   <script src="../../lib/markmap/markerclusterer.js"></script>
-  <script src='../../lib/calendar/js/fullcalendar.js' type="text/javascript"></script>
+  <!-- <script src='../../lib/calendar/js/fullcalendar.js' type="text/javascript"></script> -->
   <script src="../../lib/chart.js/Chart.min.js"></script>
 
   <!-- <script src='../../js/customize.js' type="text/javascript"></script> -->
@@ -40,7 +41,7 @@
 
   <!-- Latest compiled and minified JavaScript -->
   <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.9/dist/js/bootstrap-select.min.js"></script> -->
-  
+
 
   <!-- (Optional) Latest compiled and minified JavaScript translation files -->
   <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.9/dist/js/i18n/defaults-*.min.js"></script> -->

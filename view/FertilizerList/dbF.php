@@ -7,7 +7,7 @@ $request = $_POST['request'];
 
 switch($request){
     case 'select': //--------------------------case select ------------------------------
-        $sql = "SELECT * FROM `db-fertilizer` join `DIM-Fertilizer` on (`dbID` = `db-fertilizer`.`FID`) WHERE `db-fertilizer`.`Name` = `DIM-Fertilizer`.`Name` AND `db-fertilizer`.`Alias` = `DIM-Fertilizer`.`Alias`";
+        $sql = "SELECT * FROM `db-fertilizer` join `dim-fertilizer` on (`dbID` = `db-fertilizer`.`FID`) WHERE `db-fertilizer`.`Name` = `dim-fertilizer`.`Name` AND `db-fertilizer`.`Alias` = `dim-fertilizer`.`Alias`";
         print_r(json_encode(select($sql)));
         break;
     case 'p':
@@ -23,7 +23,7 @@ switch($request){
         }
         $FID = $_POST['id'];
         $dataCondition = selectData(" SELECT * FROM `db-fercondition` WHERE `FID` = $FID");
-        echo"---". $numCon."=".$dataCondition[0]['numrow'];
+        // echo"---". $numCon."=".$dataCondition[0]['numrow'];
         break;
     case 'update': //--------------------------case update ------------------------------
         $Name = preg_replace('/[[:space:]]+/', ' ', trim($_POST['name']));
@@ -34,7 +34,7 @@ switch($request){
         $DIMID = $_POST['dimid'];
         $Icon = $_POST['icon'];
 
-        echo"---". "Iconnnnnn".$Icon;
+        // echo"---". "Iconnnnnn".$Icon;
         $dataI;
         
         // ------------------------------- check data to update
@@ -209,7 +209,7 @@ switch($request){
         }
         else{
             if($DIMID!=$IDInsert){
-                echo"---"."insertttttttttttt";
+                // echo"---"."insertttttttttttt";
                 $StartT = time();
                 $StartID = getDIMDate()[1]['ID'];
                 $IDICON = $DIMID;
@@ -326,7 +326,7 @@ function insertLog($data){
     //     $dataIcon['StartID'] = $StartID; 
     // }
    
-    $sql = "SELECT * FROM `DIM-Fertilizer` WHERE `dbID` = $FID  AND `Name` = '$Name' AND`Alias` = '$Alias'";
+    $sql = "SELECT * FROM `dim-fertilizer` WHERE `dbID` = $FID  AND `Name` = '$Name' AND`Alias` = '$Alias'";
     // $DIMfertID = selectData($sql)[1]['ID'];
     // echo"---". $DIMfertID;
     $checkDIM = selectData($sql);
@@ -334,9 +334,9 @@ function insertLog($data){
         $DIMfertID = $checkDIM[1]['ID'];
     }else{
         // echo"---". "elsessssss";
-    $sqlDIM_Fertilizer = "INSERT INTO `DIM-Fertilizer` (`dbID`,`Name`,`Alias`) VALUE ($FID,'$Name','$Alias')";
+    $sqlDIM_Fertilizer = "INSERT INTO `dim-fertilizer` (`dbID`,`Name`,`Alias`) VALUE ($FID,'$Name','$Alias')";
     $DIMfertID = addinsertData($sqlDIM_Fertilizer);
-    echo"---". "insertDIM";
+    // echo"---". "insertDIM";
     // echo"---". $sqlDIM_Fertilizer;
     }
 
@@ -345,7 +345,7 @@ function insertLog($data){
     VALUES ($LOGloginID,$StartT,$StartID,$DIMfertID,$StartDD,$StartMM,$EndDD,$EndMM,$Usage,$EQ1,$EQ2);";
     // echo"---". "insert       $DIMfertID";
     addinsertData($sqlLog_Fertilizer);
-    echo"---". "insertdata";
+    // echo"---". "insertdata";
     return $DIMfertID;
 }
 function insertLogIcon($data){
@@ -356,22 +356,22 @@ function insertLogIcon($data){
     $Type = 2;
     $FileName = $data['FileName'];
     $Path = $data['Path'];
-    $sql = "INSERT INTO `LOG-Icon` (`LOGloginID`,`StartT`,`StartID`,`DIMIconID`,`Type`,`FileName`,`Path`)
+    $sql = "INSERT INTO `log-icon` (`LOGloginID`,`StartT`,`StartID`,`DIMIconID`,`Type`,`FileName`,`Path`)
     VALUES ($LOGloginID,$StartT,$StartID,$DIMIconID,2,'$FileName','$Path');";
     // echo"---". $sql;
     addinsertData($sql);
     //  $sql;
-    echo"---". "insertLogIcon";
+    // echo"---". "insertLogIcon";
 }
 
 function updateLogIcon($ID){
     $EndID = getDIMDate()[1]['ID'];
     $t = time();
-    $sql = "UPDATE `LOG-Icon` 
+    $sql = "UPDATE `log-icon` 
     SET `EndT`= $t ,`EndID` = $EndID
     WHERE `DIMIconID` = $ID AND `EndID` IS NULL;";
     updateData($sql);
-    echo"---". "updateLogIcon";
+    // echo"---". "updateLogIcon";
 }
 function insertLogCon($item,$id,$Order){
     $StartID = getDIMDate()[1]['ID'];
@@ -382,7 +382,7 @@ function insertLogCon($item,$id,$Order){
     VALUES ($LOGloginID,$t,$StartID,$id,$Order,'$item');";
     // addinsertData($sqlLog_FerCondition);
    addinsertData($sqlLog_FerCondition);
-    echo"---". "insertLogCon";
+    // echo"---". "insertLogCon";
 }
 
 function updateLog($ID){
@@ -392,16 +392,16 @@ function updateLog($ID){
     SET `EndT`= $t ,`EndID` = $EndID
     WHERE `DIMfertID` = $ID AND `EndID` IS NULL;";
     updateData($sql);
-    echo"---". "updateLog";
+    // echo"---". "updateLog";
 }
 function updateLogCon($ID){
     $EndID = getDIMDate()[1]['ID'];
     $t = time();
-    $sql = "UPDATE `log-ferCondition` 
+    $sql = "UPDATE `log-fercondition` 
     SET `EndT`= $t ,`EndID` = $EndID
     WHERE `DIMfertID` = $ID AND `EndID` IS NULL;";
     updateData($sql);
-    echo"---". "updateLogCon";
+    // echo"---". "updateLogCon";
 
 }
 ?>

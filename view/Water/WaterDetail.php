@@ -3,6 +3,10 @@ session_start();
 $idUT = $_SESSION[md5('typeid')];
 $CurrentMenu = "Water";
 $type = $_GET['type'];
+// $url = "http://" . $_SERVER['HTTP_HOST'] . $_SERVER['SCRIPT_NAME'] . "?" . $_SERVER['QUERY_STRING'];
+// echo "[  " . $_SERVER['HTTP_HOST'] . "  ]";
+// echo "[  " . $_SERVER['SCRIPT_NAME'] . "  ]";
+// echo "[  " . $_SERVER['QUERY_STRING'] . "  ]";
 ?>
 
 
@@ -304,7 +308,7 @@ $type = $_GET['type'];
 
     let type = "<?php echo $type; ?>"
 
-    console.log(type);
+
 
     let event = [];
     let eventN = [];

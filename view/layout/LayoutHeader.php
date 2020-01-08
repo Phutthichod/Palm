@@ -178,7 +178,9 @@ if ($DATAUSER[1]['IsFarmer'] == 1 && $idUT != 4) {
     div {
       font-family: 'Kanit', sans-serif;
     }
-
+    .status-layout{
+      cursor:pointer;
+    }
     #accordionSidebar {
       background-color: #E91E63;
     }
@@ -261,7 +263,7 @@ if ($DATAUSER[1]['IsFarmer'] == 1 && $idUT != 4) {
                 </a>
                 <div class="dropdown-divider"></div>
                 <?php if ($AmountChangeType != 0) { ?>
-                  <a class="dropdown-item " data-toggle="dropdown" id="userDropdown2">
+                  <a class="dropdown-item status-layout" data-toggle="dropdown" id="userDropdown2">
                     <i class="fas fa-cog fa-sm fa-fw mr-2 text-gray-400"></i>
                     <span style="color: black;">เปลี่ยนสถานะ</span>
                   </a>
