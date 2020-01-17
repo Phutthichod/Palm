@@ -7,9 +7,26 @@ $currentYear = date("Y") + 543;
 $backYear = date("Y") + 543 - 1;
 ?>
 
-<?php include_once("../layout/LayoutHeader.php"); ?>
+<?php include_once("../layout/LayoutHeader.php");
+require_once("../../dbConnect.php");
+$totalFarm = selectDataOne("SELECT COUNT(`db-farm`.`FMID`) AS totalFarm FROM `db-farm` ");
+$totalSubFarm = selectDataOne("SELECT COUNT(`db-subfarm`.`FSID`) AS totalSubFarm FROM `db-subfarm` ");
+$totalAreaRai = selectDataOne("SELECT SUM(`db-subfarm`.`AreaRai`) AS totalAreaRai FROM `db-subfarm` ");
+$totalPalm = selectDataOne("SELECT (SUM(`log-planting`.`NumGrowth1`)+SUM(`log-planting`.`NumGrowth2`))-SUM(`log-planting`.`NumDead`) AS totalPalm FROM `log-planting`
+    WHERE `log-planting`.`isDelete` = 0");
+?>
 
 <style>
+    .img_scan {}
+
+    .text-left {
+        align: left;
+    }
+
+    .text-right {
+        align: right;
+    }
+
     .margin-photo {
         margin-top: 25px;
     }
@@ -27,6 +44,10 @@ $backYear = date("Y") + 543 - 1;
         background: white;
         margin-right: 7px;
         margin-bottom: 10px;
+    }
+
+    .mar {
+        margin-top: 5px;
     }
 
     font {
@@ -108,9 +129,9 @@ $backYear = date("Y") + 543 - 1;
                             <span class="link-active">ศัตรูพืช</span>
                             <span style="float:right;">
                                 <i class="fas fa-bookmark"></i>
-                                <a class="link-path" href="#">หน้าแรก</a>
+                                <a class="link-path" href="">หน้าแรก</a>
                                 <span> > </span>
-                                <a class="link-path link-active" href="#">ศัตรูพืช</a>
+                                <a class="link-path link-active" href="">ศัตรูพืช</a>
                             </span>
                         </div>
                     </div>
@@ -127,7 +148,7 @@ $backYear = date("Y") + 543 - 1;
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
                             <div class="font-weight-bold  text-uppercase mb-1">จำนวนครั้งพบศัตรูพืช</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">15 ครั้ง</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800"><span id="cardPestAlarm"></span></div>
                         </div>
                         <div class="col-auto">
                             <i class="material-icons icon-big">panorama_vertical</i>
@@ -142,7 +163,7 @@ $backYear = date("Y") + 543 - 1;
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
                             <div class="font-weight-bold  text-uppercase mb-1">จำนวนสวน/แปลง</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">30 สวน/100 แปลง</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800"><?php echo $totalFarm['totalFarm'] . " สวน / " . $totalSubFarm['totalSubFarm'] . " แปลง"; ?></div>
                         </div>
                         <div class="col-auto">
                             <i class="material-icons icon-big">filter_vintage</i>
@@ -157,7 +178,7 @@ $backYear = date("Y") + 543 - 1;
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
                             <div class="font-weight-bold  text-uppercase mb-1">พื้นที่ทั้งหมด</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">10 ไร่</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800"><?php echo $totalAreaRai['totalAreaRai']; ?> ไร่</div>
                         </div>
                         <div class="col-auto">
                             <i class="material-icons icon-big">dashboard</i>
@@ -172,7 +193,7 @@ $backYear = date("Y") + 543 - 1;
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
                             <div class="font-weight-bold  text-uppercase mb-1">จำนวนต้นไม้ทั้งหทด</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">150 ต้น</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800"><?php echo $totalPalm['totalPalm']; ?> ต้น</div>
                         </div>
                         <div class="col-auto">
                             <i class="material-icons icon-big">format_size</i>
@@ -306,17 +327,18 @@ $backYear = date("Y") + 543 - 1;
                 <div class="card-header card-bg">
                     <div>
                         <span>ศัตรูพืชสวนปาล์มน้ำมันในระบบ</span>
-                        <button type="button" id="btn-modal5" style="float:right;" class="btn btn-success" data-toggle="modal" data-target="#modal-5"><i class="fas fa-plus"></i>เพิ่มการตรวจพบศัตรูพืช</button>
-                        <!-- <span style="float:right;">ปี 2562</span> -->
+                        <span style="float:right;">ปี 2563</span>
                     </div>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
+                        <button type="button" id="btn-modal5" style="float:right;" class="btn btn-success" data-toggle="modal" data-target="#modal-5"><i class="fas fa-plus"></i>เพิ่มการตรวจพบศัตรูพืช</button>
                         <table id="example" class="table table-bordered table-striped table-hover table-data">
                             <thead>
                                 <tr>
                                     <th>ชื่อเกษตรกร</th>
                                     <th>ชื่อสวน</th>
+                                    <th>ชื่อแปลง</th>
                                     <th>จำนวนแปลง</th>
                                     <th>พื้นที่ปลูก</th>
                                     <th>จำนวนต้น</th>
@@ -329,6 +351,7 @@ $backYear = date("Y") + 543 - 1;
                                 <tr>
                                     <th>ชื่อเกษตรกร</th>
                                     <th>ชื่อสวน</th>
+                                    <th>ชื่อแปลง</th>
                                     <th>จำนวนแปลง</th>
                                     <th>พื้นที่ปลูก</th>
                                     <th>จำนวนต้น</th>
@@ -428,95 +451,22 @@ $backYear = date("Y") + 543 - 1;
         </div>
     </div>
 
-    <div class="row modal fade" id="modal-4" role="dialog">
-        <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4" style="text-align: center;">
-            <div style="text-align: center;">
-                <img class="img-radius" src="../../picture/default.jpg" />
-            </div>
-            <hr>
-            <h4>ชื่อ : แมลง 1</h4>
-            <h4>ชื่อทางการ : แมลงเต่าทอง</h4>
-            <button type="button" id="btn_edit" class="test btn btn-warning btn-sm form-control mt-3" value="0">แก้ไขข้อมูล</button>
-        </div>
-        <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
-            <h4>ลักษณะ</h4>
-            <textarea rows="10" cols="40" style="margin-bottom:20px; max-width: 270px;" readonly>ข้อมูลลักษณะ</textarea>
-
-            <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
-                <ol class="carousel-indicators">
-                    <li data-target="#carouselExampleIndicators" data-slide-to="0" class="active"></li>
-                    <li data-target="#carouselExampleIndicators" data-slide-to="1"></li>
-                    <li data-target="#carouselExampleIndicators" data-slide-to="2"></li>
-                </ol>
-                <div class="carousel-inner">
-                    <div class="carousel-item active">
-                        <img class="" src="../../picture/defaultPalm.jpg">
+    <!-------------- Edit Modal ------------->
+    <div class="modal fade" id="modal-4" role="dialog">
+        <form method="post" enctype="multipart/form-data" id="e_form-insert">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header header-modal">
+                        <h4 class="modal-title">เพิ่มการตรวจพบศัตรูพืช</h4>
                     </div>
-                    <div class="carousel-item">
-                        <img class="" src="../../picture/defaultPalm.jpg">
-                    </div>
-                    <div class="carousel-item">
-                        <img class="" src="../../picture/defaultPalm.jpg">
-                    </div>
-                </div>
-                <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
-                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                    <span class="sr-only">Previous</span>
-                </a>
-                <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
-                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                    <span class="sr-only">Next</span>
-                </a>
-            </div>
-
-        </div>
-        <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
-            <h4>อันตราย</h4>
-            <textarea rows="10" cols="40" style="margin-bottom:20px; max-width: 270px;" readonly>ข้อมูลอันตราย</textarea>
-
-            <div id="carouselExampleIndicators2" class="carousel slide" data-ride="carousel">
-                <ol class="carousel-indicators">
-                    <li data-target="#carouselExampleIndicators2" data-slide-to="0" class="active"></li>
-                    <li data-target="#carouselExampleIndicators2" data-slide-to="1"></li>
-                    <li data-target="#carouselExampleIndicators2" data-slide-to="2"></li>
-                </ol>
-                <div class="carousel-inner">
-                    <div class="carousel-item active">
-                        <img class="" src="../../picture/defaultPalm.jpg">
-                    </div>
-                    <div class="carousel-item">
-                        <img class="" src="../../picture/defaultPalm.jpg">
-                    </div>
-                    <div class="carousel-item">
-                        <img class="" src="../../picture/defaultPalm.jpg">
-                    </div>
-                </div>
-                <a class="carousel-control-prev" href="#carouselExampleIndicators2" role="button" data-slide="prev">
-                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                    <span class="sr-only">Previous</span>
-                </a>
-                <a class="carousel-control-next" href="#carouselExampleIndicators2" role="button" data-slide="next">
-                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                    <span class="sr-only">Next</span>
-                </a>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal fade" id="modal-5"  role="dialog">
-        <div class="modal-dialog modal-lg" role="document">
-            <div class="modal-content">
-                <div class="modal-header header-modal">
-                    <h4 class="modal-title">เพิ่มการตรวจพบศัตรูพืช</h4>
-                </div>
-                <div class="modal-body">
-                    <div class="main">
-                    <div class="row mb-4">
+                    <div class="modal-body">
+                        <div class="main">
+                            <div class="row mb-4">
                                 <div class="col-xl-3 col-12 text-right">
                                     <span>วันที่</span>
                                 </div>
                                 <div class="col-xl-9 col-12">
-                                    <input class="form-control" width="auto" class="" id="p_date" />
+                                    <input class="form-control" width="auto" id="e_p_date" />
                                 </div>
                             </div>
                             <div class="row mb-4">
@@ -524,7 +474,7 @@ $backYear = date("Y") + 543 - 1;
                                     <span>จากสวน</span>
                                 </div>
                                 <div class="col-xl-9 col-12">
-                                    <select class="js-example-basic-single" id="p_farm">
+                                    <select class="js-example-basic-single" id="e_p_farm">
 
                                     </select>
                                 </div>
@@ -534,7 +484,7 @@ $backYear = date("Y") + 543 - 1;
                                     <span>จากแปลง</span>
                                 </div>
                                 <div class="col-xl-9 col-12">
-                                    <select class="js-example-basic-single" id="p_subfarm">
+                                    <select class="js-example-basic-single" id="e_p_subfarm">
 
                                     </select>
                                 </div>
@@ -544,7 +494,7 @@ $backYear = date("Y") + 543 - 1;
                                     <span>ชนิดศัตรูพืช</span>
                                 </div>
                                 <div class="col-xl-9 col-12">
-                                    <select class="js-example-basic-single" id="p_rank">
+                                    <select class="js-example-basic-single" id="e_p_rank">
 
                                     </select>
                                 </div>
@@ -554,7 +504,7 @@ $backYear = date("Y") + 543 - 1;
                                     <span>ศัตรูพืช</span>
                                 </div>
                                 <div class="col-xl-9 col-12">
-                                    <select class="js-example-basic-single" id="p_pest">
+                                    <select class="js-example-basic-single" id="e_p_pest">
 
                                     </select>
                                 </div>
@@ -564,45 +514,136 @@ $backYear = date("Y") + 543 - 1;
                                     <span>ลักษณะ</span>
                                 </div>
                                 <div class="col-xl-9 col-12">
-                                    <textarea name="" class="form-control" id="p_note" cols="30" rows="5"></textarea>
+                                    <textarea name="" class="form-control" id="e_p_note" cols="30" rows="5"></textarea>
                                 </div>
                             </div>
-                        <div class="row mb-4">
-                            <div class="col-xl-3 col-12 text-right">
-                                <span>รูปภาพ</span>
-                            </div>
-                            <div class="col-xl-9 col-12">
-                                <div class="grid-img-multiple">
+                            <div class="row mb-4">
+                                <div class="col-xl-3 col-12 text-right">
+                                    <span>รูปภาพ</span>
+                                </div>
+                                <div class="col-xl-9 col-12">
+                                    <div class="grid-img-multiple" id="e_p_insert_img">
 
-                                    <div class="img-reletive">
-                                        <img src="https://ast.kaidee.com/blackpearl/v6.18.0/_next/static/images/gallery-filled-48x48-p30-6477f4477287e770745b82b7f1793745.svg" width="50px" height="50px" alt="">
-                                        <input type="file" class="form-control" id="p_photo" name="p_photo[]" accept=".jpg,.png" multiple>
                                     </div>
                                 </div>
                             </div>
                         </div>
+                        <div class="crop-img">
+                            <center>
+                                <div id="e_upload-demo" class="center-block"></div>
+                            </center>
+                        </div>
+                        <input type="hidden" id="e_hidden_id" name="e_photo" value="edit" />
+                        <div class="modal-footer normal-button">
+                            <button id="e_m_success" type="button" class="btn btn-success">ยืนยัน</button>
+                            <button id="e_m_not_success" type="button" class="btn btn-danger" data-dismiss="modal">ยกเลิก</button>
+                        </div>
+                        <div class="modal-footer crop-button">
+                            <button type="button" class="btn btn-success btn-crop">ยืนยัน</button>
+                            <button type="button" class="btn btn-danger btn-cancel-crop" data-dismiss="modal">ยกเลิก</button>
+                        </div>
                     </div>
-                    <div class="crop-img">
-                        <center>
-                            <!-- <input id='pic-logo' type='file' class='item-img file center-block' name='icon_insert' /> -->
-                            <!-- <img id="img-insert" src="https://via.placeholder.com/200x200.png" alt="" width="200" height="200"> -->
-                            <div id="upload-demo"  class="center-block"></div>
-                        </center>
-                    </div>
-                </div>
-                <div class="modal-footer normal-button">
-                    <button id="m_success" type="button" class="btn btn-success">ยืนยัน</button>
-                    <button id="m_not_success" type="button" class="btn btn-danger" data-dismiss="modal">ยกเลิก</button>
-                </div>
-                <div class="modal-footer crop-button">
-                    <button  type="button" class="btn btn-success btn-crop">ยืนยัน</button>
-                    <button  type="button" class="btn btn-danger btn-cancel-crop" data-dismiss="modal">ยกเลิก</button>
                 </div>
             </div>
-        </div>
+        </form>
     </div>
 
+    <!--------------  Modal ------------->
+    <div class="modal fade" id="modal-5" role="dialog">
+        <form method="post" enctype="multipart/form-data" id="form-insert">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header header-modal">
+                        <h4 class="modal-title">เพิ่มการตรวจพบศัตรูพืช</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="main">
+                            <div class="row mb-4">
+                                <div class="col-xl-3 col-12 text-right">
+                                    <span>วันที่</span>
+                                </div>
+                                <div class="col-xl-9 col-12">
+                                    <input class="form-control" width="auto" id="p_date" name="p_date" />
+                                </div>
+                            </div>
+                            <div class="row mb-4">
+                                <div class="col-xl-3 col-12 text-right">
+                                    <span>จากสวน</span>
+                                </div>
+                                <div class="col-xl-9 col-12">
+                                    <select class="js-example-basic-single" id="p_farm" name="p_farm">
 
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row mb-4">
+                                <div class="col-xl-3 col-12 text-right">
+                                    <span>จากแปลง</span>
+                                </div>
+                                <div class="col-xl-9 col-12">
+                                    <select class="js-example-basic-single" id="p_subfarm" name="p_subfarm">
+
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row mb-4">
+                                <div class="col-xl-3 col-12 text-right">
+                                    <span>ชนิดศัตรูพืช</span>
+                                </div>
+                                <div class="col-xl-9 col-12">
+                                    <select class="js-example-basic-single" id="p_rank" name="p_rank">
+
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row mb-4">
+                                <div class="col-xl-3 col-12 text-right">
+                                    <span>ศัตรูพืช</span>
+                                </div>
+                                <div class="col-xl-9 col-12">
+                                    <select class="js-example-basic-single" id="p_pest" name="p_pest">
+
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row mb-4">
+                                <div class="col-xl-3 col-12 text-right">
+                                    <span>ลักษณะ</span>
+                                </div>
+                                <div class="col-xl-9 col-12">
+                                    <textarea name="p_note" class="form-control" id="p_note" cols="30" rows="5"></textarea>
+                                </div>
+                            </div>
+                            <div class="row mb-4">
+                                <div class="col-xl-3 col-12 text-right">
+                                    <span>รูปภาพ</span>
+                                </div>
+                                <div class="col-xl-9 col-12">
+                                    <div class="grid-img-multiple" id="p_insert_img">
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="crop-img">
+                            <center>
+                                <div id="upload-demo" class="center-block"></div>
+                            </center>
+                        </div>
+                        <input type="hidden" id="hidden_id" name="photo" value="insert" />
+                        <div class="modal-footer normal-button">
+                            <button id="m_success" type="button" class="btn btn-success">ยืนยัน</button>
+                            <button id="m_not_success" type="button" class="btn btn-danger" data-dismiss="modal">ยกเลิก</button>
+                        </div>
+                        <div class="modal-footer crop-button">
+                            <button type="button" class="btn btn-success btn-crop">ยืนยัน</button>
+                            <button type="button" class="btn btn-danger btn-cancel-crop" data-dismiss="modal">ยกเลิก</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
 
 </div>
 
@@ -649,7 +690,12 @@ $backYear = date("Y") + 543 - 1;
         });
 
         $('#p_date').datepicker({
-            showOtherMonths: true
+            showOtherMonths: true,
+            format: 'yyyy-mm-dd'
+        });
+        $('#e_p_date').datepicker({
+            showOtherMonths: true,
+            format: 'yyyy-mm-dd'
         });
 
     });
@@ -711,6 +757,7 @@ $backYear = date("Y") + 543 - 1;
 
     document.getElementById("province").addEventListener("load", loadProvince());
     document.getElementById("example").addEventListener("load", loadData());
+    document.getElementById("btn-modal5").addEventListener("load", loadFarm());
 
     // โหลดจังหวัด
     function loadProvince() {
@@ -752,8 +799,8 @@ $backYear = date("Y") + 543 - 1;
         xhttp.onreadystatechange = function() {
             if (this.readyState == 4 && this.status == 200) {
                 dataFarm = JSON.parse(this.responseText);
-                console.log(dataFarm)
-                let text = "<option disabled selected>เลือกสวน</option>";
+                // console.log(dataFarm)
+                let text = "<option disabled selected value='-1'>เลือกสวน</option>";
                 for (i in dataFarm) {
                     text += ` <option value="${dataFarm[i].FMID}">${dataFarm[i].Name}</option> `
                 }
@@ -764,37 +811,54 @@ $backYear = date("Y") + 543 - 1;
         xhttp.send();
     }
     // โหลด SubFarm
-    function loadSubFarm(farm) {
+    function loadSubFarm(farm, ID) {
         let xhttp = new XMLHttpRequest();
         xhttp.onreadystatechange = function() {
             if (this.readyState == 4 && this.status == 200) {
                 dataSubFarm = JSON.parse(this.responseText);
-                console.log(dataSubFarm);
-                let text = "<option value='-1' disabled selected>ทุกแปลง</option>";
+                let text = "<option value='-1'>ทุกแปลง</option>";
                 for (i in dataSubFarm) {
                     text += ` <option value="${dataSubFarm[i].FSID}">${dataSubFarm[i].Name}</option> `
                 }
-                $("#p_subfarm").html(text);
+                $(ID).html(text);
             }
         };
         xhttp.open("GET", "./loadSubFarm.php?farm=" + farm, true);
         xhttp.send();
     }
     // โหลด Pest
-    function loadPest(id) {
+    function loadPest(id, ID) {
         let xhttp = new XMLHttpRequest();
         xhttp.onreadystatechange = function() {
             if (this.readyState == 4 && this.status == 200) {
                 dataPest = JSON.parse(this.responseText);
-                console.log(dataPest);
+                // console.log(dataPest);
                 let text = "<option disabled selected>เลือกศัตรูพืช</option>";
                 for (i in dataPest) {
-                    text += ` <option value="${dataPest[i].PID}">${dataPest[i].Alias}</option> `
+                    text += ` <option value="${dataPest[i].dbpestLID}">${dataPest[i].Alias}</option> `
                 }
-                $("#p_pest").html(text);
+                $(ID).html(text);
             }
         };
         xhttp.open("GET", "./loadPest.php?id=" + id, true);
+        xhttp.send();
+    }
+    // โหลด Pest2
+    function loadPest2(path, id, ID) {
+        let xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+                dataPest = JSON.parse(this.responseText);
+                // console.log(dataPest);
+                let text = "";
+                for (i in dataPest) {
+                    text += ` <option value="${dataPest[i].dbpestLID}">${dataPest[i].Alias}</option> `
+                }
+                $(ID).html(text);
+                $(ID).val(data[id].dbpestLID).trigger('change');
+            }
+        };
+        xhttp.open("GET", "./loadPest.php?id=" + path, true);
         xhttp.send();
     }
     // โหลด Photo [log-pest]
@@ -834,24 +898,52 @@ $backYear = date("Y") + 543 - 1;
         xhttp.send(`path=${path}`);
     }
     // โหลด Photo Gallary [log-pestAlarm] -> PICS
-    function loadPhoto_LogPestAlarm(PID, TYPE1, TYPE2, ) {
-        let path = "../../picture/Pest/" + TYPE1 + "/" + TYPE2 + "/" + PID;
+    function loadPhoto_LogPestAlarm(PICS) {
         let xhttp = new XMLHttpRequest();
         xhttp.onreadystatechange = function() {
             if (this.readyState == 4 && this.status == 200) {
                 let data1 = JSON.parse(this.responseText);
                 let text = "";
                 for (i in data1) {
-                    text += `<a href="${path+"/"+data1[i]}" class="col-xl-3 col-3 margin-photo" target="_blank">
-                                      <img src="${path+"/"+data1[i]}"" class="img-gal">
-                                  </a>`
+                    text += `<a href="${PICS+"/"+data1[i]}" class="col-xl-3 col-3 margin-photo" target="_blank">
+                                <img src="${PICS+"/"+data1[i]}"" class="img-gal">
+                            </a>`
                 }
-                $("#fetchPhoto").append(text);
+                $("#fetchPhoto").html(text);
             }
         };
         xhttp.open("POST", "./scanDir.php", true);
         xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-        xhttp.send(`path=${path}`);
+        xhttp.send(`path=${PICS}`);
+    }
+    // โหลด Photo Edit [log-pestAlarm] -> PICS
+    function loadPhoto_LogPestAlarm2(PICS, id) {
+        let xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+                let data1 = JSON.parse(this.responseText);
+                let text = ``;
+                for (i in data1) {
+                    text += `<div class="card" width="70px" hight="70px">
+                                    <div class="card-body" style="padding:0;">
+                                        <img class="img_scan" src = "${PICS+"/"+data1[i]}" width="100%" hight="100%" />
+                                    </div>
+                                    <div class="card-footer">
+                                        <button type="button" class="btn btn-warning edit-img">แก้ไข</button>
+                                        <button type="button" class="btn btn-danger delete-img">ลบ</button>
+                                    </div>
+                                </div>`
+                }
+                text += `<div class="img-reletive">
+                            <img src="https://ast.kaidee.com/blackpearl/v6.18.0/_next/static/images/gallery-filled-48x48-p30-6477f4477287e770745b82b7f1793745.svg" width="50px" height="50px" alt="">
+                            <input type="file" class="form-control" id="e_p_photo" name="p_photo[]" accept=".jpg,.png" multiple>
+                        </div>`;
+                $(id).html(text);
+            }
+        };
+        xhttp.open("POST", "./scanDir.php", true);
+        xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+        xhttp.send(`path=${PICS}`);
     }
     // โหลด Datatable 
     function loadData() {
@@ -859,30 +951,34 @@ $backYear = date("Y") + 543 - 1;
         let xhttp = new XMLHttpRequest();
         xhttp.onreadystatechange = function() {
             if (this.readyState == 4 && this.status == 200) {
+                let count = 0;
                 data = JSON.parse(this.responseText);
-                console.log(data);
+                //console.log(data);
                 let text = "";
                 for (i in data) {
                     text += `<tr>
-                            <td>${data[i].Name}</td>
-                            <td>${data[i].FName}</td>
-                            <td>${data[i].SumSubFarm}</td>
-                            <td>${data[i].SumArea}</td>
-                            <td>${data[i].SumNumTree}</td>
-                            <td>${data[i].TypeTH}</td>
-                            <td>${data[i].Date}</td>
+                            <td class="text-left">${data[i].Name}</td>
+                            <td class="text-left">${data[i].FName}</td>
+                            <td class="text-left">${data[i].subFName}</td>
+                            <td class="text-right">${data[i].SumSubFarm}</td>
+                            <td class="text-right">${data[i].SumArea}</td>
+                            <td class="text-right">${data[i].SumNumTree}</td>
+                            <td style="text-align:center;">${data[i].TypeTH}</td>
+                            <td class="text-right">${data[i].Date}</td>
                             <td style="text-align:center;">
-                                <button type="button" id='${i}' Pid='${data[i].ID}' class="btn btn-info btn-sm btn-Pest" data-toggle="modal" data-target="#modal-1"><i class="fas fa-bars"></i></button>
+                                <button type="button" id='${i}' Pid='${data[i].ID}' class="btn btn-warning btn-sm btn-edit" data-toggle="modal" data-target="#modal-4"><i class="fas fa-edit"></i></button>
+                                <button type="button" id='${i}' Pid='${data[i].ID}' class="btn btn-success btn-sm btn-Pest" data-toggle="modal" data-target="#modal-1"><i class="fas fa-bars"></i></button>
                                 <button type="button" id='${i}' Pid='${data[i].ID}' class="btn btn-info btn-sm btn-photo" data-toggle="modal" data-target="#modal-2"><i class="far fa-images"></i></button>
-                                <button type="button" id='${i}' Pid='${data[i].ID}' class="btn btn-warning btn-sm btn-note" data-toggle="modal" data-target="#modal-3"><i class="far fa-sticky-note"></i></button>
+                                <button type="button" id='${i}' Pid='${data[i].ID}' class="btn btn-primary btn-sm btn-note" data-toggle="modal" data-target="#modal-3"><i class="far fa-sticky-note"></i></button>
                                 <button type="button" id='${i}' Pid='${data[i].ID}' class="btn btn-danger btn-sm btn-delete"><i class="far fa-trash-alt"></i></button>
                             </td>
-                        </tr>`
+                        </tr>`;
+                    count++;
                 }
                 $("#fetchDataTable").html(text);
                 $('#example').DataTable({
-                    dom: '<"row"<"col-sm-12"B>>' +
-                        '<"row"<"col-sm-6"l><"col-sm-6"f>>' +
+                    dom: '<"row"<"col-sm-6"B>>' +
+                        '<"row"<"col-sm-6 mar"l><"col-sm-6 mar"f>>' +
                         '<"row"<"col-sm-12"tr>>' +
                         '<"row"<"col-sm-5"i><"col-sm-7"p>>',
                     buttons: [{
@@ -904,6 +1000,7 @@ $backYear = date("Y") + 543 - 1;
                         }
                     ]
                 });
+                document.getElementById("cardPestAlarm").textContent = count + " ครั้ง";
             }
         };
         xhttp.open("GET", "./loadPestAlarm.php", true);
@@ -931,9 +1028,12 @@ $backYear = date("Y") + 543 - 1;
         ID_Distrinct = x;
     });
 
-    //Start Event load Farm
+    //Start Event Create Modal && LoadFarm
     $("#btn-modal5").on('click', function() {
-        $('#p_farm').html("<option disabled selected>เลือกสวน</option>");
+        let current_datetime = new Date()
+        let formatted_date = (current_datetime.getFullYear() + "-" + (current_datetime.getMonth() + 1) + "-" + current_datetime.getDate());
+        $('#p_date').val(formatted_date);
+        $('#p_farm').val(-1).trigger('change');
         $('#p_subfarm').html("<option disabled selected>เลือกแปลง</option>");
         $('#p_rank').html(`<option disabled selected>เลือกชนิดศัตรูพืช</option>
                             <option value="1">แมลงศัตรูพืช</option>
@@ -942,18 +1042,40 @@ $backYear = date("Y") + 543 - 1;
                             <option value="4">ศัตรูพืชอื่นๆ</option>`);
         $('#p_pest').html("<option disabled selected>เลือกศัตรูพืช</option>");
         document.getElementById("p_note").value = "";
-        let current_datetime = new Date()
-        let formatted_date = (current_datetime.getMonth() + 1) + "/" + current_datetime.getDate() + "/" + current_datetime.getFullYear();
-        $('#p_date').val(formatted_date);
-
-        loadFarm();
+        $('#p_insert_img').html(`<div class="img-reletive">
+                                    <img src="https://ast.kaidee.com/blackpearl/v6.18.0/_next/static/images/gallery-filled-48x48-p30-6477f4477287e770745b82b7f1793745.svg" width="50px" height="50px" alt="">
+                                    <input type="file" class="form-control" id="p_photo" name="p_photo[]" accept=".jpg,.png" multiple>
+                                </div>`);
+    });
+    //Start Submit Create Modal
+    $(document).on('click', '#m_success', function() {
+        console.log("*-*-*--*-*-*-*");
+        let form = new FormData($('#form-insert')[0]);
+        let pic_sc = new Array();
+        $('.img_scan').each(function(i, obj) {
+            pic_sc.push($(this).attr('src') + 'manu20');
+        });
+        form.append('pic', pic_sc);
+        $.ajax({
+            type: "POST",
+            data: form,
+            url: "uploadPhoto.php",
+            async: false,
+            cache: false,
+            contentType: false,
+            processData: false,
+            success: function(result) {
+                location.reload();
+            }
+        });
+        console.log(form);
     });
     //Start Event Select_สวน
     $("#p_farm").on('change', function() {
         $("#p_subfarm").empty();
         let x = document.getElementById("p_farm").value;
         ID_Farm = x;
-        loadSubFarm(x);
+        loadSubFarm(x, "#p_subfarm");
     });
     //Start Event Select_แปลง
     $("#p_subfarm").on('change', function() {
@@ -966,7 +1088,7 @@ $backYear = date("Y") + 543 - 1;
         $("#p_pest").empty();
         let x = document.getElementById("p_rank").value;
         ID_TypePest = x;
-        loadPest(x);
+        loadPest(x, "#p_pest");
     });
     //Start Event Select_Pest
     $("#p_pest").on('change', function() {
@@ -974,6 +1096,47 @@ $backYear = date("Y") + 543 - 1;
         ID_Pest = x;
     });
 
+
+    //
+    $(document).on('click', '.btn-edit', function() {
+        let id = $(this).attr('id');
+        let text = "";
+
+        $('#e_p_date').val(data[id].Date);
+
+        for (i in dataFarm)
+            text += ` <option value="${dataFarm[i].FMID}">${dataFarm[i].Name}</option> `;
+        $("#e_p_farm").html(text);
+        $('#e_p_farm').val(data[id].FID).trigger('change');
+
+        let xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+                dataSubFarm = JSON.parse(this.responseText);
+                let text = "";
+                for (i in dataSubFarm) {
+                    text += ` <option value="${dataSubFarm[i].FSID}">${dataSubFarm[i].Name}</option> `
+                }
+                $("#e_p_subfarm").html(text);
+                $('#e_p_subfarm').val(data[id].SFID).trigger('change');
+            }
+        };
+        xhttp.open("GET", "./loadSubFarm.php?farm=" + data[id].FID, true);
+        xhttp.send();
+
+        $('#e_p_rank').html(`<option value="1">แมลงศัตรูพืช</option>
+                            <option value="2">โรคพืช</option>
+                            <option value="3">วัชพืช</option>
+                            <option value="4">ศัตรูพืชอื่นๆ</option>`);
+        $('#e_p_rank').val(data[id].dbpestTID).trigger('change');
+
+        loadPest2(data[id].dbpestTID, id, "#e_p_pest");
+
+        document.getElementById("e_p_note").value = data[id].Note;
+
+        loadPhoto_LogPestAlarm2(data[id].PICS, "#e_p_insert_img");
+
+    });
     //
     $(document).on('click', '.btn-Pest', function() {
         let id = $(this).attr('id');
@@ -988,6 +1151,11 @@ $backYear = date("Y") + 543 - 1;
         loadPhoto_LogPest(data[id].dbpestLID, nameType, "style", "#carouselExampleIndicators2", data[id].NumPicChar);
     });
     //
+    $(document).on('click', '.btn-photo', function() {
+        let id = $(this).attr('id');
+        loadPhoto_LogPestAlarm(data[id].PICS);
+    });
+    //
     $(document).on('click', '.btn-note', function() {
         let id = $(this).attr('id');
         document.getElementById("Note").innerHTML = data[id].Note;
@@ -996,7 +1164,6 @@ $backYear = date("Y") + 543 - 1;
     $(document).on('click', '.btn-delete', function() {
         let id = $(this).attr('id');
         let pid = $(this).attr('Pid');
-
         swal({
                 title: "ยืนยันการลบข้อมูล",
                 // text: `Id_diary : ${id} ?`,
@@ -1015,26 +1182,31 @@ $backYear = date("Y") + 543 - 1;
                         let xhttp = new XMLHttpRequest();
                         xhttp.onreadystatechange = function() {
                             if (this.readyState == 4 && this.status == 200) {
+                                let count = 0;
                                 data.splice(id, 1);
                                 let text = "";
                                 for (i in data) {
                                     text += `<tr>
-                                                <td>${data[i].Name}</td>
-                                                <td>${data[i].FName}</td>
-                                                <td>${data[i].SumSubFarm}</td>
-                                                <td>${data[i].SumArea}</td>
-                                                <td>${data[i].SumNumTree}</td>
-                                                <td>${data[i].TypeTH}</td>
-                                                <td>${data[i].Date}</td>
+                                                <td class="text-left">${data[i].Name}</td>
+                                                <td class="text-left">${data[i].FName}</td>
+                                                <td class="text-left">${data[i].subFName}</td>
+                                                <td class="text-right">${data[i].SumSubFarm}</td>
+                                                <td class="text-right">${data[i].SumArea}</td>
+                                                <td class="text-right">${data[i].SumNumTree}</td>
+                                                <td style="text-align:center;">${data[i].TypeTH}</td>
+                                                <td class="text-right">${data[i].Date}</td>
                                                 <td style="text-align:center;">
-                                                    <button type="button" id='${i}' Pid='${data[i].ID}' class="btn btn-info btn-sm btn-Pest" data-toggle="modal" data-target="#modal-1"><i class="fas fa-bars"></i></button>
+                                                    <button type="button" id='${i}' Pid='${data[i].ID}' class="btn btn-warning btn-sm btn-edit" data-toggle="modal" data-target="#modal-4"><i class="fas fa-edit"></i></button>
+                                                    <button type="button" id='${i}' Pid='${data[i].ID}' class="btn btn-success btn-sm btn-Pest" data-toggle="modal" data-target="#modal-1"><i class="fas fa-bars"></i></button>
                                                     <button type="button" id='${i}' Pid='${data[i].ID}' class="btn btn-info btn-sm btn-photo" data-toggle="modal" data-target="#modal-2"><i class="far fa-images"></i></button>
-                                                    <button type="button" id='${i}' Pid='${data[i].ID}' class="btn btn-warning btn-sm btn-note" data-toggle="modal" data-target="#modal-3"><i class="far fa-sticky-note"></i></button>
+                                                    <button type="button" id='${i}' Pid='${data[i].ID}' class="btn btn-primary btn-sm btn-note" data-toggle="modal" data-target="#modal-3"><i class="far fa-sticky-note"></i></button>
                                                     <button type="button" id='${i}' Pid='${data[i].ID}' class="btn btn-danger btn-sm btn-delete"><i class="far fa-trash-alt"></i></button>
                                                 </td>
-                                            </tr>`
+                                            </tr>`;
+                                    count++;
                                 }
                                 $("#fetchDataTable").html(text);
+                                document.getElementById("cardPestAlarm").textContent = count + " ครั้ง";
                             }
                         };
                         xhttp.open("POST", "./deletePest.php", true);
@@ -1046,14 +1218,7 @@ $backYear = date("Y") + 543 - 1;
                 }
             });
     });
-    //
-    $(document).on('click', '.btn-photo', function() {
-        let id = $(this).attr('id');
-        let nameType = type[data[id].dbpestTID - 1];
-        $("#fetchPhoto").html("");
-        loadPhoto_LogPestAlarm(data[id].dbpestLID, nameType, "danger");
-        loadPhoto_LogPestAlarm(data[id].dbpestLID, nameType, "style");
-    });
+
 
     //
     $("#btn_search").on('click', function() {
@@ -1070,24 +1235,29 @@ $backYear = date("Y") + 543 - 1;
     let xxx = 0;
     $('.crop-img').hide()
     $('.crop-button').hide()
+    $(document).on('change', '#e_p_photo', function() {
+        img_Preview_Upload(this, '.grid-img-multiple');
+    });
     // Start Insert Photo
-    $('#p_photo').on('change', function() {
+    $(document).on('change', '#p_photo', function() {
         img_Preview_Upload(this, '.grid-img-multiple');
     });
     // Show Preview Photo --> After Insert
     function img_Preview_Upload(input, Target) {
         if (input.files) {
             var filesAmount = input.files.length;
+            console.log("TTTTTTTTT = " + filesAmount);
             for (i = 0; i < filesAmount; i++) {
                 var reader = new FileReader();
                 reader.onload = function(event) {
+                    console.log(xxx + "  *-*-*\n");
                     $(Target).prepend(`<div class="card" width="70px" hight="70px">
                                             <div class="card-body" style="padding:0;">
-                                                <img src = "${event.target.result}" id="img-${+new Date()}" width="100%" hight="100%" />
+                                                <img class="img_scan" src = "${event.target.result}" width="100%" hight="100%" />
                                             </div>
                                             <div class="card-footer">
-                                                <button class="btn btn-warning edit-img">แก้ไข</button>
-                                                <button class="btn btn-danger delete-img">ลบ</button>
+                                                <button type="button" class="btn btn-warning edit-img">แก้ไข</button>
+                                                <button type="button" class="btn btn-danger delete-img">ลบ</button>
                                             </div>
                                         </div>`)
                 }

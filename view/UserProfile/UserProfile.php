@@ -764,7 +764,7 @@ function readFile(input) {
         var reader = new FileReader();
         reader.onload = function(e) {
             $('#cropImagePop').addClass('show');
-            console.log("lllllllll")
+            console.log("lllllllll")e
             rawImg = e.target.result;
 
             loadIm();

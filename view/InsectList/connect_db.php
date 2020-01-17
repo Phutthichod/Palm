@@ -2,7 +2,7 @@
  $server="localhost";
  $user="root";
  $pass="";
- $db_name="palm9";
+ $db_name="palm7";
 
  $conn=new mysqli($server,$user,$pass,$db_name);
 

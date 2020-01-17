@@ -161,7 +161,7 @@ if (isset($_POST['insert'])) {
                             <div class="col-2">
                                 <!-- manage button -->
 
-                                <button type="button" class="btn btn-warning btn-sm btn_edit editpest" pid="<?php echo $row["PID"]; ?>" name="<?php echo $row["Name"]; ?>" alias="<?php echo $row["Alias"]; ?>" charstyle="<?php echo $row["Charactor"]; ?>" dangerstyle="<?php echo $row["Danger"]; ?>">
+                                <button type="button"   class="btn btn-warning btn-sm btn_edit" pid="<?php echo $row["PID"]; ?>" name="<?php echo $row["Name"]; ?>" alias="<?php echo $row["Alias"]; ?>" charstyle="<?php echo $row["Charactor"]; ?>" dangerstyle="<?php echo $row["Danger"]; ?>" data-icon = "<?php echo $row["Icon"]; ?>" numPicChar = "<?php echo $row["NumPicChar"]; ?>"numPicDanger = "<?php echo $row["NumPicDanger"]; ?>" >
                                     <i class="fas fa-edit"></i></button>
 
                                 <button type="button" class="btn btn-danger btn-sm delete" data-pid="<?php echo $row["PID"]; ?>" data-alias="<?php echo $row["Alias"]; ?>" >
@@ -195,7 +195,7 @@ if (isset($_POST['insert'])) {
                                             <img class="d-block w-100" src=<?php echo  $src = "../../picture/Pest/insect/style/" . $row["PID"] . "/" . $row["Icon"]; ?> style="height:200px;">
 
                                         </div>
-                                        <?php for ($style_index = 0; $style_index < $row["NumPicDanger"] - 2; $style_index++) { ?>
+                                        <?php for ($style_index = 0; $style_index < $row["NumPicChar"] - 1; $style_index++) { ?>
                                             <div class="carousel-item">
                                                 <img class="d-block w-100" src=<?php echo  $src = "../../picture/Pest/insect/style/" . $row["PID"] . "/" . $style_index . "_" . $row["Icon"]; ?> style="height:200px;">
                                             </div>
@@ -275,9 +275,9 @@ if (isset($_POST['insert'])) {
 
     <?php include_once("../layout/LayoutFooter.php"); ?>
     <?php require("modalInsert.php"); ?>
-    <?php require("editInsect.php"); ?>
+    <?php require("modalEdit.php"); ?>
 
-    <script src="InsectList.js"></script>
+    <script src="PestList.js"></script>
     <script src="../../croppie/croppie.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-sweetalert/1.0.1/sweetalert.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-sweetalert/1.0.1/sweetalert.min.js"></script>

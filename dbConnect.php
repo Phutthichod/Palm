@@ -6,7 +6,7 @@ function connectDB(){
 	$servername = "localhost";
 	$username = "root";
 	$password = "";
-	$db_name = "palm9";
+	$db_name = "palm1";
 
 	// $servername = "localhost";
 	// $username = "palmWeb2561";

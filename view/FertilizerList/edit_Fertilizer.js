@@ -728,7 +728,7 @@ return true;
 
 }
 function startInputNum(selecter){
-    let re = /^([ก-ฮA-Za-z0-9])/
+    let re = /^([ก-ไ๑-๙A-Za-z0-9])/
     // let re
     for(i in selecter){
         if(!(re.test(selecter[i].val().trim()))){
